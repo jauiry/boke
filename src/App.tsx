@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import SEO from './components/SEO';
 import type { Post } from './types/blog';
 import { getPostBySlug } from './data/blogData';
 
@@ -107,6 +108,9 @@ function App() {
         onViewChange={handleViewChange}
         onSearch={handleSearch}
       />
+
+      {/* SEO */}
+      <SEO />
 
       {/* Loading Overlay */}
       <AnimatePresence>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  ArrowLeft, Calendar, Clock, Eye, Heart, Share2, 
+import {
+  ArrowLeft, Calendar, Clock, Eye, Heart, Share2,
   MessageCircle, Bookmark, Twitter, Linkedin, Link as LinkIcon,
   ChevronUp
 } from 'lucide-react';
@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import type { Post } from '@/types/blog';
 import { getRelatedPosts } from '@/data/blogData';
 import PostCard from './PostCard';
+import SEO from './SEO';
 
 interface PostDetailProps {
   post: Post;
@@ -25,14 +26,21 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [commentText, setCommentText] = useState('');
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [readProgress, setReadProgress] = useState(0);
 
   const relatedPosts = getRelatedPosts(post, 3);
 
   useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 500);
+
+      // 计算阅读进度
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min((scrollTop / docHeight) * 100, 100) : 0;
+      setReadProgress(progress);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -129,13 +137,23 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="min-h-screen bg-slate-50 dark:bg-slate-900"
-    >
+    <>
+      {/* SEO */}
+      <SEO post={post} type="article" />
+
+      {/* Reading Progress Bar */}
+      <div
+        className="fixed top-0 left-0 h-1 bg-gradient-to-r from-violet-500 to-fuchsia-500 z-[100]"
+        style={{ width: `${readProgress}%` }}
+      />
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        className="min-h-screen bg-slate-50 dark:bg-slate-900"
+      >
       {/* Header */}
       <div className="sticky top-16 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -420,5 +438,6 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
         <ChevronUp className="w-5 h-5" />
       </motion.button>
     </motion.div>
+  </>
   );
 }
