@@ -116,21 +116,39 @@ async function fetchBlogData(): Promise<any> {
 function parsePosts(content: string): any[] {
   const posts: any[] = [];
 
-  // 使用更完整的正则提取轻量化数据
-  // 匹配每个 post 块的 id, title, slug, excerpt, createdAt, readTime, coverImage, featured
-  const postBlockRegex = /\{\s*id:\s*'([^']*)'[^}]*?title:\s*'([^']*)'[^}]*?slug:\s*'([^']*)'[^}]*?excerpt:\s*'([^']*)'[^}]*?createdAt:\s*'([^']*)'[^}]*?readTime:\s*(\d+)[^}]*?coverImage:\s*'([^']*)'[^}]*?featured:\s*(true|false)/g;
+  // 使用更简单的正则单独提取每个字段
+  const idMatches = content.matchAll(/id:\s*'([^']*)'/g);
+  const titleMatches = content.matchAll(/title:\s*'([^']*)'/g);
+  const slugMatches = content.matchAll(/slug:\s*'([^']*)'/g);
+  const excerptMatches = content.matchAll(/excerpt:\s*'([^']*)'/g);
+  const createdAtMatches = content.matchAll(/createdAt:\s*'([^']*)'/g);
+  const readTimeMatches = content.matchAll(/readTime:\s*(\d+)/g);
+  const coverImageMatches = content.matchAll(/coverImage:\s*'([^']*)'/g);
+  const featuredMatches = content.matchAll(/featured:\s*(true|false)/g);
 
-  let match;
-  while ((match = postBlockRegex.exec(content)) !== null) {
+  // 转换为数组
+  const ids = [...idMatches].map(m => m[1]);
+  const titles = [...titleMatches].map(m => m[1]);
+  const slugs = [...slugMatches].map(m => m[1]);
+  const excerpts = [...excerptMatches].map(m => m[1]);
+  const createdAts = [...createdAtMatches].map(m => m[1]);
+  const readTimes = [...readTimeMatches].map(m => parseInt(m[1]));
+  const coverImages = [...coverImageMatches].map(m => m[1]);
+  const featureds = [...featuredMatches].map(m => m[1] === 'true');
+
+  // 组合成一个posts数组
+  const count = Math.min(ids.length, titles.length, slugs.length);
+
+  for (let i = 0; i < count; i++) {
     posts.push({
-      id: match[1],
-      title: match[2],
-      slug: match[3],
-      excerpt: match[4],
-      createdAt: match[5],
-      readTime: parseInt(match[6]),
-      coverImage: match[7],
-      featured: match[8] === 'true',
+      id: ids[i],
+      title: titles[i],
+      slug: slugs[i],
+      excerpt: excerpts[i] || '',
+      createdAt: createdAts[i] || '',
+      readTime: readTimes[i] || 1,
+      coverImage: coverImages[i] || '',
+      featured: featureds[i] || false,
     });
   }
 
