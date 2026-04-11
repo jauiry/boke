@@ -131,6 +131,8 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
           <motion.img
             src={coverUrl}
             alt={post.title}
+            loading="lazy"
+            decoding="async"
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = 'none';

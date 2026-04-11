@@ -1,14 +1,35 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import PostList from './components/PostList';
-import PostDetail from './components/PostDetail';
-import TagsPage from './components/TagsPage';
-import AboutPage from './components/AboutPage';
 import Footer from './components/Footer';
 import type { Post } from './types/blog';
 import { getPostBySlug } from './data/blogData';
+
+// 代码分割：延迟加载非首屏组件
+const PostList = lazy(() => import('./components/PostList'));
+const PostDetail = lazy(() => import('./components/PostDetail'));
+const TagsPage = lazy(() => import('./components/TagsPage'));
+const AboutPage = lazy(() => import('./components/AboutPage'));
+
+// 加载骨架屏组件
+function LoadingSkeleton() {
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-24 pb-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-1/3" />
+          <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-2/3" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl h-64" />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 type ViewType = 'home' | 'articles' | 'tags' | 'about';
 
@@ -115,11 +136,13 @@ function App() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <PostDetail
-                post={selectedPost}
-                onBack={handleBackFromPost}
-                onPostClick={handlePostClick}
-              />
+              <Suspense fallback={<LoadingSkeleton />}>
+                <PostDetail
+                  post={selectedPost}
+                  onBack={handleBackFromPost}
+                  onPostClick={handlePostClick}
+                />
+              </Suspense>
             </motion.div>
           ) : (
             <motion.div
@@ -152,18 +175,24 @@ function App() {
               )}
 
               {currentView === 'articles' && (
-                <PostList
-                  onPostClick={handlePostClick}
-                  initialSearchQuery={searchQuery}
-                />
+                <Suspense fallback={<LoadingSkeleton />}>
+                  <PostList
+                    onPostClick={handlePostClick}
+                    initialSearchQuery={searchQuery}
+                  />
+                </Suspense>
               )}
 
               {currentView === 'tags' && (
-                <TagsPage onPostClick={handlePostClick} />
+                <Suspense fallback={<LoadingSkeleton />}>
+                  <TagsPage onPostClick={handlePostClick} />
+                </Suspense>
               )}
 
               {currentView === 'about' && (
-                <AboutPage />
+                <Suspense fallback={<LoadingSkeleton />}>
+                  <AboutPage />
+                </Suspense>
               )}
             </motion.div>
           )}
