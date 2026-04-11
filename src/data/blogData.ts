@@ -444,8 +444,10 @@ export const getRelatedPosts = (currentPost: Post, limit: number = 3): Post[] =>
     .slice(0, limit);
 };
 
-export const getPostsByTag = (tagName: string): Post[] => {
-  return posts.filter(post => 
-    post.tags.some(tag => tag.name.toLowerCase() === tagName.toLowerCase())
+export const getPostsByTag = (tagIdOrName: string): Post[] => {
+  return posts.filter(post =>
+    post.tags.some(tag =>
+      tag.id === tagIdOrName || tag.name.toLowerCase() === tagIdOrName.toLowerCase()
+    )
   );
 };
