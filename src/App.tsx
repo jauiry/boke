@@ -6,9 +6,13 @@ import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import SEO from './components/SEO';
 import PostListSkeleton from './components/PostListSkeleton';
+import { setupGlobalErrorHandler } from './components/ErrorBoundary';
 import type { Post } from './types/blog';
 import type { PostListItem } from './types/api';
 import { getPostBySlug } from './data/blogData';
+
+// 初始化全局错误处理
+setupGlobalErrorHandler();
 
 // 代码分割：延迟加载非首屏组件
 const PostList = lazy(() => import('./components/PostList'));
