@@ -40,7 +40,7 @@ export const posts: Post[] = [
 ## 测试成功
 
 GitHub API 集成已经配置完成，可以正常发布文章了！`,
-    coverImage: 'https://hailuo-image-algeng-data.oss-cn-wulanchabu.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-04-11%2F9538d547-6eef-4818-81e3-de715e9b8b07_aigc.jpeg?Expires=1775998953&OSSAccessKeyId=LTAI5tB2SwrRwAtD23etQUbC&Signature=wi3ZF7sz4trEgGMwcFOkL80inMo%3D',
+    coverImage: '/covers/github-api.json',
     author: {
       id: '1',
       name: '郏祥瑞',
@@ -320,7 +320,7 @@ cloudflared tunnel run --url http://localhost:18800 wecom-tunnel
 ---
 
 **本文档由 OpenClaw 助手整理生成**`,
-    coverImage: 'https://hailuo-image-algeng-data.oss-cn-wulanchabu.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-04-11%2Fa9f5047f-03e7-4be1-83b1-9aadff85c5f7_aigc.jpeg?Expires=1775999002&OSSAccessKeyId=LTAI5tB2SwrRwAtD23etQUbC&Signature=AkmkrAkWQ2h2U%2BIEw8lLI6B0sTc%3D',
+    coverImage: '/covers/openclaw.json',
     author: {
       id: '1',
       name: '郏祥瑞',
@@ -397,7 +397,7 @@ JMeter 基于 Java 开发，需要先安装 JDK 8 或更高版本。
 ## 总结
 
 JMeter 是一个功能强大的性能测试工具，掌握它对于测试工程师来说非常重要。希望本文对你有所帮助！`,
-    coverImage: 'https://hailuo-image-algeng-data.oss-cn-wulanchabu.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-04-11%2F3781e7e5-af46-4d43-b184-dc8251708ad1_aigc.jpeg?Expires=1775999350&OSSAccessKeyId=LTAI5tB2SwrRwAtD23etQUbC&Signature=bLn0WlLbL0zpiBu%2FSFJbPKTzxZ8%3D',
+    coverImage: '/covers/jmeter.json',
     author: {
       id: '1',
       name: '郏祥瑞',

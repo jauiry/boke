@@ -37,7 +37,7 @@ function escapeTemplateString(str: string): string {
     .replace(/\$/g, '\\$');
 }
 
-// 使用 MiniMax API 生成文章封面图片
+// 使用 MiniMax API 生成文章封面图片（返回 base64 格式）
 async function generateCoverImage(title: string): Promise<string | null> {
   try {
     // 构建图片生成提示词
@@ -53,7 +53,7 @@ async function generateCoverImage(title: string): Promise<string | null> {
         model: 'image-01',
         prompt: prompt,
         aspect_ratio: '16:9',
-        response_format: 'url',
+        response_format: 'base64',  // 使用 base64 格式，永久有效
         n: 1,
         prompt_optimizer: true,
       }),
@@ -72,10 +72,12 @@ async function generateCoverImage(title: string): Promise<string | null> {
       return null;
     }
 
-    // 返回生成的图片 URL
-    if (data.data && data.data.image_urls && data.data.image_urls.length > 0) {
-      console.log('封面图片生成成功:', data.data.image_urls[0]);
-      return data.data.image_urls[0];
+    // 返回生成的图片 base64 数据
+    if (data.data && data.data.image_base64 && data.data.image_base64.length > 0) {
+      const base64Data = data.data.image_base64[0];
+      console.log('封面图片生成成功，长度:', base64Data.length);
+      // 返回 data URI 格式
+      return `data:image/jpeg;base64,${base64Data}`;
     }
 
     return null;

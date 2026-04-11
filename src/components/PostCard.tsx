@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, Eye, Heart, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { Post } from '@/types/blog';
+import { useState, useEffect } from 'react';
 
 interface PostCardProps {
   post: Post;
@@ -10,9 +11,54 @@ interface PostCardProps {
   variant?: 'default' | 'featured' | 'compact';
 }
 
+// 加载封面图片 URL（支持 JSON 格式的 base64 数据）
+async function getCoverImageUrl(coverImage: string | undefined): Promise<string | null> {
+  if (!coverImage) return null;
+
+  // 如果是 JSON 文件路径，fetch 并解析 base64
+  if (coverImage.startsWith('/')) {
+    try {
+      const response = await fetch(coverImage);
+      const data = await response.json();
+      if (data.base64) {
+        return `data:image/jpeg;base64,${data.base64}`;
+      }
+    } catch (error) {
+      console.error('加载封面图片失败:', error);
+      return null;
+    }
+  }
+
+  // 如果是直接的 data URI
+  if (coverImage.startsWith('data:')) {
+    return coverImage;
+  }
+
+  // 否则返回原 URL
+  return coverImage;
+}
+
 export default function PostCard({ post, index = 0, onClick, variant = 'default' }: PostCardProps) {
   const isFeatured = variant === 'featured';
   const isCompact = variant === 'compact';
+  const [coverUrl, setCoverUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadCover() {
+      const url = await getCoverImageUrl(post.coverImage);
+      if (isMounted && url) {
+        setCoverUrl(url);
+      }
+    }
+
+    loadCover();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [post.coverImage]);
 
   if (isCompact) {
     return (
@@ -59,9 +105,9 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
     >
       {/* Cover Image */}
       <div className={`relative overflow-hidden ${isFeatured ? 'md:h-full h-48' : 'h-48'}`}>
-        {post.coverImage ? (
+        {coverUrl ? (
           <motion.img
-            src={post.coverImage}
+            src={coverUrl}
             alt={post.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={(e) => {
