@@ -1,12 +1,41 @@
 import { motion } from 'framer-motion';
 import { ArrowDown, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { posts } from '@/data/blogData';
 
 interface HeroProps {
   onExplore: () => void;
 }
 
+// 计算博客统计
+function getBlogStats() {
+  const articleCount = posts.length;
+  const totalViews = posts.reduce((sum, post) => sum + (post.views || 0), 0);
+  const firstPostDate = posts.length > 0
+    ? new Date(Math.min(...posts.map(p => new Date(p.createdAt).getTime())))
+    : new Date();
+  const yearsSinceFirstPost = new Date().getFullYear() - firstPostDate.getFullYear();
+
+  return {
+    articleCount,
+    totalViews,
+    yearsSinceFirstPost: yearsSinceFirstPost < 1 ? 1 : yearsSinceFirstPost,
+  };
+}
+
 export default function Hero({ onExplore }: HeroProps) {
+  const stats = getBlogStats();
+
+  // 格式化阅读量
+  const formatViews = (views: number) => {
+    if (views >= 10000) {
+      return `${(views / 10000).toFixed(1)}W+`;
+    } else if (views >= 1000) {
+      return `${(views / 1000).toFixed(1)}K+`;
+    }
+    return views.toLocaleString();
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Gradient */}
@@ -139,9 +168,9 @@ export default function Hero({ onExplore }: HeroProps) {
           className="mt-16 grid grid-cols-3 gap-8 max-w-md mx-auto"
         >
           {[
-            { value: '50+', label: '技术文章' },
-            { value: '10K+', label: '月度阅读' },
-            { value: '3年', label: '持续更新' },
+            { value: stats.articleCount.toString(), label: '技术文章' },
+            { value: formatViews(stats.totalViews), label: '总阅读' },
+            { value: `${stats.yearsSinceFirstPost}年`, label: '持续更新' },
           ].map((stat, index) => (
             <div key={index} className="text-center">
               <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
