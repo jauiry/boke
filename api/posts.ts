@@ -93,7 +93,7 @@ async function fetchBlogData(): Promise<any> {
   const content = Buffer.from(data.content, 'base64').toString('utf-8');
 
   // 提取 posts 数组
-  const postsMatch = content.match(/export const posts: Post\[\] = \[([\s\S]*?)\];\s*$/);
+  const postsMatch = content.match(/export const posts: Post\[\] = \[([\s\S]*?)\];/);
   if (!postsMatch) {
     throw new Error('Cannot parse posts data');
   }
