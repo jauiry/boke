@@ -7,6 +7,14 @@
     <meta name="keywords" content="软件测试,性能测试,JMeter,接口测试,自动化测试,技术博客" />
     <meta name="author" content="郏祥瑞" />
 
+    <!-- PWA -->
+    <meta name="theme-color" content="#7c3aed" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="mxqys" />
+    <link rel="manifest" href="/manifest.json" />
+
     <!-- 预连接关键资源 -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -21,16 +29,27 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
 
-    <!-- 主题色 -->
-    <meta name="theme-color" content="#7c3aed" />
-
-    <!-- 禁止搜索爬虫（开发阶段） -->
-    <!-- <meta name="robots" content="noindex,nofollow" /> -->
+    <!-- 站点地图 -->
+    <link rel="sitemap" type="application/xml" title="站点地图" href="/api/sitemap.xml" />
 
     <title>郏祥瑞的技术博客 - 软件测试与性能测试</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // 注册 Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+              console.log('SW registered:', registration.scope);
+            })
+            .catch((error) => {
+              console.log('SW registration failed:', error);
+            });
+        });
+      }
+    </script>
   </body>
 </html>

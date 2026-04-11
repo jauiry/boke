@@ -1,0 +1,27 @@
+{
+  "name": "郏祥瑞的技术博客",
+  "short_name": "mxqys",
+  "description": "分享软件测试、性能测试、接口自动化等技术文章",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#7c3aed",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["technology", "blogs"],
+  "lang": "zh-CN",
+  "dir": "ltr"
+}

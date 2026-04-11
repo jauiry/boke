@@ -12,15 +12,27 @@ interface SEOProps {
 export default function SEO({
   title = '郏祥瑞的技术博客',
   description = '分享软件测试、性能测试、接口自动化等技术文章',
-  image = '/og-image.png',
+  image,
   post,
   type = 'website',
 }: SEOProps) {
   const siteName = '郏祥瑞的技术博客';
+  const siteUrl = 'https://www.mxqys.xyz';
+
   const fullTitle = post ? `${post.title} - ${siteName}` : title;
   const fullDescription = post?.excerpt || description;
-  const fullImage = post?.coverImage || image;
-  const url = post ? `https://www.mxqys.xyz/${post.slug}` : 'https://www.mxqys.xyz';
+
+  // 动态 OG 图片 URL
+  const ogImage = post
+    ? `${siteUrl}/api/og?title=${encodeURIComponent(post.title)}&date=${encodeURIComponent(post.createdAt)}`
+    : image || `${siteUrl}/api/og?title=${encodeURIComponent(title)}`;
+
+  const url = post ? `${siteUrl}/${post.slug}` : siteUrl;
+
+  // 从文章内容提取关键词（简化版：取前10个标签或常见词）
+  const keywords = post
+    ? post.tags.map(t => t.name).join(', ')
+    : '软件测试,性能测试,JMeter,接口测试,自动化测试,技术博客';
 
   useEffect(() => {
     // 更新文档标题
@@ -48,17 +60,27 @@ export default function SEO({
     updateMeta('og:description', fullDescription, true);
     updateMeta('og:type', type, true);
     updateMeta('og:url', url, true);
-    updateMeta('og:image', fullImage, true);
+    updateMeta('og:image', ogImage, true);
     updateMeta('og:site_name', siteName, true);
+    updateMeta('og:locale', 'zh_CN', true);
 
     // Twitter Card
+    updateMeta('twitter:card', 'summary_large_image');
     updateMeta('twitter:title', fullTitle);
     updateMeta('twitter:description', fullDescription);
-    updateMeta('twitter:image', fullImage);
-    updateMeta('twitter:card', 'summary_large_image');
+    updateMeta('twitter:image', ogImage);
+    updateMeta('twitter:site', '@mxqys', true);
+
+    // 文章特有 meta
+    if (post) {
+      updateMeta('article:published_time', post.createdAt, true);
+      updateMeta('article:author', '郏祥瑞', true);
+      updateMeta('article:tag', post.tags.map(t => t.name).join(', '), true);
+    }
 
     // 其他重要 meta
     updateMeta('description', fullDescription);
+    updateMeta('keywords', keywords);
     updateMeta('author', '郏祥瑞');
 
     // 更新 canonical URL
@@ -70,7 +92,7 @@ export default function SEO({
     }
     canonical.href = url;
 
-  }, [fullTitle, fullDescription, fullImage, url, type, post]);
+  }, [fullTitle, fullDescription, ogImage, url, type, post, keywords]);
 
   return null;
 }
