@@ -24,8 +24,8 @@ export default function SEO({
 
   // 动态 OG 图片 URL
   const ogImage = post
-    ? `${siteUrl}/api/og?title=${encodeURIComponent(post.title)}&date=${encodeURIComponent(post.createdAt)}`
-    : image || `${siteUrl}/api/og?title=${encodeURIComponent(title)}`;
+    ? `${siteUrl}/api/og-image?title=${encodeURIComponent(post.title)}&date=${encodeURIComponent(post.createdAt)}`
+    : image || `${siteUrl}/api/og-image?title=${encodeURIComponent(title)}`;
 
   const url = post ? `${siteUrl}/${post.slug}` : siteUrl;
 
