@@ -59,11 +59,22 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
     >
       {/* Cover Image */}
       <div className={`relative overflow-hidden ${isFeatured ? 'md:h-full h-48' : 'h-48'}`}>
-        <motion.img
-          src={post.coverImage}
-          alt={post.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-        />
+        {post.coverImage ? (
+          <motion.img
+            src={post.coverImage}
+            alt={post.title}
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = 'none';
+              const parent = (e.target as HTMLImageElement).parentElement;
+              if (parent) {
+                parent.classList.add('bg-gradient-to-br', 'from-violet-500', 'to-fuchsia-500');
+              }
+            }}
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-br from-violet-500 to-fuchsia-500" />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         
         {/* Featured Badge */}
