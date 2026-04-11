@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
 import type { Post } from './types/blog';
 import { getPostBySlug } from './data/blogData';
 
@@ -201,6 +202,9 @@ function App() {
 
       {/* Footer */}
       {!selectedPost && <Footer onViewChange={handleViewChange} />}
+
+      {/* 返回顶部按钮 & 滚动进度条 */}
+      <ScrollToTop />
     </div>
   );
 }
