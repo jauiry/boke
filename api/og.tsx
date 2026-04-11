@@ -1,182 +1,84 @@
-// Vercel Edge Function - 动态 OG 图片生成
-// 使用 Satori 将 JSX 渲染为 PNG
+// Vercel Serverless Function - 动态 OG 图片生成
+// 返回 SVG 格式的分享图（兼容性好）
 
-import { ImageResponse } from '@vercel/og';
-import { NextRequest } from 'next/server';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export const runtime = 'edge';
-
-export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  const { searchParams } = new URL(req.url);
   const title = searchParams.get('title') || '郏祥瑞的技术博客';
   const date = searchParams.get('date') || '';
 
   // 格式化日期
-  const formattedDate = date
-    ? new Date(date).toLocaleDateString('zh-CN', {
+  let formattedDate = '';
+  if (date) {
+    try {
+      formattedDate = new Date(date).toLocaleDateString('zh-CN', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
-      })
-    : '';
-
-  return new ImageResponse(
-    (
-      <div
-        style={{
-          height: '100%',
-          width: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'flex-start',
-          justifyContent: 'flex-end',
-          backgroundColor: '#0f172a',
-          backgroundImage: 'linear-gradient(135deg, #7c3aed 0%, #a855f7 50%, #ec4899 100%)',
-          padding: '60px',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-        }}
-      >
-        {/* 背景装饰 */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '40px',
-            right: '40px',
-            width: '200px',
-            height: '200px',
-            borderRadius: '50%',
-            background: 'rgba(255, 255, 255, 0.1)',
-            filter: 'blur(60px)',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '100px',
-            left: '100px',
-            width: '150px',
-            height: '150px',
-            borderRadius: '50%',
-            background: 'rgba(255, 255, 255, 0.08)',
-            filter: 'blur(40px)',
-          }}
-        />
-
-        {/* Logo */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '40px',
-            left: '40px',
-            display: 'flex',
-            alignItems: 'center',
-          }}
-        >
-          <div
-            style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '12px',
-              background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: 'white',
-              fontSize: '24px',
-              fontWeight: 'bold',
-            }}
-          >
-            M
-          </div>
-          <span
-            style={{
-              marginLeft: '12px',
-              fontSize: '20px',
-              fontWeight: '600',
-              color: 'white',
-              opacity: 0.9,
-            }}
-          >
-            mxqys.xyz
-          </span>
-        </div>
-
-        {/* 文章标题 */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            maxWidth: '900px',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              marginBottom: '20px',
-            }}
-          >
-            <span
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                color: 'white',
-                padding: '6px 16px',
-                borderRadius: '20px',
-                fontSize: '14px',
-                fontWeight: '500',
-              }}
-            >
-              技术分享
-            </span>
-          </div>
-
-          <h1
-            style={{
-              color: 'white',
-              fontSize: title.length > 30 ? '48px' : '56px',
-              fontWeight: '700',
-              lineHeight: 1.2,
-              margin: 0,
-              textShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
-            }}
-          >
-            {title.length > 60 ? title.slice(0, 60) + '...' : title}
-          </h1>
-
-          {formattedDate && (
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginTop: '24px',
-                color: 'rgba(255, 255, 255, 0.8)',
-                fontSize: '18px',
-              }}
-            >
-              <span>{formattedDate}</span>
-              <span style={{ margin: '0 12px' }}>·</span>
-              <span>郏祥瑞</span>
-            </div>
-          )}
-        </div>
-
-        {/* 底部装饰线 */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: '6px',
-            background: 'linear-gradient(90deg, #7c3aed, #a855f7, #ec4899)',
-          }}
-        />
-      </div>
-    ),
-    {
-      width: 1200,
-      height: 630,
+      });
+    } catch {
+      formattedDate = '';
     }
-  );
+  }
+
+  // 截断过长的标题
+  const displayTitle = title.length > 40 ? title.slice(0, 40) + '...' : title;
+
+  // SVG OG 图片
+  const svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="50%" style="stop-color:#a855f7"/>
+      <stop offset="100%" style="stop-color:#ec4899"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 背景 -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- 装饰圆 -->
+  <circle cx="1050" cy="80" r="120" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="150" cy="550" r="80" fill="rgba(255,255,255,0.08)"/>
+
+  <!-- Logo -->
+  <rect x="50" y="40" width="50" height="50" rx="12" fill="rgba(255,255,255,0.2)"/>
+  <text x="75" y="75" font-family="system-ui, sans-serif" font-size="28" font-weight="bold" fill="white" text-anchor="middle">M</text>
+  <text x="115" y="72" font-family="system-ui, sans-serif" font-size="20" font-weight="500" fill="rgba(255,255,255,0.9)">mxqys.xyz</text>
+
+  <!-- 标签 -->
+  <rect x="50" y="200" width="100" height="36" rx="18" fill="rgba(255,255,255,0.2)"/>
+  <text x="100" y="225" font-family="system-ui, sans-serif" font-size="14" fill="white" text-anchor="middle">技术分享</text>
+
+  <!-- 标题 -->
+  <text x="50" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="700" fill="white">
+    ${escapeXml(displayTitle)}
+  </text>
+
+  <!-- 日期和作者 -->
+  ${formattedDate ? `
+  <text x="50" y="420" font-family="system-ui, sans-serif" font-size="18" fill="rgba(255,255,255,0.8)">
+    ${escapeXml(formattedDate)} · 郏祥瑞
+  </text>
+  ` : ''}
+
+  <!-- 底部装饰线 -->
+  <rect x="0" y="620" width="1200" height="10" fill="rgba(255,255,255,0.3)"/>
+</svg>`;
+
+  function escapeXml(str: string): string {
+    return str
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&apos;');
+  }
+
+  res.setHeader('Content-Type', 'image/svg+xml');
+  res.setHeader('Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=604800');
+
+  return res.status(200).send(svg);
 }
