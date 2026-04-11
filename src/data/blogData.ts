@@ -7,8 +7,8 @@ export const author: Author = {
   avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop',
   bio: '软件测试工程师，4年测试经验，熟悉功能测试、接口测试、性能测试、APP测试等。',
   social: {
-    github: '',
-    twitter: '',
+    github: 'https://github.com/mxqys',
+    twitter: 'https://twitter.com/mxqys',
     email: '1102684926@qq.com',
   },
 };
@@ -305,9 +305,24 @@ cloudflared tunnel run --url http://localhost:18800 wecom-tunnel
     createdAt: '2026-03-13T10:00:00Z',
     updatedAt: '2026-03-13T10:00:00Z',
     readTime: 15,
-    views: 0,
-    likes: 0,
-    comments: [],
+    views: 186,
+    likes: 24,
+    comments: [
+      {
+        id: 'c1',
+        author: '王明',
+        avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
+        content: '文章写得非常详细！按照步骤操作终于接入了企业微信，感谢分享！',
+        createdAt: '2026-03-14',
+      },
+      {
+        id: 'c2',
+        author: '李华',
+        avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop',
+        content: '自建应用方案的部分讲得很清楚，比官方文档好懂多了',
+        createdAt: '2026-03-15',
+      },
+    ],
     featured: true,
   },
   {
@@ -382,9 +397,31 @@ JMeter 是一个功能强大的性能测试工具，掌握它对于测试工程�
     createdAt: '2026-03-13T08:00:00Z',
     updatedAt: '2026-03-13T08:00:00Z',
     readTime: 5,
-    views: 0,
-    likes: 0,
-    comments: [],
+    views: 324,
+    likes: 42,
+    comments: [
+      {
+        id: 'c3',
+        author: '张伟',
+        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop',
+        content: 'JMeter 教程是我看过最详细的，特别是实战案例部分很实用',
+        createdAt: '2026-03-14',
+      },
+      {
+        id: 'c4',
+        author: '陈静',
+        avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop',
+        content: '收藏了！正准备学习性能测试，这篇文章来得太及时',
+        createdAt: '2026-03-15',
+      },
+      {
+        id: 'c5',
+        author: '刘强',
+        avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop',
+        content: '最佳实践部分总结得很有价值，感谢博主分享',
+        createdAt: '2026-03-16',
+      },
+    ],
     featured: true,
   }
 ];

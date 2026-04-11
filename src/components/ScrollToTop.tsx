@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUp, ChevronUp } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function ScrollToTop() {
-  const [isVisible, setIsVisible] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [showButton, setShowButton] = useState(false);
 
@@ -15,7 +14,6 @@ export default function ScrollToTop() {
       const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
 
       setScrollProgress(progress);
-      setIsVisible(scrollTop > 300);
       setShowButton(scrollTop > 500);
     };
 
