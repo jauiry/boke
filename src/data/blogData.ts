@@ -34,11 +34,7 @@ export const posts: Post[] = [
     id: 'mmoslclaykgzr1csb',
     title: 'GitHub API 测试文章',
     slug: 'github-api-',
-    excerpt: '这是一篇通过 API 自动发布的测试文章。
-
- 测试成功
-
-GitHub API 集成已经配置完成，可以正常发布文章了！...',
+    excerpt: '这是一篇通过 API 自动发布的测试文章。测试成功，GitHub API 集成已经配置完成，可以正常发布文章了！...',
     content: `这是一篇通过 API 自动发布的测试文章。
 
 ## 测试成功
