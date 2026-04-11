@@ -12,39 +12,39 @@ import { author } from '@/data/blogData';
 // 技能分类
 const skillCategories = [
   {
-    title: '测试理论与方法',
-    icon: Target,
-    skills: ['功能测试', '兼容性测试', 'UI测试', '安全测试', '敏捷开发', '测试流程设计'],
-    color: 'from-blue-500 to-cyan-500'
+    title: 'AI驱动测试',
+    icon: Cpu,
+    skills: ['AI业务流程梳理', '场景化测试点生成', 'AI辅助用例设计', '减少漏测'],
+    color: 'from-violet-500 to-purple-500'
   },
   {
-    title: '接口测试',
+    title: '接口与自动化',
     icon: Server,
-    skills: ['HTTP协议', 'Cookie/Token认证', 'Postman', 'JMeter自动化', '状态码', '请求方法'],
+    skills: ['JMeter', 'Postman', 'apifox', 'Python+requests', 'Python+playwright', 'HTTP协议'],
     color: 'from-green-500 to-emerald-500'
   },
   {
     title: '性能测试',
     icon: Zap,
-    skills: ['JMeter压测', '性能测试方案', '性能测试报告', '分布式压测', '并发测试', '全链路测试'],
+    skills: ['JMeter压测', 'perfdog性能测试', '分布式压测', '并发测试', '性能测试报告'],
     color: 'from-yellow-500 to-orange-500'
   },
   {
     title: '抓包与调试',
     icon: Bug,
-    skills: ['Fiddler', 'Charles', 'F12开发者工具', '数据包分析', '断点改包', '弱网测试'],
+    skills: ['Fiddler', 'Charles', 'F12开发者工具', 'adb命令', 'Monkey压测', '弱网测试'],
     color: 'from-red-500 to-pink-500'
   },
   {
     title: 'APP测试',
-    icon: Cpu,
-    skills: ['兼容性测试', '闪退测试', '性能测试', '弱网测试', 'adb命令', 'Monkey压测'],
-    color: 'from-purple-500 to-violet-500'
+    icon: Target,
+    skills: ['WEB/APP/H5/小程序', 'Google Play审核', 'Apple Store审核', '兼容性测试', '闪退测试'],
+    color: 'from-blue-500 to-cyan-500'
   },
   {
     title: '数据库与工具',
     icon: Database,
-    skills: ['MySQL', '数据校验', '禅道', 'JIRA', 'Meego', 'Xshell', 'Linux命令'],
+    skills: ['MySQL', 'Linux', 'Git/SVN', '飞书/JIRA', 'Xmind', 'Claude code辅助'],
     color: 'from-indigo-500 to-blue-500'
   }
 ];
@@ -52,14 +52,25 @@ const skillCategories = [
 // 工作经历
 const experiences = [
   {
-    year: '2023.07 - 2026.01',
+    year: '2024.12 - 2026.02',
+    title: '软件测试工程师',
+    company: '俊城达网络科技有限公司',
+    location: '杭州',
+    achievements: [
+      '负责各端APP的Google Play & Apple Store & 商米应用市场提交审核',
+      '使用AI梳理业务流程、生成场景化测试点，减少漏测',
+      '负责带新人，提供入职培训，熟悉项目和工具'
+    ]
+  },
+  {
+    year: '2023.06 - 2024.12',
     title: '软件测试工程师',
     company: '上海奇搜网络科技有限公司',
     location: '上海',
     achievements: [
-      '4年测试工程师从业经验，负责过多个产品的测试项目',
-      '可以独立完成产品测试工作，独立负责项目从测试到上线',
-      '负责带新人，给新人提供入职培训，熟悉项目和工具',
+      '3年测试工程师从业经验，负责过多个产品的测试项目',
+      '精通JMeter、apifox、postman做接口测试和压力测试',
+      '熟练使用Fiddler、Charles抓包工具分析HTTP请求和响应',
       '定期参加技术分享并获得"双月分享之星"称号'
     ]
   }
@@ -125,7 +136,7 @@ export default function AboutPage() {
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
                 <div className="flex items-center space-x-2 text-slate-600 dark:text-slate-400">
                   <Calendar className="w-4 h-4 text-violet-500" />
-                  <span>26岁 · 4年经验</span>
+                  <span>26岁 · 3年经验</span>
                 </div>
                 <div className="flex items-center space-x-2 text-slate-600 dark:text-slate-400">
                   <GraduationCap className="w-4 h-4 text-violet-500" />
@@ -133,7 +144,7 @@ export default function AboutPage() {
                 </div>
                 <div className="flex items-center space-x-2 text-slate-600 dark:text-slate-400">
                   <MapPin className="w-4 h-4 text-violet-500" />
-                  <span>上海市</span>
+                  <span>杭州市</span>
                 </div>
                 <div className="flex items-center space-x-2 text-slate-600 dark:text-slate-400">
                   <Briefcase className="w-4 h-4 text-violet-500" />
@@ -339,31 +350,31 @@ export default function AboutPage() {
                     <li className="flex items-start">
                       <CheckCircle className="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
                       <span className="text-sm text-slate-600 dark:text-slate-400">
-                        4年测试经验，独立负责多个项目
+                        3年测试经验，精通JMeter性能与接口测试
                       </span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircle className="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
                       <span className="text-sm text-slate-600 dark:text-slate-400">
-                        精通JMeter性能测试与自动化
+                        AI驱动测试思维，减少漏测提高覆盖率
                       </span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircle className="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
                       <span className="text-sm text-slate-600 dark:text-slate-400">
-                        丰富的APP和Web端测试经验
+                        移动端(WEP/APP/H5/小程序)测试经验
                       </span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircle className="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
                       <span className="text-sm text-slate-600 dark:text-slate-400">
-                        带新人经验，获得分享之星称号
+                        Python+playwright UI自动化实践
                       </span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircle className="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
                       <span className="text-sm text-slate-600 dark:text-slate-400">
-                        擅长跨部门沟通协作
+                        负责APP应用市场上架审核
                       </span>
                     </li>
                   </ul>
