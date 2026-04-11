@@ -397,6 +397,7 @@ JMeter 基于 Java 开发，需要先安装 JDK 8 或更高版本。
 ## 总结
 
 JMeter 是一个功能强大的性能测试工具，掌握它对于测试工程师来说非常重要。希望本文对你有所帮助！`,
+    coverImage: 'https://hailuo-image-algeng-data.oss-cn-wulanchabu.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-04-11%2F3781e7e5-af46-4d43-b184-dc8251708ad1_aigc.jpeg?Expires=1775999350&OSSAccessKeyId=LTAI5tB2SwrRwAtD23etQUbC&Signature=bLn0WlLbL0zpiBu%2FSFJbPKTzxZ8%3D',
     author: {
       id: '1',
       name: '郏祥瑞',
