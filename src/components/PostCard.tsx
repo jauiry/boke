@@ -11,6 +11,15 @@ interface PostCardProps {
   variant?: 'default' | 'featured' | 'compact';
 }
 
+// 格式化日期为友好格式
+function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 // 加载封面图片 URL（支持 JSON 格式的 base64 数据）
 async function getCoverImageUrl(coverImage: string | undefined): Promise<string | null> {
   if (!coverImage) return null;
@@ -36,6 +45,19 @@ async function getCoverImageUrl(coverImage: string | undefined): Promise<string 
 
   // 否则返回原 URL
   return coverImage;
+}
+
+// 获取标签的深色文字颜色（用于浅色背景）
+function getTagTextColor(bgColor: string): string {
+  // 将 hex 颜色转换为 RGB
+  const hex = bgColor.replace('#', '');
+  const r = parseInt(hex.substr(0, 2), 16);
+  const g = parseInt(hex.substr(2, 2), 16);
+  const b = parseInt(hex.substr(4, 2), 16);
+  // 计算亮度
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+  // 如果亮度 > 150（浅色），返回深色文字
+  return brightness > 150 ? '#374151' : '#ffffff';
 }
 
 export default function PostCard({ post, index = 0, onClick, variant = 'default' }: PostCardProps) {
@@ -80,7 +102,7 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
             <div className="flex items-center space-x-4 mt-2 text-xs text-slate-400">
               <span className="flex items-center space-x-1">
                 <Calendar className="w-3 h-3" />
-                <span>{post.createdAt}</span>
+                <span>{formatDate(post.createdAt)}</span>
               </span>
               <span className="flex items-center space-x-1">
                 <Clock className="w-3 h-3" />
@@ -144,18 +166,23 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
       <div className={`p-6 ${isFeatured ? 'md:p-8' : ''}`}>
         {/* Tags */}
         <div className="flex flex-wrap gap-2 mb-3">
-          {post.tags.slice(0, 3).map((tag) => (
-            <span
-              key={tag.id}
-              className="text-xs font-medium px-2.5 py-0.5 rounded-full"
-              style={{ 
-                backgroundColor: `${tag.color}20`, 
-                color: tag.color 
-              }}
-            >
-              {tag.name}
-            </span>
-          ))}
+          {post.tags.slice(0, 3).map((tag) => {
+            const bgColor = `${tag.color}30`;
+            const textColor = getTagTextColor(tag.color);
+            return (
+              <span
+                key={tag.id}
+                className="text-xs font-medium px-2.5 py-0.5 rounded-full"
+                style={{
+                  backgroundColor: bgColor,
+                  color: textColor,
+                  border: `1px solid ${tag.color}40`
+                }}
+              >
+                {tag.name}
+              </span>
+            );
+          })}
         </div>
 
         {/* Title */}
@@ -166,18 +193,21 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
         </h3>
 
         {/* Excerpt */}
-        <p className={`text-slate-600 dark:text-slate-400 mb-4 line-clamp-2 ${
-          isFeatured ? 'text-base md:text-lg' : 'text-sm'
-        }`}>
-          {post.excerpt}
-        </p>
+        <div className="relative mb-4">
+          <p className={`text-slate-600 dark:text-slate-400 line-clamp-2 ${
+            isFeatured ? 'text-base md:text-lg' : 'text-sm'
+          }`}>
+            {post.excerpt}
+          </p>
+          <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white dark:from-slate-800 to-transparent" />
+        </div>
 
         {/* Meta */}
         <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700">
           <div className="flex items-center space-x-4 text-sm text-slate-500 dark:text-slate-400">
             <span className="flex items-center space-x-1">
               <Calendar className="w-4 h-4" />
-              <span>{post.createdAt}</span>
+              <span>{formatDate(post.createdAt)}</span>
             </span>
             <span className="flex items-center space-x-1">
               <Clock className="w-4 h-4" />
@@ -186,14 +216,18 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
           </div>
 
           <div className="flex items-center space-x-3 text-sm text-slate-500 dark:text-slate-400">
-            <span className="flex items-center space-x-1">
-              <Eye className="w-4 h-4" />
-              <span>{post.views}</span>
-            </span>
-            <span className="flex items-center space-x-1">
-              <Heart className="w-4 h-4" />
-              <span>{post.likes}</span>
-            </span>
+            {post.views > 0 && (
+              <span className="flex items-center space-x-1">
+                <Eye className="w-4 h-4" />
+                <span>{post.views}</span>
+              </span>
+            )}
+            {post.likes > 0 && (
+              <span className="flex items-center space-x-1">
+                <Heart className="w-4 h-4" />
+                <span>{post.likes}</span>
+              </span>
+            )}
           </div>
         </div>
 

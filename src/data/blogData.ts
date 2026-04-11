@@ -31,37 +31,6 @@ export const categories: Category[] = [
 // 示例文章
 export const posts: Post[] = [
   {
-    id: 'mmoslclaykgzr1csb',
-    title: 'GitHub API 测试文章',
-    slug: 'github-api-',
-    excerpt: '这是一篇通过 API 自动发布的测试文章。测试成功，GitHub API 集成已经配置完成，可以正常发布文章了！...',
-    content: `这是一篇通过 API 自动发布的测试文章。
-
-## 测试成功
-
-GitHub API 集成已经配置完成，可以正常发布文章了！`,
-    coverImage: '/covers/github-api.json',
-    author: {
-      id: '1',
-      name: '郏祥瑞',
-      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop',
-      bio: '软件测试工程师，4年测试经验',
-      social: { github: '', twitter: '', email: '1102684926@qq.com' },
-    },
-    tags: [
-      { id: '1', name: '测试', color: '#61DAFB' },
-      { id: '2', name: '技术', color: '#3178C6' }
-    ],
-    category: { id: '1', name: '技术分享', description: '测试技术和经验分享', icon: 'Code' },
-    createdAt: '2026-03-13T11:07:15.070Z',
-    updatedAt: '2026-03-13T11:07:15.070Z',
-    readTime: 1,
-    views: 0,
-    likes: 0,
-    comments: [],
-    featured: false,
-  },
-  {
     id: '2',
     title: 'OpenClaw 企业微信接入完全指南',
     slug: 'openclaw-wecom-integration-guide',
