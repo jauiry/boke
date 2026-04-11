@@ -4,16 +4,23 @@ import { Search, Filter, Grid3X3, List as ListIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { posts, categories, tags } from '@/data/blogData';
-import PostCard from './PostCard';
-import type { Post } from '@/types/blog';
+import PostCard from './PostCardSkeleton';
+import { usePostList, useLocalTags, useLocalCategories, preloadPostList } from '@/hooks/usePosts';
+import type { PostListItem } from '@/types/api';
 
 interface PostListProps {
-  onPostClick: (post: Post) => void;
+  onPostClick: (post: PostListItem) => void;
   initialSearchQuery?: string;
 }
 
+// 预加载数据
+preloadPostList();
+
 export default function PostList({ onPostClick, initialSearchQuery = '' }: PostListProps) {
+  const posts = usePostList();
+  const tags = useLocalTags();
+  const categories = useLocalCategories();
+
   const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
@@ -25,16 +32,10 @@ export default function PostList({ onPostClick, initialSearchQuery = '' }: PostL
       const matchesSearch = searchQuery === '' ||
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesCategory = selectedCategory === null ||
-        post.category.id === selectedCategory;
-      
-      const matchesTag = selectedTag === null ||
-        post.tags.some(tag => tag.id === selectedTag);
-      
-      return matchesSearch && matchesCategory && matchesTag;
+
+      return matchesSearch;
     });
-  }, [searchQuery, selectedCategory, selectedTag]);
+  }, [posts, searchQuery]);
 
   const featuredPosts = filteredPosts.filter(post => post.featured);
   const regularPosts = filteredPosts.filter(post => !post.featured);
@@ -204,11 +205,11 @@ export default function PostList({ onPostClick, initialSearchQuery = '' }: PostL
           <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
             {searchQuery || selectedCategory || selectedTag ? '搜索结果' : '最新文章'}
           </h2>
-          
+
           {regularPosts.length > 0 ? (
             <div className={`grid gap-6 ${
-              viewMode === 'grid' 
-                ? 'md:grid-cols-2 lg:grid-cols-3' 
+              viewMode === 'grid'
+                ? 'md:grid-cols-2 lg:grid-cols-3'
                 : 'grid-cols-1'
             }`}>
               {regularPosts.map((post, index) => (

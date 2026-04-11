@@ -5,7 +5,9 @@ import Hero from './components/Hero';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import SEO from './components/SEO';
+import PostListSkeleton from './components/PostListSkeleton';
 import type { Post } from './types/blog';
+import type { PostListItem } from './types/api';
 import { getPostBySlug } from './data/blogData';
 
 // 代码分割：延迟加载非首屏组件
@@ -48,21 +50,66 @@ function App() {
     setSelectedPost(null);
     setSearchQuery('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    
+
     setTimeout(() => {
       setIsLoading(false);
     }, 300);
   };
 
-  // Handle post click
-  const handlePostClick = (post: Post) => {
+  // Handle post click - fetch full post from API
+  const handlePostClick = async (postItem: PostListItem) => {
     setIsLoading(true);
-    setSelectedPost(post);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 300);
+
+    try {
+      // 从 API 获取完整文章
+      const response = await fetch(`/api/posts/${postItem.slug}`);
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        // 转换为 Post 类型
+        const fullPost: Post = {
+          id: result.data.id,
+          title: result.data.title,
+          slug: result.data.slug,
+          excerpt: result.data.excerpt,
+          content: result.data.content,
+          coverImage: result.data.coverImage,
+          author: {
+            id: '1',
+            name: '郏祥瑞',
+            avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop',
+            bio: '软件测试工程师，4年测试经验',
+            social: { github: 'https://github.com/mxqys', twitter: 'https://twitter.com/mxqys', email: '1102684926@qq.com' },
+          },
+          tags: [],
+          category: { id: '1', name: '技术分享', description: '测试技术和经验分享', icon: 'Code' },
+          createdAt: result.data.createdAt,
+          updatedAt: result.data.createdAt,
+          readTime: result.data.readTime,
+          views: 0,
+          likes: 0,
+          comments: [],
+          featured: result.data.featured,
+        };
+        setSelectedPost(fullPost);
+      } else {
+        // API 失败，尝试本地数据
+        const localPost = getPostBySlug(postItem.slug);
+        if (localPost) {
+          setSelectedPost(localPost);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch post:', error);
+      // 降级到本地数据
+      const localPost = getPostBySlug(postItem.slug);
+      if (localPost) {
+        setSelectedPost(localPost);
+      }
+    }
+
+    setIsLoading(false);
   };
 
   // Handle search
@@ -170,17 +217,19 @@ function App() {
                           推荐阅读的高质量内容
                         </p>
                       </div>
-                      <PostList
-                        onPostClick={handlePostClick}
-                        initialSearchQuery={searchQuery}
-                      />
+                      <Suspense fallback={<PostListSkeleton />}>
+                        <PostList
+                          onPostClick={handlePostClick}
+                          initialSearchQuery={searchQuery}
+                        />
+                      </Suspense>
                     </div>
                   </div>
                 </>
               )}
 
               {currentView === 'articles' && (
-                <Suspense fallback={<LoadingSkeleton />}>
+                <Suspense fallback={<PostListSkeleton />}>
                   <PostList
                     onPostClick={handlePostClick}
                     initialSearchQuery={searchQuery}

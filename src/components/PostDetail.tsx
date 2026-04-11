@@ -10,14 +10,29 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Textarea } from '@/components/ui/textarea';
 import type { Post } from '@/types/blog';
+import type { PostListItem } from '@/types/api';
 import { getRelatedPosts } from '@/data/blogData';
 import PostCard from './PostCard';
 import SEO from './SEO';
 
+// 转换 Post 为 PostListItem
+function toPostListItem(post: Post): PostListItem {
+  return {
+    id: post.id,
+    title: post.title,
+    slug: post.slug,
+    excerpt: post.excerpt,
+    createdAt: post.createdAt,
+    readTime: post.readTime,
+    coverImage: post.coverImage,
+    featured: post.featured,
+  };
+}
+
 interface PostDetailProps {
   post: Post;
   onBack: () => void;
-  onPostClick: (post: Post) => void;
+  onPostClick: (post: PostListItem) => void;
 }
 
 export default function PostDetail({ post, onBack, onPostClick }: PostDetailProps) {
@@ -419,7 +434,7 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
                   key={relatedPost.id}
                   post={relatedPost}
                   index={index}
-                  onClick={() => onPostClick(relatedPost)}
+                  onClick={() => onPostClick(toPostListItem(relatedPost))}
                   variant="compact"
                 />
               ))}

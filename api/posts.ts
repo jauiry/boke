@@ -112,17 +112,25 @@ async function fetchBlogData(): Promise<any> {
   return result;
 }
 
-// 解析 posts 内容（简化版）
+// 解析 posts 内容（轻量化版本 - 列表页使用）
 function parsePosts(content: string): any[] {
   const posts: any[] = [];
-  const postMatches = content.matchAll(/\{[\s\S]*?id: '([^']*)'[\s\S]*?title: '([^']*)'[\s\S]*?slug: '([^']*)'[\s\S]*?excerpt: '([^']*)'/g);
 
-  for (const match of postMatches) {
+  // 使用更完整的正则提取轻量化数据
+  // 匹配每个 post 块的 id, title, slug, excerpt, createdAt, readTime, coverImage, featured
+  const postBlockRegex = /\{\s*id:\s*'([^']*)'[^}]*?title:\s*'([^']*)'[^}]*?slug:\s*'([^']*)'[^}]*?excerpt:\s*'([^']*)'[^}]*?createdAt:\s*'([^']*)'[^}]*?readTime:\s*(\d+)[^}]*?coverImage:\s*'([^']*)'[^}]*?featured:\s*(true|false)/g;
+
+  let match;
+  while ((match = postBlockRegex.exec(content)) !== null) {
     posts.push({
       id: match[1],
       title: match[2],
       slug: match[3],
       excerpt: match[4],
+      createdAt: match[5],
+      readTime: parseInt(match[6]),
+      coverImage: match[7],
+      featured: match[8] === 'true',
     });
   }
 
