@@ -76,6 +76,101 @@ const experiences = [
   }
 ];
 
+// 项目经历
+const projects = [
+  {
+    year: '2025.05 - 2026.02',
+    name: 'JEADA 商家端 (APP & WEB)',
+    type: 'APP/WEB',
+    description: '为外卖平台商家提供的管理端应用，在商米POS机使用，支持店铺管理、商品上下架、订单处理、财务结算、打印小票等功能。',
+    responsibilities: [
+      '编写测试计划、用户手册，评审测试用例',
+      '使用adb命令定位Android系统手机日志',
+      '使用monkey做闪退测试，perfdog做性能测试',
+      '测试各种Android机型嵌入APP后的功能情况',
+      '编写测试报告，评估软件质量'
+    ]
+  },
+  {
+    year: '2025.05 - 2026.02',
+    name: 'JEADA M端 (后台管理系统)',
+    type: 'WEB',
+    description: '为外卖平台内部运营人员提供的后台管理系统，涵盖用户管理、订单管理、商家管理、活动配置、财务结算等功能。',
+    responsibilities: [
+      '负责需求分析及评审，编写测试计划',
+      '使用MySQL数据库对数据进行校验和测试',
+      '使用Fiddler和F12抓包定位前后端bug',
+      '使用JMeter和apifox做接口测试和性能测试',
+      '编写测试报告，评估软件质量'
+    ]
+  },
+  {
+    year: '2025.02 - 2025.05',
+    name: 'JEADA D端 (骑手端APP)',
+    type: 'APP',
+    description: '面向外卖配送员的移动端应用，帮助骑手接单、导航取餐、送餐及完成订单管理，具备实时订单推送、路线规划、异常上报等功能。',
+    responsibilities: [
+      '负责需求评审、测试计划编写',
+      '使用MySQL数据库对数据校验',
+      '使用Fiddler和F12抓包定位bug',
+      '使用JMeter和apifox做接口测试和性能测试',
+      '编写测试报告，评估软件质量'
+    ]
+  },
+  {
+    year: '2025.02 - 2025.05',
+    name: 'JEADA S端 (站点调度管理后台)',
+    type: 'WEB',
+    description: '为外卖平台打造的智能调度系统，基于实时位置、订单优先级、骑手状态等数据，采用智能算法优化订单分配策略和配送路线。',
+    responsibilities: [
+      '负责需求分析及评审，编写测试用例',
+      '使用MySQL数据库对数据校验',
+      '使用Fiddler和F12抓包定位bug',
+      '使用JMeter做接口测试和性能测试',
+      '编写测试报告，对软件质量进行评估'
+    ]
+  },
+  {
+    year: '2024.07 - 2025.01',
+    name: '优时通购物 (WEB & APP)',
+    type: 'APP/WEB',
+    description: '针对母婴用品购物平台，有APP端和WEB端，支持拼团、补贴、满减等活动。',
+    responsibilities: [
+      '使用JMeter进行登录、购物车、提交订单等性能测试',
+      '在禅道提交Bug，进行多轮回归测试',
+      '使用Fiddler和F12抓包定位前后端bug',
+      '测试Android和IOS两种系统的APP兼容性',
+      '使用Charles模拟网络延迟、中断、超时测试'
+    ]
+  },
+  {
+    year: '2023.12 - 2024.07',
+    name: '优时通购物平台后台管理系统',
+    type: 'WEB',
+    description: '帮助购物平台高效管理商品、订单、用户等核心业务数据，实现全流程化管理。',
+    responsibilities: [
+      '执行测试用例，在禅道提交并追踪Bug',
+      '使用JMeter和apifox做接口测试和压力测试',
+      '使用Fiddler和F12抓包定位前后端bug',
+      '使用Linux命令查询日志',
+      '编写测试报告，评估软件质量'
+    ]
+  },
+  {
+    year: '2023.06 - 2023.12',
+    name: '健安 APP',
+    type: 'APP',
+    description: '在线健康咨询及健康管理APP，由平安健康互联推出，以医生资源为核心，提供实时咨询和健康管理服务。',
+    responsibilities: [
+      '编写测试用例，召开用例评审会议',
+      '执行测试用例，在禅道提交bug并进行回归测试',
+      '分别测试Android和IOS系统上面的功能',
+      '使用SQL语句对数据库进行查询，检验数据一致性',
+      '使用JMeter进行接口测试和性能测试'
+    ]
+  }
+];
+
 // 教育背景
 const education = [
   {
@@ -245,6 +340,53 @@ export default function AboutPage() {
                       </Badge>
                     </div>
                   ))}
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* 项目经历 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 }}
+            >
+              <Card className="border-0 shadow-lg">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center text-xl">
+                    <Briefcase className="w-5 h-5 mr-2 text-violet-500" />
+                    项目经历
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-6">
+                    {projects.map((project, index) => (
+                      <div key={index} className="relative pl-6 pb-6 border-l-2 border-violet-200 dark:border-violet-800 last:pb-0">
+                        <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-violet-500 border-4 border-white dark:border-slate-800" />
+                        <div className="flex flex-wrap items-center gap-2 mb-2">
+                          <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300">
+                            {project.year}
+                          </Badge>
+                          <Badge variant="outline" className="text-slate-500">
+                            {project.type}
+                          </Badge>
+                        </div>
+                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                          {project.name}
+                        </h3>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+                          {project.description}
+                        </p>
+                        <ul className="space-y-1">
+                          {project.responsibilities.map((resp, idx) => (
+                            <li key={idx} className="flex items-start text-slate-600 dark:text-slate-400">
+                              <CheckCircle className="w-3 h-3 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
+                              <span className="text-xs">{resp}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>
