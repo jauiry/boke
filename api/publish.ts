@@ -1,5 +1,6 @@
 // Vercel Serverless Function - 博客文章发布接口
 // 通过 GitHub API 自动提交文章到仓库
+// 支持 MiniMax 文生图 API 自动生成文章封面
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
@@ -10,6 +11,8 @@ const CONFIG = {
   repo: 'boke',                      // 你的仓库名
   path: 'src/data/blogData.ts',      // 文件在仓库中的路径
   secret: 'your-secret-password',    // TODO: 替换为你的发布密码
+  // MiniMax 文生图 API 配置
+  minimaxApiKey: 'sk-cp-9CmALoHnkNiWXUKtGUg5ibzYPuVSZjk9vWo1Pz2g0PaPYlBKogu2IcNjVExGv5BLHj-fAqGRH3TM17D0csUB1AFRGvWdhdOlLD-vo4ZJCwDGDOYkIqw-c4o',
 };
 
 // 生成唯一 ID
@@ -32,6 +35,54 @@ function escapeTemplateString(str: string): string {
     .replace(/\\/g, '\\\\')
     .replace(/`/g, '\\`')
     .replace(/\$/g, '\\$');
+}
+
+// 使用 MiniMax API 生成文章封面图片
+async function generateCoverImage(title: string): Promise<string | null> {
+  try {
+    // 构建图片生成提示词
+    const prompt = `Tech blog article cover image, "${title}". Modern minimalist style, abstract technology concept, clean design with purple and blue gradient background, professional software engineering theme, no text, high quality, 16:9 aspect ratio`;
+
+    const response = await fetch('https://api.minimaxi.com/v1/image_generation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${CONFIG.minimaxApiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'image-01',
+        prompt: prompt,
+        aspect_ratio: '16:9',
+        response_format: 'url',
+        n: 1,
+        prompt_optimizer: true,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('MiniMax API 错误:', errorText);
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (data.base_resp && data.base_resp.status_code !== 0) {
+      console.error('MiniMax API 返回错误:', data.base_resp.status_msg);
+      return null;
+    }
+
+    // 返回生成的图片 URL
+    if (data.data && data.data.image_urls && data.data.image_urls.length > 0) {
+      console.log('封面图片生成成功:', data.data.image_urls[0]);
+      return data.data.image_urls[0];
+    }
+
+    return null;
+  } catch (error) {
+    console.error('生成封面图片失败:', error);
+    return null;
+  }
 }
 
 // 获取当前文件内容和 SHA
@@ -99,7 +150,8 @@ function createPostObject(
   content: string,
   categoryId: string,
   tags: string[],
-  featured: boolean = false
+  featured: boolean = false,
+  coverImage?: string | null
 ) {
   const id = generateId();
   const slug = generateSlug(title) || `post-${id}`;
@@ -116,6 +168,7 @@ function createPostObject(
     slug,
     excerpt,
     content: escapedContent,
+    coverImage: coverImage || undefined,
     categoryId,
     tags,
     featured,
@@ -136,13 +189,14 @@ function insertNewPost(fileContent: string, post: any): string {
   const insertPosition = postsMatch.index! + postsMatch[0].length;
 
   // 生成新文章代码
+  const coverImageLine = post.coverImage ? `\n    coverImage: '${post.coverImage}',` : '';
   const newPostCode = `
   {
     id: '${post.id}',
     title: '${post.title.replace(/'/g, "\\'")}',
     slug: '${post.slug}',
     excerpt: '${post.excerpt.replace(/'/g, "\\'")}',
-    content: \`${post.content}\`,
+    content: \`${post.content}\`,${coverImageLine}
     author: {
       id: '1',
       name: '郏祥瑞',
@@ -222,20 +276,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // 验证必填字段
     if (!title || !content) {
-      return res.status(400).json({ 
-        success: false, 
-        error: 'Bad Request: title and content are required' 
+      return res.status(400).json({
+        success: false,
+        error: 'Bad Request: title and content are required'
       });
     }
 
     // 获取当前文件内容
     const fileData = await getFileContent();
     if (!fileData) {
-      return res.status(500).json({ 
-        success: false, 
-        error: 'Failed to fetch current file content' 
+      return res.status(500).json({
+        success: false,
+        error: 'Failed to fetch current file content'
       });
     }
+
+    // 使用 MiniMax API 生成封面图片
+    console.log('正在为文章生成封面图片...');
+    const coverImage = await generateCoverImage(title);
 
     // 创建新文章
     const newPost = createPostObject(
@@ -243,7 +301,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       content,
       categoryId || '1',
       tags || ['1'],
-      featured || false
+      featured || false,
+      coverImage
     );
 
     // 生成新文件内容
@@ -269,6 +328,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         title: newPost.title,
         slug: newPost.slug,
         excerpt: newPost.excerpt,
+        coverImage: newPost.coverImage,
       },
       postUrl: `https://www.mxqys.xyz/${newPost.slug}`,
       adminUrl: `https://vercel.com/dashboard`,
