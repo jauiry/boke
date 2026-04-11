@@ -154,6 +154,7 @@ function App() {
         currentView={currentView}
         onViewChange={handleViewChange}
         onSearch={handleSearch}
+        onPostClick={handlePostClick}
       />
 
       {/* SEO */}

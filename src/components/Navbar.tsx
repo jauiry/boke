@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Search, Sun, Moon } from 'lucide-react';
+import { Menu, X, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import SearchOverlay from './SearchOverlay';
+import type { PostListItem } from '@/types/api';
 
 interface NavbarProps {
   currentView: string;
   onViewChange: (view: string) => void;
-  onSearch: (query: string) => void;
+  onSearch?: (query: string) => void;
+  onPostClick: (post: PostListItem) => void;
 }
 
 const navItems = [
@@ -17,11 +19,10 @@ const navItems = [
   { id: 'about', label: '关于' },
 ];
 
-export default function Navbar({ currentView, onViewChange, onSearch }: NavbarProps) {
+export default function Navbar({ currentView, onViewChange, onPostClick }: NavbarProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('theme');
@@ -50,17 +51,26 @@ export default function Navbar({ currentView, onViewChange, onSearch }: NavbarPr
     }
   }, [isDark]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      onSearch(searchQuery.trim());
-      setIsSearchOpen(false);
-      setSearchQuery('');
-    }
-  };
+  // Cmd/Ctrl + K 快捷键
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsSearchOpen(true);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const toggleTheme = () => {
     setIsDark(!isDark);
+  };
+
+  const handleSearchResult = (post: PostListItem) => {
+    onPostClick(post);
+    setIsSearchOpen(false);
   };
 
   return (
@@ -120,15 +130,30 @@ export default function Navbar({ currentView, onViewChange, onSearch }: NavbarPr
 
             {/* Actions */}
             <div className="flex items-center space-x-2">
+              {/* Search Button with Kbd hint */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsSearchOpen(true)}
+                className="text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hidden sm:flex"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span className="text-xs text-slate-400 ml-2">⌘K</span>
+              </Button>
+
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsSearchOpen(true)}
-                className="text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400"
+                className="text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 sm:hidden"
               >
-                <Search className="w-5 h-5" />
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
               </Button>
-              
+
               <Button
                 variant="ghost"
                 size="icon"
@@ -184,51 +209,12 @@ export default function Navbar({ currentView, onViewChange, onSearch }: NavbarPr
         )}
       </AnimatePresence>
 
-      {/* Search Modal */}
-      <AnimatePresence>
-        {isSearchOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-start justify-center pt-24 px-4"
-            onClick={() => setIsSearchOpen(false)}
-          >
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="relative w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <form onSubmit={handleSearch} className="p-4">
-                <div className="flex items-center space-x-3">
-                  <Search className="w-5 h-5 text-slate-400" />
-                  <Input
-                    type="text"
-                    placeholder="搜索文章..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1 border-0 focus-visible:ring-0 text-lg placeholder:text-slate-400"
-                    autoFocus
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setIsSearchOpen(false)}
-                    className="text-slate-400 hover:text-slate-600"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              </form>
-              <div className="px-4 pb-4 text-sm text-slate-500">
-                按 Enter 搜索，按 ESC 关闭
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Search Overlay */}
+      <SearchOverlay
+        isOpen={isSearchOpen}
+        onClose={() => setIsSearchOpen(false)}
+        onResultClick={handleSearchResult}
+      />
     </>
   );
 }
