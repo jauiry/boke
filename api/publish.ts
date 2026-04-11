@@ -6,8 +6,8 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 // 配置
 const CONFIG = {
   githubToken: 'your-github-token',  // TODO: 替换为你的 GitHub Token
-  owner: 'your-github-username',    // TODO: 替换为你的 GitHub 用户名
-  repo: 'your-repo-name',            // TODO: 替换为你的仓库名
+  owner: 'jauiry',                   // 你的 GitHub 用户名
+  repo: 'boke',                      // 你的仓库名
   path: 'src/data/blogData.ts',      // 文件在仓库中的路径
   secret: 'your-secret-password',    // TODO: 替换为你的发布密码
 };
