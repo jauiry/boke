@@ -40,6 +40,7 @@ export const posts: Post[] = [
 ## 测试成功
 
 GitHub API 集成已经配置完成，可以正常发布文章了！`,
+    coverImage: 'https://hailuo-image-algeng-data.oss-cn-wulanchabu.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-04-11%2F9538d547-6eef-4818-81e3-de715e9b8b07_aigc.jpeg?Expires=1775998953&OSSAccessKeyId=LTAI5tB2SwrRwAtD23etQUbC&Signature=wi3ZF7sz4trEgGMwcFOkL80inMo%3D',
     author: {
       id: '1',
       name: '郏祥瑞',
@@ -319,6 +320,7 @@ cloudflared tunnel run --url http://localhost:18800 wecom-tunnel
 ---
 
 **本文档由 OpenClaw 助手整理生成**`,
+    coverImage: 'https://hailuo-image-algeng-data.oss-cn-wulanchabu.aliyuncs.com/image_inference_output%2Ftalkie%2Fprod%2Fimg%2F2026-04-11%2Fa9f5047f-03e7-4be1-83b1-9aadff85c5f7_aigc.jpeg?Expires=1775999002&OSSAccessKeyId=LTAI5tB2SwrRwAtD23etQUbC&Signature=AkmkrAkWQ2h2U%2BIEw8lLI6B0sTc%3D',
     author: {
       id: '1',
       name: '郏祥瑞',
