@@ -22,10 +22,8 @@ export default function SEO({
   const fullTitle = post ? `${post.title} - ${siteName}` : title;
   const fullDescription = post?.excerpt || description;
 
-  // 动态 OG 图片 URL
-  const ogImage = post
-    ? `${siteUrl}/api/og-image?title=${encodeURIComponent(post.title)}&date=${encodeURIComponent(post.createdAt)}`
-    : image || `${siteUrl}/api/og-image?title=${encodeURIComponent(title)}`;
+  // 静态 OG 图片（后续可以替换为动态生成的）
+  const ogImage = image || `${siteUrl}/og-default.png`;
 
   const url = post ? `${siteUrl}/${post.slug}` : siteUrl;
 
