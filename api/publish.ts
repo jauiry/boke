@@ -1,0 +1,284 @@
+// Vercel Serverless Function - 博客文章发布接口
+// 通过 GitHub API 自动提交文章到仓库
+
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+
+// 配置
+const CONFIG = {
+  githubToken: 'your-github-token',  // TODO: 替换为你的 GitHub Token
+  owner: 'your-github-username',    // TODO: 替换为你的 GitHub 用户名
+  repo: 'your-repo-name',            // TODO: 替换为你的仓库名
+  path: 'src/data/blogData.ts',      // 文件在仓库中的路径
+  secret: 'your-secret-password',    // TODO: 替换为你的发布密码
+};
+
+// 生成唯一 ID
+function generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2, 9);
+}
+
+// 生成 slug
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .substring(0, 50);
+}
+
+// 转义模板字符串中的特殊字符
+function escapeTemplateString(str: string): string {
+  return str
+    .replace(/\\/g, '\\\\')
+    .replace(/`/g, '\\`')
+    .replace(/\$/g, '\\$');
+}
+
+// 获取当前文件内容和 SHA
+async function getFileContent(): Promise<{ content: string; sha: string } | null> {
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`,
+      {
+        headers: {
+          'Authorization': `token ${CONFIG.githubToken}`,
+          'Accept': 'application/vnd.github.v3+json',
+        },
+      }
+    );
+
+    if (!response.ok) {
+      console.error('获取文件失败:', await response.text());
+      return null;
+    }
+
+    const data = await response.json();
+    const content = Buffer.from(data.content, 'base64').toString('utf-8');
+    return { content, sha: data.sha };
+  } catch (error) {
+    console.error('获取文件错误:', error);
+    return null;
+  }
+}
+
+// 提交更新到 GitHub
+async function updateFile(content: string, sha: string, message: string): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${CONFIG.githubToken}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message,
+          content: Buffer.from(content).toString('base64'),
+          sha,
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      console.error('提交失败:', await response.text());
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('提交错误:', error);
+    return false;
+  }
+}
+
+// 创建新文章对象
+function createPostObject(
+  title: string,
+  content: string,
+  categoryId: string,
+  tags: string[],
+  featured: boolean = false
+) {
+  const id = generateId();
+  const slug = generateSlug(title) || `post-${id}`;
+  const excerpt = content.slice(0, 150).replace(/[#*\[\]`]/g, '') + '...';
+  const readTime = Math.max(1, Math.ceil(content.length / 300));
+  const now = new Date().toISOString();
+
+  // 转义内容中的特殊字符
+  const escapedContent = escapeTemplateString(content);
+
+  return {
+    id,
+    title,
+    slug,
+    excerpt,
+    content: escapedContent,
+    categoryId,
+    tags,
+    featured,
+    readTime,
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+// 解析现有的 blogData.ts 并插入新文章
+function insertNewPost(fileContent: string, post: any): string {
+  // 找到 posts 数组的定义位置
+  const postsMatch = fileContent.match(/export const posts: Post\[\] = \[/);
+  if (!postsMatch) {
+    throw new Error('无法找到 posts 数组定义');
+  }
+
+  const insertPosition = postsMatch.index! + postsMatch[0].length;
+
+  // 生成新文章代码
+  const newPostCode = `
+  {
+    id: '${post.id}',
+    title: '${post.title.replace(/'/g, "\\'")}',
+    slug: '${post.slug}',
+    excerpt: '${post.excerpt.replace(/'/g, "\\'")}',
+    content: \`${post.content}\`,
+    author: {
+      id: '1',
+      name: '郏祥瑞',
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop',
+      bio: '软件测试工程师，4年测试经验',
+      social: { github: '', twitter: '', email: '1102684926@qq.com' },
+    },
+    tags: [${post.tags.map((t: string) => `
+      { id: '${t}', name: '${getTagName(t)}', color: '${getTagColor(t)}' }`).join(',')}
+    ],
+    category: ${getCategoryCode(post.categoryId)},
+    createdAt: '${post.createdAt}',
+    updatedAt: '${post.updatedAt}',
+    readTime: ${post.readTime},
+    views: 0,
+    likes: 0,
+    comments: [],
+    featured: ${post.featured},
+  },`;
+
+  // 插入到数组开头
+  return fileContent.slice(0, insertPosition) + newPostCode + fileContent.slice(insertPosition);
+}
+
+// 获取标签名称
+function getTagName(tagId: string): string {
+  const tags: Record<string, string> = {
+    '1': '测试',
+    '2': '技术',
+    '3': '职场',
+    '4': 'JMeter',
+    '5': '性能测试',
+  };
+  return tags[tagId] || '其他';
+}
+
+// 获取标签颜色
+function getTagColor(tagId: string): string {
+  const colors: Record<string, string> = {
+    '1': '#61DAFB',
+    '2': '#3178C6',
+    '3': '#339933',
+    '4': '#FF6B6B',
+    '5': '#F39C12',
+  };
+  return colors[tagId] || '#888888';
+}
+
+// 获取分类代码
+function getCategoryCode(categoryId: string): string {
+  const categories: Record<string, string> = {
+    '1': `{ id: '1', name: '技术分享', description: '测试技术和经验分享', icon: 'Code' }`,
+    '2': `{ id: '2', name: '职场感悟', description: '工作心得和职业发展', icon: 'Coffee' }`,
+  };
+  return categories[categoryId] || categories['1'];
+}
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // 只允许 POST 请求
+  if (req.method !== 'POST') {
+    return res.status(405).json({ 
+      success: false, 
+      error: 'Method not allowed. Use POST.' 
+    });
+  }
+
+  try {
+    const { title, content, categoryId, tags, featured, secret } = req.body;
+
+    // 验证密码
+    if (secret !== CONFIG.secret) {
+      return res.status(401).json({ 
+        success: false, 
+        error: 'Unauthorized: Invalid secret' 
+      });
+    }
+
+    // 验证必填字段
+    if (!title || !content) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Bad Request: title and content are required' 
+      });
+    }
+
+    // 获取当前文件内容
+    const fileData = await getFileContent();
+    if (!fileData) {
+      return res.status(500).json({ 
+        success: false, 
+        error: 'Failed to fetch current file content' 
+      });
+    }
+
+    // 创建新文章
+    const newPost = createPostObject(
+      title,
+      content,
+      categoryId || '1',
+      tags || ['1'],
+      featured || false
+    );
+
+    // 生成新文件内容
+    const newContent = insertNewPost(fileData.content, newPost);
+
+    // 提交到 GitHub
+    const commitMessage = `Add post: ${title}`;
+    const success = await updateFile(newContent, fileData.sha, commitMessage);
+
+    if (!success) {
+      return res.status(500).json({ 
+        success: false, 
+        error: 'Failed to commit changes to GitHub' 
+      });
+    }
+
+    // 返回成功响应
+    return res.status(200).json({
+      success: true,
+      message: '文章发布成功',
+      post: {
+        id: newPost.id,
+        title: newPost.title,
+        slug: newPost.slug,
+        excerpt: newPost.excerpt,
+      },
+      postUrl: `https://www.mxqys.xyz/${newPost.slug}`,
+      adminUrl: `https://vercel.com/dashboard`,
+    });
+
+  } catch (error) {
+    console.error('发布错误:', error);
+    return res.status(500).json({ 
+      success: false, 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    });
+  }
+}
