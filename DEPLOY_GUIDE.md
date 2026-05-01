@@ -118,7 +118,7 @@ Vercel 会自动检测框架，确认以下配置：
 
 | Name | Value | 说明 |
 |------|-------|------|
-| `GITHUB_TOKEN` | `ghp_xxx...` | 你的 GitHub Personal Access Token |
+| `GITHUB_TOKEN` | `ghp_xxxxxxxxxxxx` | 你的 GitHub Personal Access Token |
 | `SECRET` | `your_secret_here` | 发布文章的密码（自定义） |
 
 3. 点击 **Save**
