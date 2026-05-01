@@ -89,66 +89,109 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
     }
   };
 
-  // 渲染 Markdown 内容（简化版本）
+  // 渲染 Markdown 内容（支持代码块）
   const renderContent = (content: string) => {
     const lines = content.split('\n');
-    return lines.map((line, index) => {
-      const trimmedLine = line.trim();
-      
+    const elements: React.ReactNode[] = [];
+    let inCodeBlock = false;
+    let codeLines: string[] = [];
+
+    const flushCodeBlock = () => {
+      if (codeLines.length > 0) {
+        elements.push(
+          <pre key={`code-${elements.length}`} className="bg-slate-800 dark:bg-slate-950 text-slate-100 rounded-xl p-5 overflow-x-auto my-6 text-sm leading-relaxed">
+            <code>{codeLines.join('\n')}</code>
+          </pre>
+        );
+        codeLines = [];
+      }
+    };
+
+    for (let i = 0; i < lines.length; i++) {
+      const trimmedLine = lines[i].trim();
+
+      if (trimmedLine.startsWith('```')) {
+        if (inCodeBlock) {
+          flushCodeBlock();
+          inCodeBlock = false;
+        } else {
+          inCodeBlock = true;
+        }
+        continue;
+      }
+
+      if (inCodeBlock) {
+        codeLines.push(lines[i]);
+        continue;
+      }
+
       if (trimmedLine.startsWith('## ')) {
-        return (
-          <h2 key={index} className="text-2xl font-bold text-slate-900 dark:text-white mt-10 mb-4">
+        elements.push(
+          <h2 key={i} className="text-2xl font-bold text-slate-900 dark:text-white mt-10 mb-4">
             {trimmedLine.replace('## ', '')}
           </h2>
         );
-      }
-      
-      if (trimmedLine.startsWith('### ')) {
-        return (
-          <h3 key={index} className="text-xl font-semibold text-slate-900 dark:text-white mt-8 mb-3">
+      } else if (trimmedLine.startsWith('### ')) {
+        elements.push(
+          <h3 key={i} className="text-xl font-semibold text-slate-900 dark:text-white mt-8 mb-3">
             {trimmedLine.replace('### ', '')}
           </h3>
         );
-      }
-      
-      if (trimmedLine.startsWith('```')) {
-        return null; // 代码块处理简化
-      }
-      
-      if (trimmedLine.startsWith('- ')) {
-        return (
-          <li key={index} className="text-slate-700 dark:text-slate-300 ml-6 mb-2">
+      } else if (trimmedLine.startsWith('# ')) {
+        elements.push(
+          <h1 key={i} className="text-3xl font-bold text-slate-900 dark:text-white mt-12 mb-6">
+            {trimmedLine.replace('# ', '')}
+          </h1>
+        );
+      } else if (trimmedLine.startsWith('- ')) {
+        elements.push(
+          <li key={i} className="text-slate-700 dark:text-slate-300 ml-6 mb-2">
             {trimmedLine.replace('- ', '')}
           </li>
         );
-      }
-      
-      if (trimmedLine.startsWith('1. ') || trimmedLine.startsWith('2. ') || trimmedLine.startsWith('3. ')) {
-        return (
-          <li key={index} className="text-slate-700 dark:text-slate-300 ml-6 mb-2 list-decimal">
-            {trimmedLine.replace(/^\d+\. /, '')}
+      } else if (/^\d+\.\s/.test(trimmedLine)) {
+        elements.push(
+          <li key={i} className="text-slate-700 dark:text-slate-300 ml-6 mb-2 list-decimal">
+            {trimmedLine.replace(/^\d+\.\s/, '')}
           </li>
         );
-      }
-      
-      if (trimmedLine === '') {
-        return <div key={index} className="h-4" />;
-      }
-      
-      if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**')) {
-        return (
-          <p key={index} className="text-slate-700 dark:text-slate-300 mb-4 font-semibold">
-            {trimmedLine.replace(/\*\*/g, '')}
+      } else if (trimmedLine === '') {
+        elements.push(<div key={i} className="h-4" />);
+      } else if (trimmedLine.startsWith('> ')) {
+        elements.push(
+          <blockquote key={i} className="border-l-4 border-violet-500 pl-4 py-2 my-4 bg-slate-50 dark:bg-slate-800/50 italic text-slate-600 dark:text-slate-400">
+            {trimmedLine.replace('> ', '')}
+          </blockquote>
+        );
+      } else if (trimmedLine.startsWith('---')) {
+        elements.push(<hr key={i} className="my-8 border-slate-200 dark:border-slate-700" />);
+      } else if (trimmedLine.startsWith('| ')) {
+        // Simple table row - render as styled text
+        elements.push(
+          <p key={i} className="text-slate-700 dark:text-slate-300 font-mono text-sm">
+            {trimmedLine}
           </p>
         );
+      } else {
+        // Inline formatting: bold, italic, inline code
+        const formatted = trimmedLine
+          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+          .replace(/\*(.+?)\*/g, '<em>$1</em>')
+          .replace(/`(.+?)`/g, '<code class="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-violet-600 dark:text-violet-400 text-sm font-mono">$1</code>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-violet-600 dark:text-violet-400 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>');
+
+        elements.push(
+          <p key={i} className="text-slate-700 dark:text-slate-300 mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: formatted }} />
+        );
       }
-      
-      return (
-        <p key={index} className="text-slate-700 dark:text-slate-300 mb-4 leading-relaxed">
-          {trimmedLine}
-        </p>
-      );
-    });
+    }
+
+    // Flush any remaining code block
+    if (inCodeBlock) {
+      flushCodeBlock();
+    }
+
+    return elements;
   };
 
   return (

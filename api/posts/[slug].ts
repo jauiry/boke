@@ -55,6 +55,58 @@ function setCache(key: string, data: any): void {
 }
 
 // 从 blogData.ts 解析单篇文章
+function parsePostFields(block: string): Record<string, string> {
+  const fields: Record<string, string> = {};
+
+  // 匹配单行字符串字段: key: 'value'
+  const singleLineFields = ['id', 'title', 'slug', 'excerpt', 'coverImage', 'createdAt', 'updatedAt'];
+  for (const field of singleLineFields) {
+    const m = block.match(new RegExp(`${field}:\\s*'([^']*)'`));
+    if (m) fields[field] = m[1];
+  }
+
+  // 匹配模板字符串 content: `...`
+  const contentMatch = block.match(/content:\s*`([\s\S]*?)`\s*(?:,|$)/);
+  if (contentMatch) fields['content'] = contentMatch[1];
+
+  // 匹配数字字段
+  const readTimeMatch = block.match(/readTime:\s*(\d+)/);
+  if (readTimeMatch) fields['readTime'] = readTimeMatch[1];
+
+  // 匹配布尔字段
+  const featuredMatch = block.match(/featured:\s*(true|false)/);
+  if (featuredMatch) fields['featured'] = featuredMatch[1];
+
+  return fields;
+}
+
+// 从 posts 数组中提取单个 post 块
+function extractPostBlock(postsContent: string, slug: string): string | null {
+  // 找到 slug 位置
+  const slugIdx = postsContent.indexOf(`slug: '${slug}'`);
+  if (slugIdx === -1) return null;
+
+  // 从 slug 位置向前找最近的 {
+  let start = slugIdx;
+  while (start > 0 && postsContent[start] !== '{') start--;
+
+  // 从 { 开始匹配完整的对象（处理嵌套大括号）
+  let depth = 0;
+  let end = start;
+  for (let i = start; i < postsContent.length; i++) {
+    if (postsContent[i] === '{') depth++;
+    else if (postsContent[i] === '}') {
+      depth--;
+      if (depth === 0) {
+        end = i + 1;
+        break;
+      }
+    }
+  }
+
+  return postsContent.slice(start, end);
+}
+
 async function fetchPostBySlug(slug: string): Promise<any> {
   const cacheKey = `post-${slug}`;
   const cached = getCache(cacheKey);
@@ -83,28 +135,28 @@ async function fetchPostBySlug(slug: string): Promise<any> {
   const data = await response.json();
   const content = Buffer.from(data.content, 'base64').toString('utf-8');
 
-  // 提取 posts 数组
+  // 提取 posts 数组内容
   const postsMatch = content.match(/export const posts: Post\[\] = \[([\s\S]*?)\];\s*$/);
   if (!postsMatch) {
     throw new Error('Cannot parse posts data');
   }
 
-  // 查找匹配 slug 的文章（简化解析）
-  const postBlockMatch = content.match(
-    new RegExp(`id: '([^']*)'[^}]*?title: '([^']*)'[^}]*?slug: '${slug}'[^}]*?excerpt: '([^']*)'[^}]*?content: \`([\s\S]*?)\`[^}]*?coverImage: '([^']*)'`, 'm'
-  );
+  const postBlock = extractPostBlock(postsMatch[1], slug);
+  if (!postBlock) return null;
 
-  if (!postBlockMatch) {
-    return null;
-  }
+  const fields = parsePostFields(postBlock);
+  if (!fields['id'] || !fields['title']) return null;
 
   const post = {
-    id: postBlockMatch[1],
-    title: postBlockMatch[2],
-    slug: postBlockMatch[3],
-    excerpt: postBlockMatch[4],
-    content: postBlockMatch[5],
-    coverImage: postBlockMatch[6],
+    id: fields['id'],
+    title: fields['title'],
+    slug: fields['slug'] || slug,
+    excerpt: fields['excerpt'] || '',
+    content: fields['content'] || '',
+    coverImage: fields['coverImage'] || null,
+    createdAt: fields['createdAt'] || '',
+    readTime: parseInt(fields['readTime'] || '1'),
+    featured: fields['featured'] === 'true',
   };
 
   setCache(cacheKey, post);

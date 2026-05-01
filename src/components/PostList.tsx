@@ -4,7 +4,7 @@ import { Search, Filter, Grid3X3, List as ListIcon } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import PostCard from './PostCardSkeleton';
+import PostCard from './PostCard';
 import { usePostList, useLocalTags, useLocalCategories, preloadPostList } from '@/hooks/usePosts';
 import type { PostListItem } from '@/types/api';
 
@@ -33,9 +33,15 @@ export default function PostList({ onPostClick, initialSearchQuery = '' }: PostL
         post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         post.excerpt.toLowerCase().includes(searchQuery.toLowerCase());
 
-      return matchesSearch;
+      const matchesCategory = !selectedCategory ||
+        (post as any).categoryId === selectedCategory;
+
+      const matchesTag = !selectedTag ||
+        (post as any).tagIds?.includes(selectedTag);
+
+      return matchesSearch && matchesCategory && matchesTag;
     });
-  }, [posts, searchQuery]);
+  }, [posts, searchQuery, selectedCategory, selectedTag]);
 
   const featuredPosts = filteredPosts.filter(post => post.featured);
   const regularPosts = filteredPosts.filter(post => !post.featured);

@@ -6,13 +6,12 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 // 配置
 const CONFIG = {
-  githubToken: 'your-github-token',  // TODO: 替换为你的 GitHub Token
-  owner: 'jauiry',                   // 你的 GitHub 用户名
-  repo: 'boke',                      // 你的仓库名
-  path: 'src/data/blogData.ts',      // 文件在仓库中的路径
-  secret: 'your-secret-password',    // TODO: 替换为你的发布密码
-  // MiniMax 文生图 API 配置
-  minimaxApiKey: 'sk-cp-9CmALoHnkNiWXUKtGUg5ibzYPuVSZjk9vWo1Pz2g0PaPYlBKogu2IcNjVExGv5BLHj-fAqGRH3TM17D0csUB1AFRGvWdhdOlLD-vo4ZJCwDGDOYkIqw-c4o',
+  githubToken: process.env.GITHUB_TOKEN || '',
+  owner: 'jauiry',
+  repo: 'boke',
+  path: 'src/data/blogData.ts',
+  secret: process.env.SECRET || '',
+  minimaxApiKey: process.env.MINIMAX_API_KEY || '',
 };
 
 // 生成唯一 ID

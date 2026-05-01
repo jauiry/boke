@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDown, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -7,24 +8,16 @@ interface HeroProps {
   onExplore: () => void;
 }
 
-// 计算博客统计
-function getBlogStats() {
-  const articleCount = posts.length;
-  const totalViews = posts.reduce((sum, post) => sum + (post.views || 0), 0);
-  const firstPostDate = posts.length > 0
-    ? new Date(Math.min(...posts.map(p => new Date(p.createdAt).getTime())))
-    : new Date();
-  const yearsSinceFirstPost = new Date().getFullYear() - firstPostDate.getFullYear();
-
-  return {
-    articleCount,
-    totalViews,
-    yearsSinceFirstPost: yearsSinceFirstPost < 1 ? 1 : yearsSinceFirstPost,
-  };
-}
-
 export default function Hero({ onExplore }: HeroProps) {
-  const stats = getBlogStats();
+  const stats = useMemo(() => {
+    const articleCount = posts.length;
+    const totalViews = posts.reduce((sum, post) => sum + (post.views || 0), 0);
+    const firstPostDate = posts.length > 0
+      ? new Date(Math.min(...posts.map(p => new Date(p.createdAt).getTime())))
+      : new Date();
+    const yearsSinceFirstPost = Math.max(1, new Date().getFullYear() - firstPostDate.getFullYear());
+    return { articleCount, totalViews, yearsSinceFirstPost };
+  }, []);
 
   // 格式化阅读量
   const formatViews = (views: number) => {
@@ -153,7 +146,7 @@ export default function Hero({ onExplore }: HeroProps) {
           <Button
             variant="outline"
             size="lg"
-            onClick={() => window.open('https://github.com', '_blank')}
+            onClick={() => window.open('https://github.com/mxqys', '_blank')}
             className="px-8 py-6 text-lg rounded-xl border-2 hover:bg-slate-50 dark:hover:bg-slate-800"
           >
             关注 GitHub

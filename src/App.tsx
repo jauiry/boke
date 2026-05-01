@@ -142,6 +142,28 @@ function App() {
     }
   }, []);
 
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname;
+      const slug = path.replace('/', '');
+      if (slug) {
+        const post = getPostBySlug(slug);
+        if (post) {
+          setSelectedPost(post);
+        } else {
+          setSelectedPost(null);
+          setCurrentView('home');
+        }
+      } else {
+        setSelectedPost(null);
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
   // Update URL when post changes
   useEffect(() => {
     if (selectedPost) {

@@ -2,13 +2,19 @@ import { motion } from 'framer-motion';
 import { Calendar, Clock, Eye, Heart, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import type { Post } from '@/types/blog';
+import type { PostListItem } from '@/types/api';
 import { useState, useEffect } from 'react';
 
 interface PostCardProps {
-  post: Post;
+  post: Post | PostListItem;
   index?: number;
   onClick: () => void;
   variant?: 'default' | 'featured' | 'compact';
+}
+
+// Type guard to check if post is a full Post
+function isFullPost(post: Post | PostListItem): post is Post {
+  return 'content' in post && 'author' in post && 'tags' in post;
 }
 
 // 格式化日期为友好格式
@@ -157,35 +163,39 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
         )}
 
         {/* Category Badge */}
-        <div className="absolute bottom-4 left-4">
-          <Badge variant="secondary" className="bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 backdrop-blur-sm">
-            {post.category.name}
-          </Badge>
-        </div>
+        {isFullPost(post) && post.category && (
+          <div className="absolute bottom-4 left-4">
+            <Badge variant="secondary" className="bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 backdrop-blur-sm">
+              {post.category.name}
+            </Badge>
+          </div>
+        )}
       </div>
 
       {/* Content */}
       <div className={`p-6 ${isFeatured ? 'md:p-8' : ''}`}>
         {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-3">
-          {post.tags.slice(0, 3).map((tag) => {
-            const bgColor = `${tag.color}30`;
-            const textColor = getTagTextColor(tag.color);
-            return (
-              <span
-                key={tag.id}
-                className="text-xs font-medium px-2.5 py-0.5 rounded-full"
-                style={{
-                  backgroundColor: bgColor,
-                  color: textColor,
-                  border: `1px solid ${tag.color}40`
-                }}
-              >
-                {tag.name}
-              </span>
-            );
-          })}
-        </div>
+        {isFullPost(post) && post.tags.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-3">
+            {post.tags.slice(0, 3).map((tag) => {
+              const bgColor = `${tag.color}30`;
+              const textColor = getTagTextColor(tag.color);
+              return (
+                <span
+                  key={tag.id}
+                  className="text-xs font-medium px-2.5 py-0.5 rounded-full"
+                  style={{
+                    backgroundColor: bgColor,
+                    color: textColor,
+                    border: `1px solid ${tag.color}40`
+                  }}
+                >
+                  {tag.name}
+                </span>
+              );
+            })}
+          </div>
+        )}
 
         {/* Title */}
         <h3 className={`font-bold text-slate-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors mb-3 ${
@@ -218,13 +228,13 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
           </div>
 
           <div className="flex items-center space-x-3 text-sm text-slate-500 dark:text-slate-400">
-            {post.views > 0 && (
+            {isFullPost(post) && post.views > 0 && (
               <span className="flex items-center space-x-1">
                 <Eye className="w-4 h-4" />
                 <span>{post.views}</span>
               </span>
             )}
-            {post.likes > 0 && (
+            {isFullPost(post) && post.likes > 0 && (
               <span className="flex items-center space-x-1">
                 <Heart className="w-4 h-4" />
                 <span>{post.likes}</span>

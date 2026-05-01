@@ -6,7 +6,13 @@ interface FooterProps {
   onViewChange: (view: string) => void;
 }
 
-const footerLinks = [
+interface FooterLink {
+  label: string;
+  view?: string;
+  href?: string;
+}
+
+const footerLinks: { title: string; links: FooterLink[] }[] = [
   {
     title: '导航',
     links: [
@@ -19,9 +25,8 @@ const footerLinks = [
   {
     title: '资源',
     links: [
-      { label: 'RSS 订阅', view: 'rss' },
-      { label: '站点地图', view: 'sitemap' },
-      { label: '友情链接', view: 'friends' },
+      { label: '站点地图', href: '/sitemap.xml' },
+      { label: 'GitHub', href: 'https://github.com/jauiry/boke' },
     ],
   },
 ];
@@ -83,12 +88,23 @@ export default function Footer({ onViewChange }: FooterProps) {
               <ul className="space-y-2">
                 {section.links.map((link) => (
                   <li key={link.label}>
-                    <button
-                      onClick={() => onViewChange(link.view)}
-                      className="text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
-                    >
-                      {link.label}
-                    </button>
+                    {link.href ? (
+                      <a
+                        href={link.href}
+                        target={link.href.startsWith('http') ? '_blank' : undefined}
+                        rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                        className="text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                      >
+                        {link.label}
+                      </a>
+                    ) : (
+                      <button
+                        onClick={() => onViewChange(link.view!)}
+                        className="text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                      >
+                        {link.label}
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>
