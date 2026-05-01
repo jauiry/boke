@@ -8,7 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { Textarea } from '@/components/ui/textarea';
+import Giscus from './Giscus';
 import type { Post } from '@/types/blog';
 import type { PostListItem } from '@/types/api';
 import { getRelatedPosts } from '@/data/blogData';
@@ -39,7 +39,6 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
   const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [showShareMenu, setShowShareMenu] = useState(false);
-  const [commentText, setCommentText] = useState('');
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [readProgress, setReadProgress] = useState(0);
 
@@ -79,14 +78,6 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
         break;
     }
     setShowShareMenu(false);
-  };
-
-  const handleSubmitComment = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (commentText.trim()) {
-      // 这里可以添加提交评论的逻辑
-      setCommentText('');
-    }
   };
 
   // 渲染 Markdown 内容（支持代码块）
@@ -404,61 +395,14 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
           </Button>
         </motion.div>
 
-        {/* Comments Section */}
+        {/* Comments Section — powered by Giscus + GitHub Discussions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
           className="mb-12"
         >
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
-            评论 ({post.comments.length})
-          </h3>
-          
-          {/* Comment Form */}
-          <form onSubmit={handleSubmitComment} className="mb-8">
-            <Textarea
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              placeholder="写下你的想法..."
-              className="mb-4 resize-none"
-              rows={4}
-            />
-            <Button type="submit" className="bg-violet-600 hover:bg-violet-700">
-              发表评论
-            </Button>
-          </form>
-
-          {/* Comments List */}
-          <div className="space-y-6">
-            {post.comments.map((comment, index) => (
-              <motion.div
-                key={comment.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 * index }}
-                className="flex space-x-4"
-              >
-                <Avatar className="w-10 h-10">
-                  <AvatarImage src={comment.avatar} alt={comment.author} />
-                  <AvatarFallback>{comment.author[0]}</AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <span className="font-medium text-slate-900 dark:text-white">
-                      {comment.author}
-                    </span>
-                    <span className="text-sm text-slate-500">
-                      {comment.createdAt}
-                    </span>
-                  </div>
-                  <p className="text-slate-700 dark:text-slate-300">
-                    {comment.content}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <Giscus />
         </motion.div>
 
         {/* Related Posts */}

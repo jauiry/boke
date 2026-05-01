@@ -19,6 +19,7 @@ const PostList = lazy(() => import('./components/PostList'));
 const PostDetail = lazy(() => import('./components/PostDetail'));
 const TagsPage = lazy(() => import('./components/TagsPage'));
 const AboutPage = lazy(() => import('./components/AboutPage'));
+const AdminPage = lazy(() => import('./components/AdminPage'));
 
 // 加载骨架屏组件
 function LoadingSkeleton() {
@@ -39,7 +40,7 @@ function LoadingSkeleton() {
   );
 }
 
-type ViewType = 'home' | 'articles' | 'tags' | 'about';
+type ViewType = 'home' | 'articles' | 'tags' | 'about' | 'admin';
 
 function App() {
   const [currentView, setCurrentView] = useState<ViewType>('home');
@@ -129,12 +130,14 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Check URL for direct post access
+  // Check URL for direct post access or admin
   useEffect(() => {
     const path = window.location.pathname;
     const slug = path.replace('/', '');
-    
-    if (slug) {
+
+    if (slug === 'admin') {
+      setCurrentView('admin');
+    } else if (slug) {
       const post = getPostBySlug(slug);
       if (post) {
         setSelectedPost(post);
@@ -147,7 +150,10 @@ function App() {
     const handlePopState = () => {
       const path = window.location.pathname;
       const slug = path.replace('/', '');
-      if (slug) {
+      if (slug === 'admin') {
+        setSelectedPost(null);
+        setCurrentView('admin');
+      } else if (slug) {
         const post = getPostBySlug(slug);
         if (post) {
           setSelectedPost(post);
@@ -278,13 +284,23 @@ function App() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Admin page — full screen, no nav/footer */}
+        {currentView === 'admin' && (
+          <Suspense fallback={<LoadingSkeleton />}>
+            <AdminPage onBack={() => {
+              setCurrentView('home');
+              window.history.pushState({}, '', '/');
+            }} />
+          </Suspense>
+        )}
       </main>
 
       {/* Footer */}
-      {!selectedPost && <Footer onViewChange={handleViewChange} />}
+      {!selectedPost && currentView !== 'admin' && <Footer onViewChange={handleViewChange} />}
 
       {/* 返回顶部按钮 & 滚动进度条 */}
-      <ScrollToTop />
+      {currentView !== 'admin' && <ScrollToTop />}
     </div>
   );
 }
