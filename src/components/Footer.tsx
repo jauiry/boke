@@ -25,6 +25,7 @@ const footerLinks: { title: string; links: FooterLink[] }[] = [
   {
     title: '资源',
     links: [
+      { label: 'RSS 订阅', href: '/api/rss.xml' },
       { label: '站点地图', href: '/sitemap.xml' },
       { label: 'GitHub', href: 'https://github.com/jauiry/boke' },
     ],

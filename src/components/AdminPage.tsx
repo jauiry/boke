@@ -1,8 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Eye, Send, Lock, Bold, Code, List, Hash, Link2, Quote, Image, Sparkles } from 'lucide-react';
+import { ArrowLeft, Eye, Send, Lock, Bold, Code, List, Hash, Link2, Quote, Image, Sparkles, Edit3, Trash2, FileText, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { categories, tags } from '@/data/blogData';
+import type { PostListItem } from '@/types/api';
 
 interface AdminPageProps {
   onBack: () => void;
@@ -104,6 +105,126 @@ export default function AdminPage({ onBack }: AdminPageProps) {
   const [publishing, setPublishing] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  // 文章管理
+  const [tab, setTab] = useState<'new' | 'manage'>('new');
+  const [posts, setPosts] = useState<PostListItem[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(false);
+  const [editingSlug, setEditingSlug] = useState<string | null>(null);
+  const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
+
+  const fetchPosts = useCallback(async () => {
+    setLoadingPosts(true);
+    try {
+      const res = await fetch('/api/posts');
+      const data = await res.json();
+      if (data.success && data.data) setPosts(data.data);
+    } catch { /* ignore */ }
+    setLoadingPosts(false);
+  }, []);
+
+  useEffect(() => {
+    if (tab === 'manage') fetchPosts();
+  }, [tab, fetchPosts]);
+
+  const handleEdit = useCallback(async (post: PostListItem) => {
+    setTab('new');
+    setEditingSlug(post.slug);
+    setTitle(post.title);
+    setContent(''); // 需要从详情 API 获取完整内容
+    setFeatured(post.featured || false);
+
+    // 获取完整文章内容
+    try {
+      const res = await fetch(`/api/posts/${post.slug}`);
+      const data = await res.json();
+      if (data.success && data.data?.content) {
+        setContent(data.data.content);
+      }
+    } catch { /* fallback to excerpt */ }
+  }, []);
+
+  const handleDelete = useCallback(async (slug: string) => {
+    const secretStr = sessionStorage.getItem(STORAGE_KEY) || '';
+    setDeletingSlug(slug);
+    try {
+      const res = await fetch('/api/posts/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slug, secret: secretStr }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPosts(prev => prev.filter(p => p.slug !== slug));
+        setMessage({ type: 'success', text: '文章已删除' });
+      } else {
+        setMessage({ type: 'error', text: data.error || '删除失败' });
+      }
+    } catch {
+      setMessage({ type: 'error', text: '网络错误' });
+    }
+    setDeletingSlug(null);
+  }, []);
+
+  const handlePublish = useCallback(async () => {
+    if (!title.trim() || !content.trim()) {
+      setMessage({ type: 'error', text: '标题和内容不能为空' });
+      return;
+    }
+
+    setPublishing(true);
+    setMessage(null);
+
+    const secretStr = sessionStorage.getItem(STORAGE_KEY) || '';
+    const isEdit = !!editingSlug;
+
+    try {
+      const url = isEdit ? '/api/posts/edit' : '/api/publish';
+      const method = isEdit ? 'PUT' : 'POST';
+      const body: any = {
+        title: title.trim(),
+        content: content.trim(),
+        categoryId,
+        tags: selectedTags,
+        featured,
+        secret: secretStr,
+      };
+      if (isEdit) body.slug = editingSlug;
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setMessage({
+          type: 'success',
+          text: isEdit ? '更新成功！' : `发布成功！${data.postUrl || ''}`,
+        });
+        resetForm();
+      } else {
+        setMessage({ type: 'error', text: data.error || '操作失败' });
+      }
+    } catch {
+      setMessage({ type: 'error', text: '网络错误' });
+    } finally {
+      setPublishing(false);
+    }
+  }, [title, content, categoryId, selectedTags, featured, editingSlug]);
+
+  const resetForm = useCallback(() => {
+    setTitle('');
+    setContent('');
+    setCategoryId('1');
+    setSelectedTags(['1']);
+    setFeatured(false);
+    setEditingSlug(null);
+    setTab('manage');
+    fetchPosts();
+  }, [fetchPosts]);
+
   const handleAuth = useCallback(() => {
     if (secret.trim().length < 3) {
       setAuthError('请输入有效的密码');
@@ -144,52 +265,6 @@ export default function AdminPage({ onBack }: AdminPageProps) {
       prev.includes(tagId) ? prev.filter(t => t !== tagId) : [...prev, tagId]
     );
   }, []);
-
-  const handlePublish = useCallback(async () => {
-    if (!title.trim() || !content.trim()) {
-      setMessage({ type: 'error', text: '标题和内容不能为空' });
-      return;
-    }
-
-    setPublishing(true);
-    setMessage(null);
-
-    try {
-      const res = await fetch('/api/publish', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: title.trim(),
-          content: content.trim(),
-          categoryId,
-          tags: selectedTags,
-          featured,
-          secret,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (data.success) {
-        setMessage({
-          type: 'success',
-          text: `发布成功！文章地址：${data.postUrl}`,
-        });
-        // 清空表单
-        setTitle('');
-        setContent('');
-        setCategoryId('1');
-        setSelectedTags(['1']);
-        setFeatured(false);
-      } else {
-        setMessage({ type: 'error', text: data.error || '发布失败' });
-      }
-    } catch (err) {
-      setMessage({ type: 'error', text: '网络错误，发布失败' });
-    } finally {
-      setPublishing(false);
-    }
-  }, [title, content, categoryId, selectedTags, featured, secret]);
 
   // 未认证 — 显示登录
   if (!authenticated) {
@@ -245,7 +320,12 @@ export default function AdminPage({ onBack }: AdminPageProps) {
             <Button variant="ghost" size="icon" onClick={onBack}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">发布新文章</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+              {editingSlug ? '编辑文章' : '发布新文章'}
+            </h1>
+            {editingSlug && (
+              <button onClick={resetForm} className="text-sm text-violet-600 hover:underline">取消编辑</button>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <Button
@@ -264,9 +344,9 @@ export default function AdminPage({ onBack }: AdminPageProps) {
               className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white"
             >
               {publishing ? (
-                <><Sparkles className="w-4 h-4 mr-1 animate-spin" /> 发布中...</>
+                <><Sparkles className="w-4 h-4 mr-1 animate-spin" /> {editingSlug ? '更新中...' : '发布中...'}</>
               ) : (
-                <><Send className="w-4 h-4 mr-1" /> 发布</>
+                <>{editingSlug ? <Edit3 className="w-4 h-4 mr-1" /> : <Send className="w-4 h-4 mr-1" />} {editingSlug ? '更新' : '发布'}</>
               )}
             </Button>
             <Button variant="ghost" size="sm" onClick={handleLogout}>
@@ -293,6 +373,90 @@ export default function AdminPage({ onBack }: AdminPageProps) {
           )}
         </AnimatePresence>
 
+        {/* Tab Bar */}
+        <div className="flex gap-1 mb-6 bg-white dark:bg-slate-800 rounded-xl p-1 border border-slate-200 dark:border-slate-700 w-fit">
+          <button
+            onClick={() => { setTab('new'); }}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              tab === 'new'
+                ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400'
+                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+            }`}
+          >
+            <Plus className="w-4 h-4" /> 新建
+          </button>
+          <button
+            onClick={() => { setTab('manage'); fetchPosts(); }}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              tab === 'manage'
+                ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400'
+                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+            }`}
+          >
+            <FileText className="w-4 h-4" /> 管理 ({posts.length})
+          </button>
+        </div>
+
+        {/* 文章管理列表 */}
+        {tab === 'manage' && (
+          <div className="mb-8">
+            {loadingPosts ? (
+              <div className="text-center py-12 text-slate-400">加载中...</div>
+            ) : posts.length === 0 ? (
+              <div className="text-center py-12 text-slate-400">
+                <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
+                <p>暂无文章</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {posts.map((post) => (
+                  <div
+                    key={post.id}
+                    className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-violet-200 dark:hover:border-violet-800 transition-colors"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-slate-900 dark:text-white truncate">
+                        {post.title}
+                      </h3>
+                      <p className="text-sm text-slate-500 truncate mt-0.5">
+                        {post.slug} · {post.createdAt?.slice(0, 10)} · {post.readTime}分钟
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-1 ml-4 shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEdit(post)}
+                        className="text-slate-500 hover:text-violet-600"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          if (confirm(`确定删除「${post.title}」？此操作不可撤销。`)) {
+                            handleDelete(post.slug);
+                          }
+                        }}
+                        disabled={deletingSlug === post.slug}
+                        className="text-slate-500 hover:text-red-600"
+                      >
+                        {deletingSlug === post.slug ? (
+                          <Sparkles className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {tab === 'new' && (
         <div className="grid lg:grid-cols-2 gap-6">
           {/* 编辑面板 */}
           <div className="space-y-4">
@@ -388,6 +552,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
             </div>
           </div>
         </div>
+        )}
       </div>
     </div>
   );
