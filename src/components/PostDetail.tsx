@@ -8,7 +8,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import Giscus from './Giscus';
+import Comment from './Comment';
 import type { Post } from '@/types/blog';
 import type { PostListItem } from '@/types/api';
 import { getRelatedPosts } from '@/data/blogData';
@@ -395,14 +395,14 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
           </Button>
         </motion.div>
 
-        {/* Comments Section — powered by Giscus + GitHub Discussions */}
+        {/* Comments Section — powered by Twikoo */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
           className="mb-12"
         >
-          <Giscus />
+          <Comment />
         </motion.div>
 
         {/* Related Posts */}
