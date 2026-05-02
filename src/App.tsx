@@ -212,7 +212,7 @@ function App() {
       </AnimatePresence>
 
       {/* Main Content */}
-      <main>
+      <main id="main-content">
         <AnimatePresence mode="wait">
           {selectedPost ? (
             <motion.div

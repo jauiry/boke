@@ -42,6 +42,8 @@ export default function SearchOverlay({ isOpen, onClose, onResultClick }: Search
   const debouncedQuery = useDebounce(query, 300);
   const inputRef = useRef<HTMLInputElement>(null);
   const requestIdRef = useRef(0);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const resultsContainerRef = useRef<HTMLDivElement>(null);
 
   // 聚焦输入框
   useEffect(() => {
@@ -85,11 +87,31 @@ export default function SearchOverlay({ isOpen, onClose, onResultClick }: Search
     });
   }, [debouncedQuery]);
 
-  // ESC 关闭
+  const handleResultClick = useCallback((post: PostListItem) => {
+    onResultClick(post);
+    setQuery('');
+    setResults([]);
+    onClose();
+  }, [onResultClick, onClose]);
+
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
+        return;
+      }
+      if (results.length === 0) return;
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedIndex(prev => Math.min(prev + 1, results.length - 1));
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedIndex(prev => Math.max(prev - 1, -1));
+      } else if (e.key === 'Enter' && selectedIndex >= 0) {
+        e.preventDefault();
+        handleResultClick(results[selectedIndex]);
       }
     };
 
@@ -100,14 +122,12 @@ export default function SearchOverlay({ isOpen, onClose, onResultClick }: Search
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, results, selectedIndex, handleResultClick]);
 
-  const handleResultClick = useCallback((post: PostListItem) => {
-    onResultClick(post);
-    setQuery('');
-    setResults([]);
-    onClose();
-  }, [onResultClick, onClose]);
+  // Reset selection when results change
+  useEffect(() => {
+    setSelectedIndex(-1);
+  }, [results]);
 
   return (
     <AnimatePresence>
@@ -174,17 +194,24 @@ export default function SearchOverlay({ isOpen, onClose, onResultClick }: Search
                 <div className="px-4 py-2 text-sm text-slate-500 border-b border-slate-100 dark:border-slate-800">
                   找到 {results.length} 篇相关文章
                 </div>
-                <div className="py-2">
+                <div className="py-2" ref={resultsContainerRef} role="listbox" aria-label="搜索结果">
                   {results.map((post, index) => (
                     <motion.button
                       key={post.id}
+                      role="option"
+                      aria-selected={selectedIndex === index}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.05 }}
                       onClick={() => handleResultClick(post)}
-                      className="w-full px-6 py-4 flex items-start space-x-4 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors text-left"
+                      onMouseEnter={() => setSelectedIndex(index)}
+                      className={`w-full px-6 py-4 flex items-start space-x-4 transition-colors text-left ${
+                        selectedIndex === index
+                          ? 'bg-violet-50 dark:bg-violet-900/20'
+                          : 'hover:bg-slate-50 dark:hover:bg-slate-800'
+                      }`}
                     >
-                      <FileText className="w-5 h-5 text-slate-400 flex-shrink-0 mt-0.5" />
+                      <FileText className={`w-5 h-5 flex-shrink-0 mt-0.5 ${selectedIndex === index ? 'text-violet-500' : 'text-slate-400'}`} />
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium text-slate-900 dark:text-white truncate">
                           {post.title}

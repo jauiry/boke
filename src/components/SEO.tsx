@@ -18,70 +18,55 @@ export default function SEO({
 }: SEOProps) {
   const siteName = '郏祥瑞的技术博客';
   const siteUrl = 'https://www.mxqys.xyz';
+  const authorName = '郏祥瑞';
 
   const fullTitle = post ? `${post.title} - ${siteName}` : title;
   const fullDescription = post?.excerpt || description;
-
-  // 静态 OG 图片（后续可以替换为动态生成的）
-  const ogImage = image || `${siteUrl}/og-default.png`;
-
+  const ogImage = image || `${siteUrl}/icon-512.svg`;
   const url = post ? `${siteUrl}/${post.slug}` : siteUrl;
-
-  // 从文章内容提取关键词（简化版：取前10个标签或常见词）
   const keywords = post
     ? post.tags.map(t => t.name).join(', ')
     : '软件测试,性能测试,JMeter,接口测试,自动化测试,技术博客';
 
   useEffect(() => {
-    // 更新文档标题
     document.title = fullTitle;
 
-    // 更新或创建 meta 标签
-    const updateMeta = (name: string, content: string, property?: boolean) => {
-      const selector = property ? `meta[property="${name}"]` : `meta[name="${name}"]`;
-      let meta = document.querySelector(selector) as HTMLMetaElement;
-
-      if (!meta) {
-        meta = document.createElement('meta');
-        if (property) {
-          meta.setAttribute('property', name);
+    const setMeta = (selector: string, content: string) => {
+      let el = document.querySelector(selector) as HTMLMetaElement | null;
+      if (!el) {
+        el = document.createElement('meta');
+        if (selector.startsWith('meta[property=')) {
+          el.setAttribute('property', selector.match(/property="([^"]+)"/)![1]);
         } else {
-          meta.setAttribute('name', name);
+          el.setAttribute('name', selector.match(/name="([^"]+)"/)![1]);
         }
-        document.head.appendChild(meta);
+        document.head.appendChild(el);
       }
-      meta.content = content;
+      el.content = content;
     };
 
-    // Open Graph
-    updateMeta('og:title', fullTitle, true);
-    updateMeta('og:description', fullDescription, true);
-    updateMeta('og:type', type, true);
-    updateMeta('og:url', url, true);
-    updateMeta('og:image', ogImage, true);
-    updateMeta('og:site_name', siteName, true);
-    updateMeta('og:locale', 'zh_CN', true);
+    setMeta('meta[name="description"]', fullDescription);
+    setMeta('meta[name="keywords"]', keywords);
+    setMeta('meta[name="author"]', authorName);
+    setMeta('meta[property="og:title"]', fullTitle);
+    setMeta('meta[property="og:description"]', fullDescription);
+    setMeta('meta[property="og:type"]', type);
+    setMeta('meta[property="og:url"]', url);
+    setMeta('meta[property="og:image"]', ogImage);
+    setMeta('meta[property="og:site_name"]', siteName);
+    setMeta('meta[property="og:locale"]', 'zh_CN');
+    setMeta('meta[name="twitter:card"]', 'summary_large_image');
+    setMeta('meta[name="twitter:title"]', fullTitle);
+    setMeta('meta[name="twitter:description"]', fullDescription);
+    setMeta('meta[name="twitter:image"]', ogImage);
 
-    // Twitter Card
-    updateMeta('twitter:card', 'summary_large_image');
-    updateMeta('twitter:title', fullTitle);
-    updateMeta('twitter:description', fullDescription);
-    updateMeta('twitter:image', ogImage);
-    updateMeta('twitter:site', '@mxqys', true);
-
-    // 文章特有 meta
     if (post) {
-      updateMeta('article:published_time', post.createdAt, true);
-      updateMeta('article:author', '郏祥瑞', true);
-      updateMeta('article:tag', post.tags.map(t => t.name).join(', '), true);
+      setMeta('meta[property="article:published_time"]', post.createdAt);
+      setMeta('meta[property="article:author"]', authorName);
+      setMeta('meta[property="article:tag"]', post.tags.map(t => t.name).join(', '));
     }
 
-    // 其他重要 meta
-    updateMeta('description', fullDescription);
-    updateMeta('keywords', keywords);
-    updateMeta('author', '郏祥瑞');
-
-    // 更新 canonical URL
+    // Canonical URL
     let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
     if (!canonical) {
       canonical = document.createElement('link');
@@ -90,7 +75,45 @@ export default function SEO({
     }
     canonical.href = url;
 
-  }, [fullTitle, fullDescription, ogImage, url, type, post, keywords]);
+    // JSON-LD structured data
+    const existingScript = document.querySelector('script[type="application/ld+json"]');
+    if (existingScript) existingScript.remove();
+
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+
+    if (post) {
+      script.textContent = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: post.title,
+        description: post.excerpt,
+        image: post.coverImage ? `${siteUrl}${post.coverImage}` : ogImage,
+        datePublished: post.createdAt,
+        dateModified: post.updatedAt,
+        author: { '@type': 'Person', name: authorName, url: siteUrl },
+        publisher: { '@type': 'Organization', name: siteName, url: siteUrl },
+        mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+        keywords: post.tags.map(t => t.name),
+      });
+    } else {
+      script.textContent = JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: siteName,
+        description,
+        url: siteUrl,
+        author: { '@type': 'Person', name: authorName },
+        potentialAction: {
+          '@type': 'SearchAction',
+          target: { '@type': 'EntryPoint', urlTemplate: `${siteUrl}/?q={search_term_string}` },
+          'query-input': 'required name=search_term_string',
+        },
+      });
+    }
+
+    document.head.appendChild(script);
+  }, [fullTitle, fullDescription, ogImage, url, type, post, keywords, authorName, siteName, siteUrl, description]);
 
   return null;
 }

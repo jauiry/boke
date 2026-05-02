@@ -1,104 +1,106 @@
-// Service Worker for PWA - 离线缓存支持
+// Service Worker v2 — improved caching strategy
+const CACHE_NAME = 'mxqys-blog-v2';
+const MAX_CACHE_ENTRIES = 50;
 
-const CACHE_NAME = 'mxqys-blog-v1';
-const STATIC_ASSETS = [
-  '/',
-  '/manifest.json',
-];
+// Prune old cache entries to prevent unlimited growth
+async function pruneCache(cacheName: string) {
+  const cache = await caches.open(cacheName);
+  const keys = await cache.keys();
+  if (keys.length > MAX_CACHE_ENTRIES) {
+    const toDelete = keys.slice(0, keys.length - MAX_CACHE_ENTRIES);
+    await Promise.all(toDelete.map(k => cache.delete(k)));
+  }
+}
 
-// 安装事件 - 缓存静态资源
+// Install
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
+      return cache.addAll(['/', '/manifest.json']);
     })
   );
   self.skipWaiting();
 });
 
-// 激活事件 - 清理旧缓存
+// Activate — purge old caches
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
-      );
-    })
+    caches.keys().then((names) =>
+      Promise.all(names.filter(n => n !== CACHE_NAME).map(n => caches.delete(n)))
+    )
   );
   self.clients.claim();
 });
 
-// 请求拦截 - 网络优先，缓存 fallback
+// Helper: stale-while-revalidate
+function staleWhileRevalidate(request: Request, cacheName: string) {
+  return caches.match(request).then((cached) => {
+    const fetchPromise = fetch(request).then((response) => {
+      if (response.ok) {
+        const clone = response.clone();
+        caches.open(cacheName).then((cache) => {
+          cache.put(request, clone);
+          pruneCache(cacheName);
+        });
+      }
+      return response;
+    }).catch(() => cached);
+    return cached || fetchPromise;
+  });
+}
+
+// Helper: cache-first for images
+function cacheFirst(request: Request, cacheName: string) {
+  return caches.match(request).then((cached) => {
+    if (cached) return cached;
+    return fetch(request).then((response) => {
+      const clone = response.clone();
+      caches.open(cacheName).then((cache) => {
+        cache.put(request, clone);
+        pruneCache(cacheName);
+      });
+      return response;
+    }).catch(() => {
+      return new Response(
+        '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200"><rect fill="#7c3aed" width="400" height="200"/><text x="200" y="110" text-anchor="middle" fill="white" font-size="20" font-family="system-ui">Image</text></svg>',
+        { headers: { 'Content-Type': 'image/svg+xml' } }
+      );
+    });
+  });
+}
+
+// Fetch
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // API 请求不缓存
-  if (url.pathname.startsWith('/api/')) {
-    return;
-  }
+  // Skip API requests
+  if (url.pathname.startsWith('/api/')) return;
 
-  // 图片请求 - 缓存优先
+  // Images: cache-first
   if (request.destination === 'image') {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        if (cached) return cached;
-        return fetch(request).then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, clone);
-          });
-          return response;
-        }).catch(() => {
-          // 图片加载失败返回占位图
-          return new Response(
-            '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><rect fill="#7c3aed" width="200" height="200"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="white" font-size="24">图片</text></svg>',
-            { headers: { 'Content-Type': 'image/svg+xml' } }
-          );
-        });
-      })
-    );
+    event.respondWith(cacheFirst(request, CACHE_NAME));
     return;
   }
 
-  // 页面和静态资源 - 网络优先
-  event.respondWith(
-    fetch(request)
-      .then((response) => {
-        // 缓存成功的响应
-        if (response.ok) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, clone);
-          });
-        }
-        return response;
-      })
-      .catch(() => {
-        // 网络失败，从缓存返回
-        return caches.match(request).then((cached) => {
-          if (cached) return cached;
-          // 缓存也没有，返回离线页面
-          if (request.mode === 'navigate') {
-            return caches.match('/');
-          }
-          return new Response('Offline', { status: 503 });
-        });
-      })
-  );
+  // Fonts: cache-first
+  if (request.destination === 'font') {
+    event.respondWith(cacheFirst(request, CACHE_NAME));
+    return;
+  }
+
+  // Pages & static assets: stale-while-revalidate
+  event.respondWith(staleWhileRevalidate(request, CACHE_NAME));
 });
 
-// 推送通知支持（未来扩展）
+// Push notifications
 self.addEventListener('push', (event) => {
   if (event.data) {
     const data = event.data.json();
     event.waitUntil(
       self.registration.showNotification(data.title || '新文章', {
         body: data.body || '博客有新内容更新',
-        icon: '/icon-192.png',
-        badge: '/icon-192.png',
+        icon: '/icon-192.svg',
         data: data.url,
       })
     );
@@ -108,8 +110,6 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   if (event.notification.data) {
-    event.waitUntil(
-      clients.openWindow(event.notification.data)
-    );
+    event.waitUntil(clients.openWindow(event.notification.data));
   }
 });
