@@ -80,7 +80,20 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
     setShowShareMenu(false);
   };
 
-  // 渲染 Markdown 内容（支持代码块）
+  // Inline formatting helper
+  const formatInline = (text: string): string => {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/`(.+?)`/g, '<code class="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-violet-600 dark:text-violet-400 text-sm font-mono">$1</code>')
+      .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="inline-block max-w-full rounded" loading="lazy" />')
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-violet-600 dark:text-violet-400 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>');
+  };
+
+  // 渲染 Markdown 内容（支持代码块、表格、图片、任务列表）
   const renderContent = (content: string) => {
     const lines = content.split('\n');
     const elements: React.ReactNode[] = [];
@@ -178,6 +191,15 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
             {trimmedLine.replace('# ', '')}
           </h1>
         );
+      } else if (trimmedLine.startsWith('- [ ]') || trimmedLine.startsWith('- [x]') || trimmedLine.startsWith('- [X]')) {
+        const checked = trimmedLine.startsWith('- [x]') || trimmedLine.startsWith('- [X]');
+        const text = trimmedLine.replace(/- \[[ xX]\] /, '');
+        elements.push(
+          <div key={i} className="flex items-start gap-2 ml-6 mb-2">
+            <input type="checkbox" checked={checked} readOnly className="mt-1 accent-violet-600" />
+            <span className={`text-slate-700 dark:text-slate-300 ${checked ? 'line-through text-slate-400' : ''}`}>{text}</span>
+          </div>
+        );
       } else if (trimmedLine.startsWith('- ')) {
         elements.push(
           <li key={i} className="text-slate-700 dark:text-slate-300 ml-6 mb-2">
@@ -200,24 +222,86 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
         );
       } else if (trimmedLine.startsWith('---')) {
         elements.push(<hr key={i} className="my-8 border-slate-200 dark:border-slate-700" />);
-      } else if (trimmedLine.startsWith('| ')) {
-        // Simple table row - render as styled text
-        elements.push(
-          <p key={i} className="text-slate-700 dark:text-slate-300 font-mono text-sm">
-            {trimmedLine}
-          </p>
-        );
-      } else {
-        // Inline formatting: bold, italic, inline code
-        const formatted = trimmedLine
-          .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-          .replace(/\*(.+?)\*/g, '<em>$1</em>')
-          .replace(/`(.+?)`/g, '<code class="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-violet-600 dark:text-violet-400 text-sm font-mono">$1</code>')
-          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-violet-600 dark:text-violet-400 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>');
+      } else if (trimmedLine.startsWith('| ') && trimmedLine.endsWith('|')) {
+        // Table: collect consecutive rows including separator
+        const tableRows: string[][] = [];
+        let j = i;
+        while (j < lines.length) {
+          const row = lines[j].trim();
+          if (!row.startsWith('|') || !row.endsWith('|')) break;
+          // Stop collecting if we encounter a header-separator row
+          const cells = row.split('|').slice(1, -1).map(c => c.trim());
+          tableRows.push(cells);
+          j++;
+        }
 
-        elements.push(
-          <p key={i} className="text-slate-700 dark:text-slate-300 mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: formatted }} />
-        );
+        if (tableRows.length >= 2) {
+          // First row = header, second = separator (ignore), rest = data
+          const header = tableRows[0];
+          const dataRows = tableRows.slice(2);
+
+          // Check if second row is separator (contains only dashes, colons, spaces, pipes)
+          const isSepRow = tableRows[1].every(c => /^[-:\s]+$/.test(c));
+          const allRows = isSepRow ? dataRows : tableRows.slice(1);
+
+          elements.push(
+            <div key={i} className="my-6 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-slate-50 dark:bg-slate-800/50">
+                    {header.map((h, hi) => (
+                      <th key={hi} className="px-4 py-3 text-left font-semibold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700">
+                        {formatInline(h)}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {allRows.map((row, ri) => (
+                    <tr key={ri} className="border-b border-slate-100 dark:border-slate-800 last:border-0">
+                      {row.map((cell, ci) => (
+                        <td key={ci} className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                          {formatInline(cell)}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          );
+
+          i = j - 1; // skip past all consumed rows
+        } else {
+          // Fallback for malformed tables
+          elements.push(<p key={i} className="text-slate-700 dark:text-slate-300 font-mono text-sm mb-4">{trimmedLine}</p>);
+        }
+      } else {
+        // Image: ![alt](url)
+        const imageMatch = trimmedLine.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+        if (imageMatch) {
+          elements.push(
+            <figure key={i} className="my-6">
+              <img
+                src={imageMatch[2]}
+                alt={imageMatch[1] || 'Image'}
+                loading="lazy"
+                className="rounded-xl max-w-full h-auto border border-slate-200 dark:border-slate-700"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+              {imageMatch[1] && (
+                <figcaption className="text-center text-sm text-slate-400 mt-2">{imageMatch[1]}</figcaption>
+              )}
+            </figure>
+          );
+        } else {
+          const formatted = formatInline(trimmedLine);
+          elements.push(
+            <p key={i} className="text-slate-700 dark:text-slate-300 mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: formatted }} />
+          );
+        }
       }
     }
 

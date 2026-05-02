@@ -20,10 +20,8 @@ export default defineConfig({
           'vendor-react': ['react', 'react-dom'],
           'vendor-motion': ['framer-motion'],
           'vendor-radix': [
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-select',
-            '@radix-ui/react-tabs',
+            '@radix-ui/react-avatar',
+            '@radix-ui/react-slot',
           ],
         },
       },
