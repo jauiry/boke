@@ -95,7 +95,7 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: index * 0.1 }}
         onClick={onClick}
-        className="group cursor-pointer p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-violet-300 dark:hover:border-violet-700 transition-all hover:shadow-lg"
+        className="group cursor-pointer p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-violet-300/50 dark:hover:border-violet-600/30 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(139,92,246,0.12)]"
       >
         <div className="flex items-start space-x-4">
           <div className="flex-1 min-w-0">
@@ -127,7 +127,7 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       onClick={onClick}
-      className={`group cursor-pointer overflow-hidden rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-violet-300 dark:hover:border-violet-700 transition-all duration-300 hover:shadow-xl hover:shadow-violet-500/10 ${
+      className={`group cursor-pointer overflow-hidden rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-violet-300/50 dark:hover:border-violet-600/30 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(139,92,246,0.15)] dark:hover:shadow-[0_8px_30px_rgba(139,92,246,0.2)] ${
         isFeatured ? 'md:col-span-2 md:grid md:grid-cols-2' : ''
       }`}
     >

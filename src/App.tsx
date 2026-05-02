@@ -20,6 +20,7 @@ const PostDetail = lazy(() => import('./components/PostDetail'));
 const TagsPage = lazy(() => import('./components/TagsPage'));
 const AboutPage = lazy(() => import('./components/AboutPage'));
 const AdminPage = lazy(() => import('./components/AdminPage'));
+const FeaturedGrid = lazy(() => import('./components/FeaturedGrid'));
 
 // 加载骨架屏组件
 function LoadingSkeleton() {
@@ -240,16 +241,11 @@ function App() {
               {currentView === 'home' && (
                 <>
                   <Hero onExplore={() => handleViewChange('articles')} />
-                  <div className="py-16 bg-white dark:bg-slate-900">
+                  <div className="py-16 md:py-24 bg-white dark:bg-slate-900">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                      <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">
-                          精选文章
-                        </h2>
-                        <p className="text-slate-600 dark:text-slate-400">
-                          推荐阅读的高质量内容
-                        </p>
-                      </div>
+                      <Suspense fallback={<PostListSkeleton />}>
+                        <FeaturedGrid onPostClick={handlePostClick} />
+                      </Suspense>
                       <Suspense fallback={<PostListSkeleton />}>
                         <PostList
                           onPostClick={handlePostClick}

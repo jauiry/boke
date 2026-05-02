@@ -86,15 +86,58 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
     const elements: React.ReactNode[] = [];
     let inCodeBlock = false;
     let codeLines: string[] = [];
+    let codeLang = '';
+
+    const CodeBlock = ({ lang, code }: { lang: string; code: string }) => {
+      const [copied, setCopied] = useState(false);
+      const handleCopy = () => {
+        navigator.clipboard.writeText(code);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      };
+
+      return (
+        <div className="relative group my-6 rounded-xl overflow-hidden border border-slate-700/50">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-2 bg-slate-800/80 dark:bg-slate-900/80 border-b border-slate-700/50">
+            <span className="text-xs text-slate-400 font-mono">
+              {lang || 'plaintext'}
+            </span>
+            <button
+              onClick={handleCopy}
+              className="text-xs text-slate-400 hover:text-slate-200 transition-colors flex items-center gap-1.5"
+            >
+              {copied ? (
+                <><CheckIcon className="w-3 h-3 text-green-400" /> 已复制</>
+              ) : (
+                <><CopyIcon className="w-3 h-3" /> 复制</>
+              )}
+            </button>
+          </div>
+          {/* Code */}
+          <pre className="bg-slate-900 dark:bg-slate-950 text-slate-100 p-5 overflow-x-auto text-sm leading-relaxed m-0">
+            <code>{code}</code>
+          </pre>
+        </div>
+      );
+    };
+
+    // Small inline icons
+    const CopyIcon = ({ className }: { className?: string }) => (
+      <svg className={className} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+    );
+    const CheckIcon = ({ className }: { className?: string }) => (
+      <svg className={className} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12"/></svg>
+    );
 
     const flushCodeBlock = () => {
       if (codeLines.length > 0) {
+        const codeId = `code-${elements.length}`;
         elements.push(
-          <pre key={`code-${elements.length}`} className="bg-slate-800 dark:bg-slate-950 text-slate-100 rounded-xl p-5 overflow-x-auto my-6 text-sm leading-relaxed">
-            <code>{codeLines.join('\n')}</code>
-          </pre>
+          <CodeBlock key={codeId} lang={codeLang} code={codeLines.join('\n')} />
         );
         codeLines = [];
+        codeLang = '';
       }
     };
 
@@ -107,6 +150,7 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
           inCodeBlock = false;
         } else {
           inCodeBlock = true;
+          codeLang = trimmedLine.replace('```', '').trim();
         }
         continue;
       }
