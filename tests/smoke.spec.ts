@@ -19,7 +19,7 @@ test.describe('博客冒烟测试', () => {
     await page.goto('https://www.mxqys.xyz/articles');
 
     // 检查页面标题
-    const heading = page.locator('h1');
+    const heading = page.getByRole('heading', { name: '全部文章', exact: true });
     await expect(heading).toContainText('文章');
   });
 
@@ -30,7 +30,7 @@ test.describe('博客冒烟测试', () => {
     await page.keyboard.press('Meta+k');
 
     // 等待搜索框出现
-    const searchInput = page.locator('input[placeholder*="搜索"]');
+    const searchInput = page.getByRole('textbox', { name: '搜索文章标题或内容' });
     await expect(searchInput).toBeVisible({ timeout: 5000 });
 
     // 输入搜索词
