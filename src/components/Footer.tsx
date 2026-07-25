@@ -38,25 +38,27 @@ export default function Footer({ onViewChange }: FooterProps) {
   };
 
   return (
-    <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800">
+    <footer className="relative border-t border-black/10 bg-[var(--paper-deep)] dark:border-white/10">
+      <div className="paper-noise absolute inset-0" aria-hidden="true" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">B</span>
+              <div className="grid h-9 w-9 place-items-center border border-[var(--cinnabar)]">
+                <span className="font-calligraphy text-xl text-cinnabar">明</span>
               </div>
-              <span className="font-bold text-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
-                Blog
+              <span className="font-serif-cn text-xl font-semibold tracking-[0.16em] text-ink">
+                嘉明手札
               </span>
             </div>
-            <p className="text-slate-600 dark:text-slate-400 mb-4 max-w-md">
-              记录技术成长，分享编程心得。一个专注于前端开发、后端架构和技术思考的博客。
+            <p className="mb-4 max-w-md font-serif-cn leading-8 text-ink-soft">
+              以代码为笔，以思考为墨。记录技术、设计与生活中值得被慢慢看见的瞬间。
             </p>
             <div className="flex items-center space-x-3">
               <a
                 href={author.social.github}
+                aria-label="访问 GitHub"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-violet-100 dark:hover:bg-violet-900/30 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
@@ -65,6 +67,7 @@ export default function Footer({ onViewChange }: FooterProps) {
               </a>
               <a
                 href={author.social.twitter}
+                aria-label="访问 Twitter"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-violet-100 dark:hover:bg-violet-900/30 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
@@ -73,6 +76,7 @@ export default function Footer({ onViewChange }: FooterProps) {
               </a>
               <a
                 href={`mailto:${author.social.email}`}
+                aria-label="发送邮件"
                 className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-violet-100 dark:hover:bg-violet-900/30 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
               >
                 <Mail className="w-5 h-5" />
@@ -117,7 +121,7 @@ export default function Footer({ onViewChange }: FooterProps) {
         <div className="border-t border-slate-200 dark:border-slate-800 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between">
             <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center">
-              Made with 
+              用心书写
               <Heart className="w-4 h-4 mx-1 text-red-500 fill-current" />
               by {author.name} © {new Date().getFullYear()}
             </p>
@@ -127,6 +131,7 @@ export default function Footer({ onViewChange }: FooterProps) {
               </span>
               <motion.button
                 onClick={scrollToTop}
+                aria-label="返回页面顶部"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="p-2 rounded-lg bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 hover:bg-violet-200 dark:hover:bg-violet-900/50 transition-colors"

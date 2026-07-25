@@ -181,7 +181,7 @@ function App() {
   }, [selectedPost]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="ink-page min-h-screen">
       {/* Navbar */}
       <Navbar
         currentView={currentView}
@@ -241,16 +241,11 @@ function App() {
               {currentView === 'home' && (
                 <>
                   <Hero onExplore={() => handleViewChange('articles')} />
-                  <div className="py-16 md:py-24 bg-white dark:bg-slate-900">
+                  <div className="relative py-20 md:py-28">
+                    <div className="paper-noise absolute inset-0" aria-hidden="true" />
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                       <Suspense fallback={<PostListSkeleton />}>
                         <FeaturedGrid onPostClick={handlePostClick} />
-                      </Suspense>
-                      <Suspense fallback={<PostListSkeleton />}>
-                        <PostList
-                          onPostClick={handlePostClick}
-                          initialSearchQuery={searchQuery}
-                        />
                       </Suspense>
                     </div>
                   </div>
