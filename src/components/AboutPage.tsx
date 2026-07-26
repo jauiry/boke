@@ -15,37 +15,37 @@ const skillCategories = [
     title: 'AI驱动测试',
     icon: Cpu,
     skills: ['AI业务流程梳理', '场景化测试点生成', 'AI辅助用例设计', '减少漏测'],
-    color: 'from-violet-500 to-purple-500'
+    color: 'bg-cinnabar'
   },
   {
     title: '接口与自动化',
     icon: Server,
     skills: ['JMeter', 'Postman', 'apifox', 'Python+requests', 'Python+playwright', 'HTTP协议'],
-    color: 'from-green-500 to-emerald-500'
+    color: 'bg-cinnabar'
   },
   {
     title: '性能测试',
     icon: Zap,
     skills: ['JMeter压测', 'perfdog性能测试', '分布式压测', '并发测试', '性能测试报告'],
-    color: 'from-yellow-500 to-orange-500'
+    color: 'bg-cinnabar'
   },
   {
     title: '抓包与调试',
     icon: Bug,
     skills: ['Fiddler', 'Charles', 'F12开发者工具', 'adb命令', 'Monkey压测', '弱网测试'],
-    color: 'from-red-500 to-pink-500'
+    color: 'bg-cinnabar'
   },
   {
     title: 'APP测试',
     icon: Target,
     skills: ['WEB/APP/H5/小程序', 'Google Play审核', 'Apple Store审核', '兼容性测试', '闪退测试'],
-    color: 'from-blue-500 to-cyan-500'
+    color: 'bg-cinnabar'
   },
   {
     title: '数据库与工具',
     icon: Database,
     skills: ['MySQL', 'Linux', 'Git/SVN', '飞书/JIRA', 'Xmind', 'Claude code辅助'],
-    color: 'from-indigo-500 to-blue-500'
+    color: 'bg-cinnabar'
   }
 ];
 
@@ -193,7 +193,7 @@ const advantages = [
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 pt-24 pb-16">
+    <div className="ink-page min-h-[100dvh] pb-16 pt-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* 顶部个人信息卡片 */}
@@ -202,21 +202,21 @@ export default function AboutPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <Card className="overflow-hidden border-0 shadow-2xl bg-white dark:bg-slate-800">
-            <div className="h-32 bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600" />
+          <Card className="overflow-hidden border-0 shadow-2xl bg-white dark:bg-[var(--paper-deep)]">
+            <div className="h-32 bg-gradient-to-r from-[#363d37] via-[#687266] to-[#8f342a]" />
             <CardContent className="relative px-8 pb-8">
               <div className="flex flex-col md:flex-row items-start md:items-end -mt-16 mb-6">
-                <Avatar className="w-32 h-32 border-4 border-white dark:border-slate-800 shadow-lg">
+                <Avatar className="w-32 h-32 border-4 border-white dark:border-white/5 shadow-lg">
                   <AvatarImage src={author.avatar} alt={author.name} />
-                  <AvatarFallback className="text-4xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white">
+                  <AvatarFallback className="text-4xl bg-gradient-to-br from-[#59615a] to-[#a83f32] text-white">
                     {author.name[0]}
                   </AvatarFallback>
                 </Avatar>
                 <div className="mt-4 md:mt-0 md:ml-6 flex-1">
-                  <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
+                  <h1 className="text-3xl font-bold text-ink dark:text-white">
                     {author.name}
                   </h1>
-                  <p className="text-xl text-violet-600 dark:text-violet-400 font-medium">
+                  <p className="text-xl text-cinnabar dark:text-cinnabar font-medium">
                     软件测试工程师
                   </p>
                 </div>
@@ -229,31 +229,31 @@ export default function AboutPage() {
               
               {/* 基本信息网格 */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                <div className="flex items-center space-x-2 text-slate-600 dark:text-slate-400">
-                  <Calendar className="w-4 h-4 text-violet-500" />
+                <div className="flex items-center space-x-2 text-ink-soft dark:text-ink-muted">
+                  <Calendar className="w-4 h-4 text-cinnabar" />
                   <span>26岁 · 3年经验</span>
                 </div>
-                <div className="flex items-center space-x-2 text-slate-600 dark:text-slate-400">
-                  <GraduationCap className="w-4 h-4 text-violet-500" />
+                <div className="flex items-center space-x-2 text-ink-soft dark:text-ink-muted">
+                  <GraduationCap className="w-4 h-4 text-cinnabar" />
                   <span>本科</span>
                 </div>
-                <div className="flex items-center space-x-2 text-slate-600 dark:text-slate-400">
-                  <MapPin className="w-4 h-4 text-violet-500" />
+                <div className="flex items-center space-x-2 text-ink-soft dark:text-ink-muted">
+                  <MapPin className="w-4 h-4 text-cinnabar" />
                   <span>杭州市</span>
                 </div>
-                <div className="flex items-center space-x-2 text-slate-600 dark:text-slate-400">
-                  <Briefcase className="w-4 h-4 text-violet-500" />
+                <div className="flex items-center space-x-2 text-ink-soft dark:text-ink-muted">
+                  <Briefcase className="w-4 h-4 text-cinnabar" />
                   <span>离职状态</span>
                 </div>
               </div>
 
               {/* 联系方式 */}
-              <div className="flex flex-wrap gap-3 mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
-                <a href="tel:183-2597-5419" className="flex items-center space-x-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 rounded-full text-sm text-slate-700 dark:text-slate-300 hover:bg-violet-100 dark:hover:bg-violet-900 transition-colors">
+              <div className="flex flex-wrap gap-3 mt-6 pt-6 border-t border-black/10 dark:border-white/10">
+                <a href="tel:183-2597-5419" className="flex items-center space-x-2 px-4 py-2 bg-[var(--paper-deep)] dark:bg-[#292e29] rounded-full text-sm text-ink-soft dark:text-ink-soft hover:bg-[color-mix(in_srgb,var(--cinnabar)_12%,var(--paper))] dark:hover:bg-[color-mix(in_srgb,var(--cinnabar)_18%,var(--paper))] transition-colors">
                   <Phone className="w-4 h-4" />
                   <span>183-2597-5419</span>
                 </a>
-                <a href="mailto:1102684926@qq.com" className="flex items-center space-x-2 px-4 py-2 bg-slate-100 dark:bg-slate-700 rounded-full text-sm text-slate-700 dark:text-slate-300 hover:bg-violet-100 dark:hover:bg-violet-900 transition-colors">
+                <a href="mailto:1102684926@qq.com" className="flex items-center space-x-2 px-4 py-2 bg-[var(--paper-deep)] dark:bg-[#292e29] rounded-full text-sm text-ink-soft dark:text-ink-soft hover:bg-[color-mix(in_srgb,var(--cinnabar)_12%,var(--paper))] dark:hover:bg-[color-mix(in_srgb,var(--cinnabar)_18%,var(--paper))] transition-colors">
                   <Mail className="w-4 h-4" />
                   <span>1102684926@qq.com</span>
                 </a>
@@ -275,30 +275,30 @@ export default function AboutPage() {
               <Card className="border-0 shadow-lg">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center text-xl">
-                    <Briefcase className="w-5 h-5 mr-2 text-violet-500" />
+                    <Briefcase className="w-5 h-5 mr-2 text-cinnabar" />
                     工作经历
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
                     {experiences.map((exp, index) => (
-                      <div key={index} className="relative pl-6 pb-6 border-l-2 border-violet-200 dark:border-violet-800 last:pb-0">
-                        <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-violet-500 border-4 border-white dark:border-slate-800" />
+                      <div key={index} className="relative pl-6 pb-6 border-l-2 border-black/10 dark:border-white/10 last:pb-0">
+                        <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-[color-mix(in_srgb,var(--cinnabar)_7%,var(--paper))]0 border-4 border-white dark:border-white/5" />
                         <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300">
+                          <Badge className="bg-[color-mix(in_srgb,var(--cinnabar)_12%,var(--paper))] text-cinnabar dark:bg-[color-mix(in_srgb,var(--cinnabar)_18%,var(--paper))] dark:text-cinnabar">
                             {exp.year}
                           </Badge>
-                          <span className="text-sm text-slate-500">{exp.location}</span>
+                          <span className="text-sm text-ink-muted">{exp.location}</span>
                         </div>
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-ink dark:text-white">
                           {exp.title}
                         </h3>
-                        <p className="text-violet-600 dark:text-violet-400 font-medium mb-3">
+                        <p className="text-cinnabar dark:text-cinnabar font-medium mb-3">
                           {exp.company}
                         </p>
                         <ul className="space-y-2">
                           {exp.achievements.map((achievement, idx) => (
-                            <li key={idx} className="flex items-start text-slate-600 dark:text-slate-400">
+                            <li key={idx} className="flex items-start text-ink-soft dark:text-ink-muted">
                               <CheckCircle className="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
                               <span className="text-sm">{achievement}</span>
                             </li>
@@ -320,7 +320,7 @@ export default function AboutPage() {
               <Card className="border-0 shadow-lg">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center text-xl">
-                    <GraduationCap className="w-5 h-5 mr-2 text-violet-500" />
+                    <GraduationCap className="w-5 h-5 mr-2 text-cinnabar" />
                     教育背景
                   </CardTitle>
                 </CardHeader>
@@ -328,14 +328,14 @@ export default function AboutPage() {
                   {education.map((edu, index) => (
                     <div key={index} className="flex items-start justify-between">
                       <div>
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-ink dark:text-white">
                           {edu.school}
                         </h3>
-                        <p className="text-slate-600 dark:text-slate-400">
+                        <p className="text-ink-soft dark:text-ink-muted">
                           {edu.major} · {edu.degree}
                         </p>
                       </div>
-                      <Badge variant="outline" className="text-slate-500">
+                      <Badge variant="outline" className="text-ink-muted">
                         {edu.year}
                       </Badge>
                     </div>
@@ -353,32 +353,32 @@ export default function AboutPage() {
               <Card className="border-0 shadow-lg">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center text-xl">
-                    <Briefcase className="w-5 h-5 mr-2 text-violet-500" />
+                    <Briefcase className="w-5 h-5 mr-2 text-cinnabar" />
                     项目经历
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-6">
                     {projects.map((project, index) => (
-                      <div key={index} className="relative pl-6 pb-6 border-l-2 border-violet-200 dark:border-violet-800 last:pb-0">
-                        <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-violet-500 border-4 border-white dark:border-slate-800" />
+                      <div key={index} className="relative pl-6 pb-6 border-l-2 border-black/10 dark:border-white/10 last:pb-0">
+                        <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-[color-mix(in_srgb,var(--cinnabar)_7%,var(--paper))]0 border-4 border-white dark:border-white/5" />
                         <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900 dark:text-violet-300">
+                          <Badge className="bg-[color-mix(in_srgb,var(--cinnabar)_12%,var(--paper))] text-cinnabar dark:bg-[color-mix(in_srgb,var(--cinnabar)_18%,var(--paper))] dark:text-cinnabar">
                             {project.year}
                           </Badge>
-                          <Badge variant="outline" className="text-slate-500">
+                          <Badge variant="outline" className="text-ink-muted">
                             {project.type}
                           </Badge>
                         </div>
-                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                        <h3 className="text-lg font-semibold text-ink dark:text-white mb-2">
                           {project.name}
                         </h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-400 mb-3">
+                        <p className="text-sm text-ink-soft dark:text-ink-muted mb-3">
                           {project.description}
                         </p>
                         <ul className="space-y-1">
                           {project.responsibilities.map((resp, idx) => (
-                            <li key={idx} className="flex items-start text-slate-600 dark:text-slate-400">
+                            <li key={idx} className="flex items-start text-ink-soft dark:text-ink-muted">
                               <CheckCircle className="w-3 h-3 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
                               <span className="text-xs">{resp}</span>
                             </li>
@@ -400,7 +400,7 @@ export default function AboutPage() {
               <Card className="border-0 shadow-lg">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center text-xl">
-                    <Code className="w-5 h-5 mr-2 text-violet-500" />
+                    <Code className="w-5 h-5 mr-2 text-cinnabar" />
                     专业技能
                   </CardTitle>
                 </CardHeader>
@@ -412,13 +412,13 @@ export default function AboutPage() {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.1 * index }}
-                        className="p-4 rounded-xl bg-gradient-to-br from-slate-50 to-white dark:from-slate-800 dark:to-slate-700 border border-slate-200 dark:border-slate-600 hover:shadow-md transition-shadow"
+                        className="p-4 rounded-xl bg-gradient-to-br from-[var(--paper)] to-white dark:from-[var(--paper-deep)] dark:to-[#292e29] border border-black/10 dark:border-white/15 hover:shadow-md transition-shadow"
                       >
                         <div className="flex items-center mb-3">
-                          <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${category.color} flex items-center justify-center mr-3`}>
+                          <div className={`mr-3 flex h-10 w-10 items-center justify-center ${category.color}`}>
                             <category.icon className="w-5 h-5 text-white" />
                           </div>
-                          <h3 className="font-semibold text-slate-900 dark:text-white">
+                          <h3 className="font-semibold text-ink dark:text-white">
                             {category.title}
                           </h3>
                         </div>
@@ -426,7 +426,7 @@ export default function AboutPage() {
                           {category.skills.map((skill) => (
                             <span
                               key={skill}
-                              className="px-2 py-1 text-xs bg-white dark:bg-slate-600 text-slate-700 dark:text-slate-300 rounded-md border border-slate-200 dark:border-slate-500"
+                              className="border border-black/10 bg-[var(--paper)] px-2 py-1 text-xs text-ink-soft dark:border-white/20"
                             >
                               {skill}
                             </span>
@@ -449,7 +449,7 @@ export default function AboutPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <Card className="border-0 shadow-lg bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white">
+              <Card className="border-0 shadow-lg bg-gradient-to-br from-[#363d37] to-[#8f342a] text-white">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center text-xl text-white">
                     <Star className="w-5 h-5 mr-2" />
@@ -491,31 +491,31 @@ export default function AboutPage() {
                   <ul className="space-y-3">
                     <li className="flex items-start">
                       <CheckCircle className="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
-                      <span className="text-sm text-slate-600 dark:text-slate-400">
+                      <span className="text-sm text-ink-soft dark:text-ink-muted">
                         3年测试经验，精通JMeter性能与接口测试
                       </span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircle className="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
-                      <span className="text-sm text-slate-600 dark:text-slate-400">
+                      <span className="text-sm text-ink-soft dark:text-ink-muted">
                         AI驱动测试思维，减少漏测提高覆盖率
                       </span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircle className="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
-                      <span className="text-sm text-slate-600 dark:text-slate-400">
+                      <span className="text-sm text-ink-soft dark:text-ink-muted">
                         移动端(WEP/APP/H5/小程序)测试经验
                       </span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircle className="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
-                      <span className="text-sm text-slate-600 dark:text-slate-400">
+                      <span className="text-sm text-ink-soft dark:text-ink-muted">
                         Python+playwright UI自动化实践
                       </span>
                     </li>
                     <li className="flex items-start">
                       <CheckCircle className="w-4 h-4 mr-2 mt-0.5 text-green-500 flex-shrink-0" />
-                      <span className="text-sm text-slate-600 dark:text-slate-400">
+                      <span className="text-sm text-ink-soft dark:text-ink-muted">
                         负责APP应用市场上架审核
                       </span>
                     </li>
@@ -530,15 +530,15 @@ export default function AboutPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6 }}
             >
-              <Card className="border-0 shadow-lg bg-slate-900 text-white">
+              <Card className="border-0 shadow-lg bg-[var(--paper)] text-white">
                 <CardContent className="p-6 text-center">
                   <h3 className="text-lg font-semibold mb-2">有意联系？</h3>
-                  <p className="text-sm text-slate-400 mb-4">
+                  <p className="text-sm text-ink-muted mb-4">
                     随时欢迎交流合作机会
                   </p>
                   <a 
                     href="tel:183-2597-5419"
-                    className="inline-flex items-center justify-center w-full px-4 py-2 bg-violet-600 hover:bg-violet-700 rounded-lg text-sm font-medium transition-colors"
+                    className="inline-flex items-center justify-center w-full px-4 py-2 bg-cinnabar hover:bg-[#8f342a] rounded-lg text-sm font-medium transition-colors"
                   >
                     <Phone className="w-4 h-4 mr-2" />
                     拨打电话

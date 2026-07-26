@@ -39,17 +39,17 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: index * 0.1 }}
         onClick={onClick}
-        className="group cursor-pointer p-4 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-violet-300 dark:hover:border-violet-700 transition-all hover:shadow-lg"
+        className="group cursor-pointer p-4 rounded-xl bg-white dark:bg-[var(--paper-deep)] border border-black/10 dark:border-white/10 hover:border-[var(--cinnabar)]/35 dark:hover:border-[var(--cinnabar)]/45 transition-all hover:shadow-lg"
       >
         <div className="flex items-start space-x-4">
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-slate-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors line-clamp-1">
+            <h3 className="font-semibold text-ink dark:text-white group-hover:text-cinnabar dark:group-hover:text-cinnabar transition-colors line-clamp-1">
               {post.title}
             </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-1">
+            <p className="text-sm text-ink-muted dark:text-ink-muted mt-1 line-clamp-1">
               {post.excerpt}
             </p>
-            <div className="flex items-center space-x-4 mt-2 text-xs text-slate-400">
+            <div className="flex items-center space-x-4 mt-2 text-xs text-ink-muted">
               <span className="flex items-center space-x-1">
                 <Calendar className="w-3 h-3" />
                 <span>{formatDateChinese(post.createdAt)}</span>
@@ -71,7 +71,7 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       onClick={onClick}
-      className={`group cursor-pointer overflow-hidden rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-violet-300 dark:hover:border-violet-700 transition-all duration-300 hover:shadow-xl hover:shadow-violet-500/10 ${
+      className={`ink-card group cursor-pointer overflow-hidden transition-all duration-300 hover:border-[var(--cinnabar)] ${
         isFeatured ? 'md:col-span-2 md:grid md:grid-cols-2' : ''
       }`}
       style={{ contentVisibility: 'auto' }}
@@ -89,19 +89,19 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
               (e.target as HTMLImageElement).style.display = 'none';
               const parent = (e.target as HTMLImageElement).parentElement;
               if (parent) {
-                parent.classList.add('bg-gradient-to-br', 'from-violet-500', 'to-fuchsia-500');
+                parent.classList.add('bg-gradient-to-br', 'from-[#59615a]', 'to-[#a83f32]');
               }
             }}
           />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-violet-500 to-fuchsia-500" />
+          <div className="w-full h-full bg-gradient-to-br from-[#59615a] to-[#a83f32]" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
         {/* Featured Badge */}
         {post.featured && (
           <div className="absolute top-4 left-4">
-            <Badge className="bg-violet-500 text-white border-0">
+            <Badge className="border-0 bg-cinnabar text-white">
               精选
             </Badge>
           </div>
@@ -109,7 +109,7 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
 
         {/* Category Badge */}
         <div className="absolute bottom-4 left-4">
-          <Badge variant="secondary" className="bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 backdrop-blur-sm">
+          <Badge variant="secondary" className="bg-white/90 dark:bg-[#171a18]/90 text-ink-soft dark:text-ink-soft backdrop-blur-sm">
             技术分享
           </Badge>
         </div>
@@ -139,7 +139,7 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
         </div>
 
         {/* Title */}
-        <h3 className={`font-bold text-slate-900 dark:text-white group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors mb-3 ${
+        <h3 className={`font-bold text-ink dark:text-white group-hover:text-cinnabar dark:group-hover:text-cinnabar transition-colors mb-3 ${
           isFeatured ? 'text-2xl md:text-3xl' : 'text-xl'
         }`}>
           {post.title}
@@ -147,17 +147,17 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
 
         {/* Excerpt */}
         <div className="relative mb-4">
-          <p className={`text-slate-600 dark:text-slate-400 line-clamp-2 ${
+          <p className={`text-ink-soft dark:text-ink-muted line-clamp-2 ${
             isFeatured ? 'text-base md:text-lg' : 'text-sm'
           }`}>
             {post.excerpt}
           </p>
-          <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white dark:from-slate-800 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white dark:from-[var(--paper-deep)] to-transparent" />
         </div>
 
         {/* Meta */}
-        <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700">
-          <div className="flex items-center space-x-4 text-sm text-slate-500 dark:text-slate-400">
+        <div className="flex items-center justify-between pt-4 border-t border-black/5 dark:border-white/10">
+          <div className="flex items-center space-x-4 text-sm text-ink-muted dark:text-ink-muted">
             <span className="flex items-center space-x-1">
               <Calendar className="w-4 h-4" />
               <span>{formatDateChinese(post.createdAt)}</span>
@@ -170,7 +170,7 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
         </div>
 
         {/* Read More */}
-        <div className="mt-4 flex items-center text-violet-600 dark:text-violet-400 font-medium text-sm group-hover:translate-x-2 transition-transform">
+        <div className="mt-4 flex items-center text-cinnabar dark:text-cinnabar font-medium text-sm group-hover:translate-x-2 transition-transform">
           <span>阅读全文</span>
           <ArrowRight className="w-4 h-4 ml-1" />
         </div>

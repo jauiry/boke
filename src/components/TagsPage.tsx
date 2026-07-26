@@ -16,7 +16,7 @@ export default function TagsPage({ onPostClick }: TagsPageProps) {
   const selectedTagInfo = selectedTag ? tags.find(t => t.id === selectedTag) : null;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-24 pb-16">
+    <div className="ink-page min-h-[100dvh] pb-16 pt-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -24,10 +24,10 @@ export default function TagsPage({ onPostClick }: TagsPageProps) {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-ink dark:text-white mb-4">
             标签云
           </h1>
-          <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+          <p className="text-ink-soft dark:text-ink-muted max-w-2xl mx-auto">
             按标签浏览文章，快速找到你感兴趣的内容
           </p>
         </motion.div>
@@ -44,8 +44,8 @@ export default function TagsPage({ onPostClick }: TagsPageProps) {
               onClick={() => setSelectedTag(null)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 selectedTag === null
-                  ? 'bg-violet-600 text-white shadow-lg shadow-violet-500/25'
-                  : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 border border-slate-200 dark:border-slate-700'
+                  ? 'bg-cinnabar text-white shadow-[4px_4px_0_color-mix(in_srgb,var(--ink)_20%,transparent)]'
+                  : 'bg-white dark:bg-[var(--paper-deep)] text-ink-soft dark:text-ink-soft hover:bg-[color-mix(in_srgb,var(--cinnabar)_7%,var(--paper))] dark:hover:bg-[color-mix(in_srgb,var(--cinnabar)_18%,var(--paper))]/20 border border-black/10 dark:border-white/10'
               }`}
             >
               <span className="flex items-center space-x-2">
@@ -65,7 +65,7 @@ export default function TagsPage({ onPostClick }: TagsPageProps) {
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                     selectedTag === tag.id
                       ? 'text-white shadow-lg'
-                      : 'bg-white dark:bg-slate-800 hover:shadow-md border border-slate-200 dark:border-slate-700'
+                      : 'bg-white dark:bg-[var(--paper-deep)] hover:shadow-md border border-black/10 dark:border-white/10'
                   }`}
                   style={{
                     backgroundColor: selectedTag === tag.id ? tag.color : undefined,
@@ -77,7 +77,7 @@ export default function TagsPage({ onPostClick }: TagsPageProps) {
                     <span className={`text-xs px-1.5 py-0.5 rounded-full ${
                       selectedTag === tag.id 
                         ? 'bg-white/20' 
-                        : 'bg-slate-100 dark:bg-slate-700'
+                        : 'bg-[var(--paper-deep)] dark:bg-[#292e29]'
                     }`}>
                       {tagPostCount}
                     </span>
@@ -107,7 +107,7 @@ export default function TagsPage({ onPostClick }: TagsPageProps) {
                 <h2 className="text-xl font-bold" style={{ color: selectedTagInfo.color }}>
                   {selectedTagInfo.name}
                 </h2>
-                <p className="text-slate-600 dark:text-slate-400">
+                <p className="text-ink-soft dark:text-ink-muted">
                   共 {filteredPosts.length} 篇文章
                 </p>
               </div>
@@ -135,10 +135,10 @@ export default function TagsPage({ onPostClick }: TagsPageProps) {
           ) : (
             <div className="text-center py-16">
               <div className="text-6xl mb-4">📭</div>
-              <h3 className="text-xl font-medium text-slate-900 dark:text-white mb-2">
+              <h3 className="text-xl font-medium text-ink dark:text-white mb-2">
                 该标签下暂无文章
               </h3>
-              <p className="text-slate-500 dark:text-slate-400">
+              <p className="text-ink-muted dark:text-ink-muted">
                 选择其他标签查看更多内容
               </p>
             </div>
@@ -163,13 +163,13 @@ export default function TagsPage({ onPostClick }: TagsPageProps) {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.1 * index }}
-              className="p-6 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 text-center"
+              className="p-6 bg-white dark:bg-[var(--paper-deep)] rounded-2xl border border-black/10 dark:border-white/10 text-center"
             >
-              <stat.icon className="w-6 h-6 text-violet-500 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">
+              <stat.icon className="w-6 h-6 text-cinnabar mx-auto mb-2" />
+              <div className="text-2xl font-bold text-ink dark:text-white">
                 {stat.value}
               </div>
-              <div className="text-sm text-slate-500 dark:text-slate-400">
+              <div className="text-sm text-ink-muted dark:text-ink-muted">
                 {stat.label}
               </div>
             </motion.div>

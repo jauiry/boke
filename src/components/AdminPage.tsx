@@ -13,7 +13,7 @@ const STORAGE_KEY = 'blog_admin_secret';
 
 // 轻量 Markdown 预览（复用 PostDetail 渲染逻辑的核心部分）
 function renderPreview(content: string): React.ReactNode[] {
-  if (!content) return [<p key="placeholder" className="text-slate-400 italic">预览区域，开始输入内容...</p>];
+  if (!content) return [<p key="placeholder" className="text-ink-muted italic">预览区域，开始输入内容...</p>];
 
   const lines = content.split('\n');
   const elements: React.ReactNode[] = [];
@@ -26,7 +26,7 @@ function renderPreview(content: string): React.ReactNode[] {
     if (trimmed.startsWith('```')) {
       if (inCodeBlock) {
         elements.push(
-          <pre key={`preview-code-${i}`} className="bg-slate-800 text-slate-100 rounded-lg p-3 my-2 text-sm overflow-x-auto">
+          <pre key={`preview-code-${i}`} className="bg-[var(--paper-deep)] text-[var(--paper)] rounded-lg p-3 my-2 text-sm overflow-x-auto">
             <code>{codeLines.join('\n')}</code>
           </pre>
         );
@@ -44,34 +44,34 @@ function renderPreview(content: string): React.ReactNode[] {
     }
 
     if (trimmed.startsWith('## ')) {
-      elements.push(<h2 key={i} className="text-xl font-bold text-slate-900 mt-4 mb-2">{trimmed.replace('## ', '')}</h2>);
+      elements.push(<h2 key={i} className="text-xl font-bold text-ink mt-4 mb-2">{trimmed.replace('## ', '')}</h2>);
     } else if (trimmed.startsWith('### ')) {
-      elements.push(<h3 key={i} className="text-lg font-semibold text-slate-900 mt-3 mb-1">{trimmed.replace('### ', '')}</h3>);
+      elements.push(<h3 key={i} className="text-lg font-semibold text-ink mt-3 mb-1">{trimmed.replace('### ', '')}</h3>);
     } else if (trimmed.startsWith('# ')) {
-      elements.push(<h1 key={i} className="text-2xl font-bold text-slate-900 mt-6 mb-3">{trimmed.replace('# ', '')}</h1>);
+      elements.push(<h1 key={i} className="text-2xl font-bold text-ink mt-6 mb-3">{trimmed.replace('# ', '')}</h1>);
     } else if (trimmed.startsWith('- ')) {
-      elements.push(<li key={i} className="text-slate-700 ml-4 mb-1 list-disc">{trimmed.replace('- ', '')}</li>);
+      elements.push(<li key={i} className="text-ink-soft ml-4 mb-1 list-disc">{trimmed.replace('- ', '')}</li>);
     } else if (/^\d+\.\s/.test(trimmed)) {
-      elements.push(<li key={i} className="text-slate-700 ml-4 mb-1 list-decimal">{trimmed.replace(/^\d+\.\s/, '')}</li>);
+      elements.push(<li key={i} className="text-ink-soft ml-4 mb-1 list-decimal">{trimmed.replace(/^\d+\.\s/, '')}</li>);
     } else if (trimmed.startsWith('> ')) {
-      elements.push(<blockquote key={i} className="border-l-3 border-violet-400 pl-3 py-1 my-2 bg-slate-50 italic text-slate-600">{trimmed.replace('> ', '')}</blockquote>);
+      elements.push(<blockquote key={i} className="border-l-3 border-[var(--cinnabar)]/55 pl-3 py-1 my-2 bg-[var(--paper)] italic text-ink-soft">{trimmed.replace('> ', '')}</blockquote>);
     } else if (trimmed.startsWith('---')) {
-      elements.push(<hr key={i} className="my-4 border-slate-200" />);
+      elements.push(<hr key={i} className="my-4 border-black/10" />);
     } else if (trimmed === '') {
       elements.push(<div key={i} className="h-3" />);
     } else {
       const html = trimmed
         .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
         .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        .replace(/`(.+?)`/g, '<code class="bg-slate-100 px-1 rounded text-violet-600 text-sm">$1</code>')
-        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-violet-600 underline" target="_blank">$1</a>');
-      elements.push(<p key={i} className="text-slate-700 mb-2 leading-relaxed" dangerouslySetInnerHTML={{ __html: html }} />);
+        .replace(/`(.+?)`/g, '<code class="bg-[var(--paper-deep)] px-1 rounded text-cinnabar text-sm">$1</code>')
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-cinnabar underline" target="_blank">$1</a>');
+      elements.push(<p key={i} className="text-ink-soft mb-2 leading-relaxed" dangerouslySetInnerHTML={{ __html: html }} />);
     }
   }
 
   if (inCodeBlock && codeLines.length > 0) {
     elements.push(
-      <pre key="preview-code-end" className="bg-slate-800 text-slate-100 rounded-lg p-3 my-2 text-sm overflow-x-auto">
+      <pre key="preview-code-end" className="bg-[var(--paper-deep)] text-[var(--paper)] rounded-lg p-3 my-2 text-sm overflow-x-auto">
         <code>{codeLines.join('\n')}</code>
       </pre>
     );
@@ -269,19 +269,19 @@ export default function AdminPage({ onBack }: AdminPageProps) {
   // 未认证 — 显示登录
   if (!authenticated) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-24 pb-16">
+      <div className="ink-page min-h-[100dvh] pb-16 pt-24">
         <div className="max-w-md mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg border border-slate-200 dark:border-slate-700"
+            className="bg-white dark:bg-[var(--paper-deep)] rounded-2xl p-8 shadow-lg border border-black/10 dark:border-white/10"
           >
             <div className="text-center mb-6">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#59615a] to-[#a83f32] flex items-center justify-center mx-auto mb-4">
                 <Lock className="w-8 h-8 text-white" />
               </div>
-              <h1 className="text-xl font-bold text-slate-900 dark:text-white">管理后台</h1>
-              <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">输入密码以继续</p>
+              <h1 className="text-xl font-bold text-ink dark:text-white">管理后台</h1>
+              <p className="text-ink-muted dark:text-ink-muted text-sm mt-1">输入密码以继续</p>
             </div>
 
             <input
@@ -290,7 +290,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
               onChange={(e) => { setSecret(e.target.value); setAuthError(''); }}
               onKeyDown={(e) => e.key === 'Enter' && handleAuth()}
               placeholder="输入发布密码"
-              className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 mb-3"
+              className="w-full px-4 py-3 rounded-xl border border-black/10 dark:border-white/15 bg-[var(--paper)] dark:bg-[#292e29] text-ink dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[var(--cinnabar)] mb-3"
               autoFocus
             />
 
@@ -300,7 +300,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
 
             <Button
               onClick={handleAuth}
-              className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white"
+              className="w-full bg-gradient-to-r from-[#363d37] to-[#8f342a] hover:from-[#202521] hover:to-[#782c24] text-white"
             >
               进入后台
             </Button>
@@ -312,7 +312,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
 
   // 已认证 — 编辑器
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-24 pb-16">
+    <div className="ink-page min-h-[100dvh] pb-16 pt-24">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 顶部栏 */}
         <div className="flex items-center justify-between mb-6">
@@ -320,11 +320,11 @@ export default function AdminPage({ onBack }: AdminPageProps) {
             <Button variant="ghost" size="icon" onClick={onBack}>
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+            <h1 className="text-xl font-bold text-ink dark:text-white">
               {editingSlug ? '编辑文章' : '发布新文章'}
             </h1>
             {editingSlug && (
-              <button onClick={resetForm} className="text-sm text-violet-600 hover:underline">取消编辑</button>
+              <button onClick={resetForm} className="text-sm text-cinnabar hover:underline">取消编辑</button>
             )}
           </div>
           <div className="flex items-center gap-3">
@@ -332,7 +332,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
               variant="outline"
               size="sm"
               onClick={() => setShowPreview(!showPreview)}
-              className={showPreview ? 'bg-violet-50 border-violet-300 text-violet-700' : ''}
+              className={showPreview ? 'bg-[color-mix(in_srgb,var(--cinnabar)_7%,var(--paper))] border-[var(--cinnabar)]/35 text-cinnabar' : ''}
             >
               <Eye className="w-4 h-4 mr-1" />
               {showPreview ? '编辑' : '预览'}
@@ -341,7 +341,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
               size="sm"
               onClick={handlePublish}
               disabled={publishing}
-              className="bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white"
+              className="bg-gradient-to-r from-[#363d37] to-[#8f342a] hover:from-[#202521] hover:to-[#782c24] text-white"
             >
               {publishing ? (
                 <><Sparkles className="w-4 h-4 mr-1 animate-spin" /> {editingSlug ? '更新中...' : '发布中...'}</>
@@ -374,13 +374,13 @@ export default function AdminPage({ onBack }: AdminPageProps) {
         </AnimatePresence>
 
         {/* Tab Bar */}
-        <div className="flex gap-1 mb-6 bg-white dark:bg-slate-800 rounded-xl p-1 border border-slate-200 dark:border-slate-700 w-fit">
+        <div className="flex gap-1 mb-6 bg-white dark:bg-[var(--paper-deep)] rounded-xl p-1 border border-black/10 dark:border-white/10 w-fit">
           <button
             onClick={() => { setTab('new'); }}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               tab === 'new'
-                ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400'
-                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                ? 'bg-[color-mix(in_srgb,var(--cinnabar)_12%,var(--paper))] dark:bg-[color-mix(in_srgb,var(--cinnabar)_16%,var(--paper))] text-cinnabar dark:text-cinnabar'
+                : 'text-ink-muted hover:text-ink-soft dark:hover:text-ink-soft'
             }`}
           >
             <Plus className="w-4 h-4" /> 新建
@@ -389,8 +389,8 @@ export default function AdminPage({ onBack }: AdminPageProps) {
             onClick={() => { setTab('manage'); fetchPosts(); }}
             className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               tab === 'manage'
-                ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400'
-                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                ? 'bg-[color-mix(in_srgb,var(--cinnabar)_12%,var(--paper))] dark:bg-[color-mix(in_srgb,var(--cinnabar)_16%,var(--paper))] text-cinnabar dark:text-cinnabar'
+                : 'text-ink-muted hover:text-ink-soft dark:hover:text-ink-soft'
             }`}
           >
             <FileText className="w-4 h-4" /> 管理 ({posts.length})
@@ -401,9 +401,9 @@ export default function AdminPage({ onBack }: AdminPageProps) {
         {tab === 'manage' && (
           <div className="mb-8">
             {loadingPosts ? (
-              <div className="text-center py-12 text-slate-400">加载中...</div>
+              <div className="text-center py-12 text-ink-muted">加载中...</div>
             ) : posts.length === 0 ? (
-              <div className="text-center py-12 text-slate-400">
+              <div className="text-center py-12 text-ink-muted">
                 <FileText className="w-12 h-12 mx-auto mb-3 opacity-50" />
                 <p>暂无文章</p>
               </div>
@@ -412,13 +412,13 @@ export default function AdminPage({ onBack }: AdminPageProps) {
                 {posts.map((post) => (
                   <div
                     key={post.id}
-                    className="flex items-center justify-between p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-violet-200 dark:hover:border-violet-800 transition-colors"
+                    className="flex items-center justify-between p-4 bg-white dark:bg-[var(--paper-deep)] rounded-xl border border-black/10 dark:border-white/10 hover:border-black/10 dark:hover:border-[var(--cinnabar)]/35 transition-colors"
                   >
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-slate-900 dark:text-white truncate">
+                      <h3 className="font-medium text-ink dark:text-white truncate">
                         {post.title}
                       </h3>
-                      <p className="text-sm text-slate-500 truncate mt-0.5">
+                      <p className="text-sm text-ink-muted truncate mt-0.5">
                         {post.slug} · {post.createdAt?.slice(0, 10)} · {post.readTime}分钟
                       </p>
                     </div>
@@ -427,7 +427,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleEdit(post)}
-                        className="text-slate-500 hover:text-violet-600"
+                        className="text-ink-muted hover:text-cinnabar"
                       >
                         <Edit3 className="w-4 h-4" />
                       </Button>
@@ -440,7 +440,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
                           }
                         }}
                         disabled={deletingSlug === post.slug}
-                        className="text-slate-500 hover:text-red-600"
+                        className="text-ink-muted hover:text-red-600"
                       >
                         {deletingSlug === post.slug ? (
                           <Sparkles className="w-4 h-4 animate-spin" />
@@ -461,13 +461,13 @@ export default function AdminPage({ onBack }: AdminPageProps) {
           {/* 编辑面板 */}
           <div className="space-y-4">
             {/* 元数据 */}
-            <div className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-slate-200 dark:border-slate-700 space-y-4">
+            <div className="bg-white dark:bg-[var(--paper-deep)] rounded-xl p-5 border border-black/10 dark:border-white/10 space-y-4">
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="文章标题"
-                className="w-full text-lg font-semibold bg-transparent text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none"
+                className="w-full bg-transparent text-lg font-semibold text-ink placeholder:text-ink-muted focus:outline-none"
               />
 
               <div className="flex flex-wrap items-center gap-3">
@@ -475,7 +475,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
                 <select
                   value={categoryId}
                   onChange={(e) => setCategoryId(e.target.value)}
-                  className="text-sm rounded-lg border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 px-3 py-1.5 text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-violet-500"
+                  className="text-sm rounded-lg border border-black/10 dark:border-white/15 bg-[var(--paper)] dark:bg-[#292e29] px-3 py-1.5 text-ink-soft dark:text-ink-soft focus:outline-none focus:ring-2 focus:ring-[var(--cinnabar)]"
                 >
                   {categories.map((c) => (
                     <option key={c.id} value={c.id}>{c.name}</option>
@@ -490,7 +490,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
                     className={`text-xs px-2.5 py-1 rounded-full transition-colors ${
                       selectedTags.includes(tag.id)
                         ? 'text-white'
-                        : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                        : 'bg-[var(--paper-deep)] dark:bg-[#292e29] text-ink-soft dark:text-ink-muted hover:bg-[color-mix(in_srgb,var(--ink)_10%,var(--paper))]'
                     }`}
                     style={selectedTags.includes(tag.id) ? { backgroundColor: tag.color } : {}}
                   >
@@ -498,12 +498,12 @@ export default function AdminPage({ onBack }: AdminPageProps) {
                   </button>
                 ))}
 
-                <label className="flex items-center gap-1.5 text-sm text-slate-600 dark:text-slate-400 cursor-pointer">
+                <label className="flex items-center gap-1.5 text-sm text-ink-soft dark:text-ink-muted cursor-pointer">
                   <input
                     type="checkbox"
                     checked={featured}
                     onChange={(e) => setFeatured(e.target.checked)}
-                    className="rounded accent-violet-600"
+                    className="rounded accent-[var(--cinnabar)]"
                   />
                   精选
                 </label>
@@ -511,12 +511,12 @@ export default function AdminPage({ onBack }: AdminPageProps) {
             </div>
 
             {/* Markdown 工具栏 */}
-            <div className="flex flex-wrap gap-1 p-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div className="flex flex-wrap gap-1 p-2 bg-white dark:bg-[var(--paper-deep)] rounded-xl border border-black/10 dark:border-white/10">
               {tools.map((tool) => (
                 <button
                   key={tool.label}
                   onClick={() => insertAtCursor(tool.insert)}
-                  className="p-2 rounded-lg text-slate-500 hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors"
+                  className="p-2 rounded-lg text-ink-muted hover:text-cinnabar hover:bg-[color-mix(in_srgb,var(--cinnabar)_7%,var(--paper))] dark:hover:bg-[color-mix(in_srgb,var(--cinnabar)_18%,var(--paper))]/20 transition-colors"
                   title={tool.label}
                 >
                   <tool.icon className="w-4 h-4" />
@@ -526,7 +526,7 @@ export default function AdminPage({ onBack }: AdminPageProps) {
 
             {/* 编辑器 / 预览 */}
             {showPreview ? (
-              <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 min-h-[400px] prose prose-slate max-w-none">
+              <div className="prose min-h-[400px] max-w-none border border-black/10 bg-[var(--paper)] p-6 dark:border-white/10 dark:prose-invert">
                 {renderPreview(content)}
               </div>
             ) : (
@@ -535,18 +535,18 @@ export default function AdminPage({ onBack }: AdminPageProps) {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="开始写 Markdown 内容...&#10;&#10;## 标题&#10;正文内容...&#10;&#10;```js&#10;console.log('代码块')&#10;```"
-                className="w-full min-h-[400px] p-5 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm font-mono leading-relaxed resize-y focus:outline-none focus:ring-2 focus:ring-violet-500 placeholder-slate-400"
+                className="min-h-[400px] w-full resize-y border border-black/10 bg-[var(--paper)] p-5 font-mono text-sm leading-relaxed text-ink placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-[var(--cinnabar)] dark:border-white/10"
               />
             )}
           </div>
 
           {/* 实时预览面板（桌面端常显） */}
           <div className="hidden lg:block">
-            <div className="sticky top-24 bg-white dark:bg-slate-800 rounded-xl p-6 border border-slate-200 dark:border-slate-700 min-h-[500px] max-h-[calc(100vh-8rem)] overflow-y-auto">
-              <h3 className="text-sm font-medium text-slate-400 mb-4 flex items-center gap-2">
+            <div className="sticky top-24 bg-white dark:bg-[var(--paper-deep)] rounded-xl p-6 border border-black/10 dark:border-white/10 min-h-[500px] max-h-[calc(100vh-8rem)] overflow-y-auto">
+              <h3 className="text-sm font-medium text-ink-muted mb-4 flex items-center gap-2">
                 <Eye className="w-4 h-4" /> 实时预览
               </h3>
-              <div className="prose prose-slate max-w-none">
+              <div className="prose max-w-none dark:prose-invert">
                 {renderPreview(content)}
               </div>
             </div>

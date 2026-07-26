@@ -162,14 +162,6 @@ html {
   animation: float 3s ease-in-out infinite;
 }
 
-/* Gradient Text */
-.gradient-text {
-  background: linear-gradient(135deg, #8b5cf6 0%, #d946ef 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
 /* Glass Effect */
 .glass {
   background: rgba(255, 255, 255, 0.1);
@@ -181,7 +173,7 @@ html {
 .focus-ring:focus-visible {
   outline: none;
   --tw-ring-offset-width: 2px;
-  --tw-ring-color: rgb(139 92 246);
+  --tw-ring-color: var(--cinnabar);
   box-shadow: 0 0 0 2px var(--tw-ring-color);
 }
 
