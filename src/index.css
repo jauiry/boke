@@ -308,6 +308,8 @@ html {
 .scroll-disciplines b { color: var(--cinnabar); font-weight: 500; }
 .scroll-side-verse { position: absolute; z-index: 3; left: clamp(.8rem, 3vw, 3rem); top: 21%; display: flex; width: 3.1rem; flex-direction: column; align-items: center; gap: .7rem; border: 1px solid rgba(255,255,255,.75); background: rgba(246,241,228,.44); padding: 1.1rem .8rem; color: var(--ink-soft); font-size: .72rem; line-height: 1.75; letter-spacing: .22em; writing-mode: vertical-rl; backdrop-filter: blur(8px); clip-path: polygon(12% 0,88% 0,100% 7%,100% 93%,88% 100%,12% 100%,0 93%,0 7%); }
 .scroll-side-verse span, .scroll-side-verse i { color: var(--cinnabar); font-style: normal; }
+.scroll-motion-toggle { position: absolute; z-index: 20; right: clamp(1rem,3vw,3rem); bottom: 2rem; display: inline-flex; align-items: center; gap: .45rem; border: 1px solid rgba(255,255,255,.75); background: color-mix(in srgb, var(--paper) 62%, transparent); padding: .55rem .75rem; color: var(--ink-soft); font-size: .68rem; letter-spacing: .12em; backdrop-filter: blur(8px); }
+.scroll-motion-toggle:hover { color: var(--cinnabar); }
 .scroll-cloud { position: absolute; pointer-events: none; border-radius: 50%; filter: blur(22px); opacity: .44; }
 .scroll-cloud-one { left: 14%; bottom: 19%; width: 36%; height: 12%; background: rgba(255,255,255,.76); }
 .scroll-cloud-two { right: 9%; bottom: 27%; width: 31%; height: 11%; background: rgba(255,255,255,.68); }
@@ -328,6 +330,7 @@ html {
 
 @media (max-width: 767px) {
   .scroll-side-verse { display: none; }
+  .scroll-motion-toggle { right: .75rem; bottom: .75rem; }
   .scroll-title { font-size: clamp(3.2rem, 14vw, 5.2rem); line-height: 1.08; white-space: normal; }
   .scroll-sun { right: 10%; top: 16%; opacity: .58; }
   .scroll-disciplines { margin-top: 3rem; gap: .45rem; }

@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowDown, BookOpen, Github, ScrollText } from 'lucide-react';
+import { ArrowDown, BookOpen, Github, Pause, Play, ScrollText } from 'lucide-react';
 import InkParticleLandscape from './InkParticleLandscape';
 
 interface HeroProps { onExplore: () => void; }
@@ -7,6 +8,14 @@ interface HeroProps { onExplore: () => void; }
 const disciplines = ['测试基础', '自动化测试', '性能测试', '质量保障', '工具与框架', '随笔杂谈'];
 
 export default function Hero({ onExplore }: HeroProps) {
+  const [motionOn, setMotionOn] = useState(() => localStorage.getItem('ink-motion') !== 'off');
+  const toggleMotion = () => {
+    const next = !motionOn;
+    setMotionOn(next);
+    localStorage.setItem('ink-motion', next ? 'on' : 'off');
+    window.dispatchEvent(new CustomEvent('ink-motion-toggle', { detail: next }));
+  };
+
   return (
     <section className="scroll-hero relative min-h-[100dvh] overflow-hidden pt-20" aria-labelledby="hero-title">
       <div className="paper-noise absolute inset-0" aria-hidden="true" />
@@ -15,6 +24,9 @@ export default function Hero({ onExplore }: HeroProps) {
       <div className="absolute inset-0" aria-hidden="true"><InkParticleLandscape /></div>
       <div className="scroll-sun" aria-hidden="true" />
       <div className="scroll-side-verse" aria-hidden="true"><span>○</span>行到水穷处，坐看云起时。<i>嘉明</i></div>
+      <button type="button" onClick={toggleMotion} className="scroll-motion-toggle" aria-label={motionOn ? '暂停粒子动效' : '播放粒子动效'}>
+        {motionOn ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}{motionOn ? '动效中' : '已暂停'}
+      </button>
 
       <div className="relative z-10 mx-auto flex min-h-[calc(100dvh-5rem)] max-w-[1500px] flex-col justify-center px-5 pb-8 pt-8 sm:px-8 lg:px-16">
         <div className="mx-auto mt-4 max-w-5xl text-center">
