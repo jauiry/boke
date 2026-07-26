@@ -27,7 +27,9 @@ test.describe('博客冒烟测试', () => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     // 打开搜索
-    await page.getByTestId('open-search').click();
+    await page.evaluate(() => {
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', ctrlKey: true, bubbles: true }));
+    });
 
     // 等待搜索框出现
     const searchInput = page.getByRole('textbox', { name: '搜索文章标题或内容' });
