@@ -19,19 +19,12 @@ const navItems = [
 ];
 
 export default function Navbar({ currentView, onViewChange, onPostClick }: NavbarProps) {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem('theme');
     return saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
-
-  useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 24);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);
@@ -60,9 +53,7 @@ export default function Navbar({ currentView, onViewChange, onPostClick }: Navba
         initial={{ y: -80 }}
         animate={{ y: 0 }}
         aria-label="主导航"
-        className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
-          isScrolled ? 'border-b border-black/10 bg-[#f3f0e8]/88 shadow-[0_10px_40px_rgba(32,37,33,0.06)] backdrop-blur-xl dark:border-white/10 dark:bg-[#171a18]/88' : 'bg-transparent'
-        }`}
+        className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-[#f3f0e8]/82 shadow-[0_10px_40px_rgba(32,37,33,0.04)] backdrop-blur-xl dark:border-white/5 dark:bg-[#171a18]/82"
       >
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
           <button onClick={() => selectView('home')} className="group flex items-center gap-3" aria-label="返回首页">
@@ -71,7 +62,7 @@ export default function Navbar({ currentView, onViewChange, onPostClick }: Navba
             </span>
             <span className="text-left">
               <span className="block font-serif-cn text-base font-semibold tracking-[0.2em] text-ink">嘉明手札</span>
-              <span className="mt-0.5 block text-[9px] uppercase tracking-[0.32em] text-ink-muted">Jiaming Notes</span>
+              <span className="mt-0.5 block text-[11px] tracking-[0.18em] text-ink-muted">JIAMING NOTES</span>
             </span>
           </button>
 
@@ -81,7 +72,7 @@ export default function Navbar({ currentView, onViewChange, onPostClick }: Navba
                 <span className={`block text-sm tracking-[0.18em] transition-colors ${currentView === item.id ? 'text-cinnabar' : 'text-ink-soft group-hover:text-ink'}`}>
                   {item.label}
                 </span>
-                <span className="mt-0.5 block text-[8px] tracking-[0.24em] text-ink-muted">{item.eyebrow}</span>
+                <span className="mt-0.5 block text-[11px] tracking-[0.16em] text-ink-muted">{item.eyebrow}</span>
                 {currentView === item.id && (
                   <motion.span layoutId="nav-ink" className="absolute -bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-cinnabar" />
                 )}
@@ -90,14 +81,14 @@ export default function Navbar({ currentView, onViewChange, onPostClick }: Navba
           </div>
 
           <div className="flex items-center gap-1">
-            <button onClick={() => setIsSearchOpen(true)} className="grid h-10 w-10 place-items-center text-ink-soft hover:text-cinnabar" aria-label="搜索文章">
+            <button onClick={() => setIsSearchOpen(true)} className="grid h-11 w-11 place-items-center text-ink-soft hover:text-cinnabar" aria-label="搜索文章">
               <Search className="h-[18px] w-[18px]" />
             </button>
-            <button onClick={() => setIsDark((value) => !value)} className="hidden h-10 w-10 place-items-center text-ink-soft hover:text-cinnabar sm:grid" aria-label={isDark ? '切换浅色主题' : '切换深色主题'}>
+            <button onClick={() => setIsDark((value) => !value)} className="hidden h-11 w-11 place-items-center text-ink-soft hover:text-cinnabar sm:grid" aria-label={isDark ? '切换浅色主题' : '切换深色主题'}>
               {isDark ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
             </button>
             <span className="mx-2 hidden h-5 w-px bg-black/10 sm:block dark:bg-white/10" />
-            <button onClick={() => setIsMobileMenuOpen((value) => !value)} className="grid h-10 w-10 place-items-center text-ink md:hidden" aria-label={isMobileMenuOpen ? '关闭菜单' : '打开菜单'}>
+            <button onClick={() => setIsMobileMenuOpen((value) => !value)} className="grid h-11 w-11 place-items-center text-ink md:hidden" aria-label={isMobileMenuOpen ? '关闭菜单' : '打开菜单'}>
               {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
@@ -116,7 +107,7 @@ export default function Navbar({ currentView, onViewChange, onPostClick }: Navba
               {navItems.map((item) => (
                 <button key={item.id} onClick={() => selectView(item.id)} className={`border p-4 text-left ${currentView === item.id ? 'border-[var(--cinnabar)] text-cinnabar' : 'border-black/10 text-ink-soft dark:border-white/10'}`}>
                   <span className="block text-base tracking-[0.18em]">{item.label}</span>
-                  <span className="mt-1 block text-[9px] tracking-[0.25em] text-ink-muted">{item.eyebrow}</span>
+                  <span className="mt-1 block text-xs tracking-[0.16em] text-ink-muted">{item.eyebrow}</span>
                 </button>
               ))}
             </div>

@@ -288,6 +288,14 @@ html {
   border: 1px solid color-mix(in srgb, var(--ink) 6%, transparent);
 }
 
+.ink-cover {
+  filter: saturate(0.34) sepia(0.22) contrast(0.96) brightness(0.92);
+}
+
+.ink-card:hover .ink-cover {
+  filter: saturate(0.46) sepia(0.16) contrast(1) brightness(0.96);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     scroll-behavior: auto !important;

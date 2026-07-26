@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import type { Post } from '@/types/blog';
 import type { PostListItem } from '@/types/api';
 import { useState, useEffect } from 'react';
+import type { MouseEvent } from 'react';
 
 interface PostCardProps {
   post: Post | PostListItem;
@@ -71,6 +72,12 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
   const isCompact = variant === 'compact';
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
 
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    event.preventDefault();
+    onClick();
+  };
+
   useEffect(() => {
     let isMounted = true;
 
@@ -90,12 +97,13 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
 
   if (isCompact) {
     return (
-      <motion.article
+      <motion.a
+        href={`/${post.slug}`}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: index * 0.1 }}
-        onClick={onClick}
-        className="ink-card group cursor-pointer p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--cinnabar)]"
+        onClick={handleClick}
+        className="ink-card group p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-[var(--cinnabar)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--cinnabar)]"
       >
         <div className="flex items-start space-x-4">
           <div className="flex-1 min-w-0">
@@ -105,7 +113,7 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
             <p className="text-sm text-ink-muted mt-1 line-clamp-1">
               {post.excerpt}
             </p>
-            <div className="flex items-center space-x-4 mt-2 text-xs text-slate-400">
+            <div className="mt-2 flex items-center space-x-4 text-xs text-ink-muted">
               <span className="flex items-center space-x-1">
                 <Calendar className="w-3 h-3" />
                 <span>{formatDate(post.createdAt)}</span>
@@ -117,17 +125,18 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
             </div>
           </div>
         </div>
-      </motion.article>
+      </motion.a>
     );
   }
 
   return (
-    <motion.article
+    <motion.a
+      href={`/${post.slug}`}
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      onClick={onClick}
-      className={`ink-card group cursor-pointer overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:border-[var(--cinnabar)] ${
+      onClick={handleClick}
+      className={`ink-card group overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:border-[var(--cinnabar)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--cinnabar)] ${
         isFeatured ? 'md:col-span-2 md:grid md:grid-cols-2' : ''
       }`}
     >
@@ -139,7 +148,7 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
             alt={post.title}
             loading="lazy"
             decoding="async"
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            className="ink-cover h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             onError={(e) => {
               (e.target as HTMLImageElement).style.display = 'none';
               const parent = (e.target as HTMLImageElement).parentElement;
@@ -165,7 +174,7 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
         {/* Category Badge */}
         {isFullPost(post) && post.category && (
           <div className="absolute bottom-4 left-4">
-            <Badge variant="secondary" className="bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-300 backdrop-blur-sm">
+            <Badge variant="secondary" className="rounded-none border border-black/10 bg-[var(--paper)]/90 text-ink-soft backdrop-blur-sm dark:border-white/10">
               {post.category.name}
             </Badge>
           </div>
@@ -215,8 +224,8 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
         </div>
 
         {/* Meta */}
-        <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700">
-          <div className="flex items-center space-x-4 text-sm text-slate-500 dark:text-slate-400">
+        <div className="flex items-center justify-between border-t border-black/10 pt-4 dark:border-white/10">
+          <div className="flex items-center space-x-4 text-sm text-ink-muted">
             <span className="flex items-center space-x-1">
               <Calendar className="w-4 h-4" />
               <span>{formatDate(post.createdAt)}</span>
@@ -227,7 +236,7 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
             </span>
           </div>
 
-          <div className="flex items-center space-x-3 text-sm text-slate-500 dark:text-slate-400">
+          <div className="flex items-center space-x-3 text-sm text-ink-muted">
             {isFullPost(post) && post.views > 0 && (
               <span className="flex items-center space-x-1">
                 <Eye className="w-4 h-4" />
@@ -249,6 +258,6 @@ export default function PostCard({ post, index = 0, onClick, variant = 'default'
           <ArrowRight className="w-4 h-4 ml-1" />
         </div>
       </div>
-    </motion.article>
+    </motion.a>
   );
 }

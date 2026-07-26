@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import type { MouseEvent } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -35,11 +36,13 @@ function BentoCard({
   size,
   index,
   onClick,
+  isPair,
 }: {
   post: PostListItem;
   size: 'large' | 'tall' | 'wide';
   index: number;
   onClick: () => void;
+  isPair: boolean;
 }) {
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
 
@@ -57,18 +60,25 @@ function BentoCard({
 
   const isLarge = size === 'large';
 
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    event.preventDefault();
+    onClick();
+  };
+
   return (
-    <motion.article
+    <motion.a
+      href={`/${post.slug}`}
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      onClick={onClick}
-      className={`ink-card group cursor-pointer relative overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:border-[var(--cinnabar)] ${sizeClasses[size]} flex flex-col`}
+      onClick={handleClick}
+      className={`ink-card group relative flex flex-col overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:border-[var(--cinnabar)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--cinnabar)] ${isPair ? '' : sizeClasses[size]}`}
     >
       {/* Cover */}
       <div className={`relative overflow-hidden ${isLarge ? 'h-64 md:h-80' : 'h-40 md:h-48'} shrink-0`}>
         {coverUrl ? (
-          <img src={coverUrl} alt={post.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          <img src={coverUrl} alt={post.title} loading="lazy" className="ink-cover w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
         ) : (
           <div className="w-full h-full bg-[radial-gradient(circle_at_65%_28%,rgba(168,63,50,.42),transparent_18%),linear-gradient(145deg,#d8d2c5,#59615a)]" />
         )}
@@ -100,7 +110,7 @@ function BentoCard({
           </span>
         </div>
       </div>
-    </motion.article>
+    </motion.a>
   );
 }
 
@@ -116,6 +126,7 @@ export default function FeaturedGrid({ onPostClick }: FeaturedGridProps) {
 
   // Assign sizes based on position
   const sizes: ('large' | 'tall' | 'wide')[] = ['large', 'tall', 'wide', 'tall'];
+  const isPair = displayPosts.length === 2;
 
   return (
     <div className="relative mb-20">
@@ -137,7 +148,7 @@ export default function FeaturedGrid({ onPostClick }: FeaturedGridProps) {
         </motion.p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[minmax(200px,auto)]">
+      <div className={`grid grid-cols-1 gap-4 ${isPair ? 'md:grid-cols-[minmax(0,1.55fr)_minmax(260px,.75fr)] md:items-end' : 'md:grid-cols-3 lg:grid-cols-4 auto-rows-[minmax(200px,auto)]'}`}>
         {displayPosts.map((post, i) => (
           <BentoCard
             key={post.id}
@@ -145,6 +156,7 @@ export default function FeaturedGrid({ onPostClick }: FeaturedGridProps) {
             size={sizes[i]}
             index={i}
             onClick={() => onPostClick(post)}
+            isPair={isPair}
           />
         ))}
       </div>

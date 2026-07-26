@@ -61,7 +61,7 @@ export default function Footer({ onViewChange }: FooterProps) {
                 aria-label="访问 GitHub"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-violet-100 dark:hover:bg-violet-900/30 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                className="grid h-11 w-11 place-items-center border border-black/15 text-ink-soft transition-colors hover:border-[var(--cinnabar)] hover:text-cinnabar dark:border-white/15"
               >
                 <Github className="w-5 h-5" />
               </a>
@@ -70,14 +70,14 @@ export default function Footer({ onViewChange }: FooterProps) {
                 aria-label="访问 Twitter"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-violet-100 dark:hover:bg-violet-900/30 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                className="grid h-11 w-11 place-items-center border border-black/15 text-ink-soft transition-colors hover:border-[var(--cinnabar)] hover:text-cinnabar dark:border-white/15"
               >
                 <Twitter className="w-5 h-5" />
               </a>
               <a
                 href={`mailto:${author.social.email}`}
                 aria-label="发送邮件"
-                className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-violet-100 dark:hover:bg-violet-900/30 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                className="grid h-11 w-11 place-items-center border border-black/15 text-ink-soft transition-colors hover:border-[var(--cinnabar)] hover:text-cinnabar dark:border-white/15"
               >
                 <Mail className="w-5 h-5" />
               </a>
@@ -87,7 +87,7 @@ export default function Footer({ onViewChange }: FooterProps) {
           {/* Links */}
           {footerLinks.map((section) => (
             <div key={section.title}>
-              <h3 className="font-semibold text-slate-900 dark:text-white mb-4">
+              <h3 className="mb-4 font-serif-cn font-semibold text-ink">
                 {section.title}
               </h3>
               <ul className="space-y-2">
@@ -98,14 +98,14 @@ export default function Footer({ onViewChange }: FooterProps) {
                         href={link.href}
                         target={link.href.startsWith('http') ? '_blank' : undefined}
                         rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                        className="text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                        className="flex min-h-11 items-center text-ink-soft transition-colors hover:text-cinnabar"
                       >
                         {link.label}
                       </a>
                     ) : (
                       <button
                         onClick={() => onViewChange(link.view!)}
-                        className="text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400 transition-colors"
+                        className="flex min-h-11 items-center text-ink-soft transition-colors hover:text-cinnabar"
                       >
                         {link.label}
                       </button>
@@ -118,23 +118,23 @@ export default function Footer({ onViewChange }: FooterProps) {
         </div>
 
         {/* Divider */}
-        <div className="border-t border-slate-200 dark:border-slate-800 pt-8">
+        <div className="border-t border-black/10 pt-8 dark:border-white/10">
           <div className="flex flex-col md:flex-row items-center justify-between">
-            <p className="text-sm text-slate-500 dark:text-slate-400 flex items-center">
+            <p className="flex items-center text-sm text-ink-muted">
               用心书写
-              <Heart className="w-4 h-4 mx-1 text-red-500 fill-current" />
+              <Heart className="mx-1 h-4 w-4 fill-current text-cinnabar" />
               by {author.name} © {new Date().getFullYear()}
             </p>
             <div className="flex items-center space-x-4 mt-4 md:mt-0">
-              <span className="text-sm text-slate-500 dark:text-slate-400">
-                使用 React + Tailwind CSS 构建
+              <span className="text-sm text-ink-muted">
+                持续记录，保持更新
               </span>
               <motion.button
                 onClick={scrollToTop}
                 aria-label="返回页面顶部"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="p-2 rounded-lg bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 hover:bg-violet-200 dark:hover:bg-violet-900/50 transition-colors"
+                className="grid h-11 w-11 place-items-center border border-black/15 text-ink-soft transition-colors hover:border-[var(--cinnabar)] hover:text-cinnabar dark:border-white/15"
               >
                 <ArrowUp className="w-4 h-4" />
               </motion.button>
