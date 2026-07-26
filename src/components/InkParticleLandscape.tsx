@@ -115,6 +115,19 @@ export default function InkParticleLandscape() {
       }
     };
 
+    const addTrail = (x: number, y: number) => {
+      motes.push({
+        x,
+        y,
+        vx: (Math.random() - 0.5) * 0.55,
+        vy: -0.18 - Math.random() * 0.24,
+        r: 0.65 + Math.random() * 1.15,
+        a: 0.22 + Math.random() * 0.2,
+        life: 0.68,
+        tone: 'ink',
+      });
+    };
+
     const drawMotes = () => {
       const intensity = reduced ? 0.45 : 1;
       for (let index = motes.length - 1; index >= 0; index--) {
@@ -192,8 +205,8 @@ export default function InkParticleLandscape() {
       }
       pointer.x = event.clientX - rect.left;
       pointer.y = event.clientY - rect.top;
-      if (motionEnabled && performance.now() - lastTrail > 34) {
-        addBurst(pointer.x, pointer.y, 3);
+      if (motionEnabled && performance.now() - lastTrail > 72) {
+        addTrail(pointer.x, pointer.y);
         lastTrail = performance.now();
       }
     };
