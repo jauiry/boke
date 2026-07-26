@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 type Dot = { x: number; y: number; ox: number; oy: number; r: number; a: number; phase: number; speed: number; tone: 'ink' | 'gold' | 'red' };
+type BirdDot = { flock: number; wing: -1 | 1; t: number; r: number; a: number; phase: number };
 type Ripple = { x: number; y: number; born: number };
 type Mote = { x: number; y: number; vx: number; vy: number; r: number; a: number; life: number; tone: 'ink' | 'gold' | 'red' };
 
@@ -17,6 +18,7 @@ export default function InkParticleLandscape() {
     const ripples: Ripple[] = [];
     let motes: Mote[] = [];
     let dots: Dot[] = [];
+    let birdDots: BirdDot[] = [];
     let width = 1;
     let height = 1;
     let animation = 0;
@@ -57,6 +59,15 @@ export default function InkParticleLandscape() {
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
       const count = Math.min(3600, Math.max(1100, Math.floor(width * 2.45)));
       dots = Array.from({ length: count }, (_, index) => makeMountainDot(index % 2 ? 'left' : 'right'));
+      const birdCount = width < 640 ? 150 : 280;
+      birdDots = Array.from({ length: birdCount }, (_, index) => ({
+        flock: index % 4,
+        wing: index % 2 ? -1 : 1,
+        t: Math.pow(Math.random(), 0.82),
+        r: 0.45 + Math.random() * 1.05,
+        a: 0.35 + Math.random() * 0.58,
+        phase: Math.random() * Math.PI * 2,
+      }));
       motes = Array.from({ length: Math.min(180, Math.max(80, Math.floor(width / 8))) }, (_, index) => ({
         x: Math.random() * width,
         y: height * (0.2 + Math.random() * 0.62),
@@ -148,11 +159,36 @@ export default function InkParticleLandscape() {
       }
     };
 
+    const drawParticleBirds = () => {
+      const flocks = width < 640
+        ? [[0.72, 0.22, 0.075, 0.027], [0.84, 0.29, 0.055, 0.021]]
+        : [[0.66, 0.18, 0.07, 0.026], [0.76, 0.24, 0.055, 0.021], [0.84, 0.18, 0.046, 0.018], [0.88, 0.31, 0.062, 0.024]];
+      context.save();
+      context.globalCompositeOperation = 'multiply';
+      for (const dot of birdDots) {
+        const flock = flocks[dot.flock % flocks.length];
+        const travel = reduced ? 0 : Math.sin(tick * 0.42 + dot.flock * 1.7) * width * 0.012;
+        const flap = reduced ? 0.72 : 0.62 + Math.sin(tick * 7.2 + dot.phase + dot.flock) * 0.28;
+        const rootX = width * flock[0] + travel;
+        const rootY = height * flock[1] + Math.sin(tick * 1.1 + dot.flock) * 3;
+        const spreadX = width * flock[2];
+        const spreadY = height * flock[3];
+        const t = dot.t;
+        const x = rootX + dot.wing * spreadX * t + Math.sin(dot.phase + tick * 1.8) * 1.6;
+        const y = rootY - spreadY * Math.sin(t * Math.PI) * flap + spreadY * t * 0.48;
+        context.fillStyle = `rgba(20,24,21,${dot.a})`;
+        context.beginPath();
+        context.arc(x, y, dot.r, 0, Math.PI * 2);
+        context.fill();
+      }
+      context.restore();
+    };
+
     const draw = (time = 0) => {
       context.clearRect(0, 0, width, height);
       tick += 0.008;
       context.save();
-      context.globalAlpha = 0.14;
+      context.globalAlpha = 0.5;
       drawWash();
       drawInkMass('left');
       drawInkMass('right');
@@ -176,6 +212,8 @@ export default function InkParticleLandscape() {
         context.fill();
       }
       context.restore();
+
+      drawParticleBirds();
 
       drawMotes();
 
