@@ -56,75 +56,20 @@ function App() {
   const [currentView, setCurrentView] = useState<ViewType>(() => resolveLocation().view);
   const [selectedPost, setSelectedPost] = useState<Post | null>(() => resolveLocation().post);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   // Handle view change
   const handleViewChange = (view: string) => {
-    setIsLoading(true);
     setCurrentView(view as ViewType);
     setSelectedPost(null);
     setSearchQuery('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 300);
   };
 
-  // Handle post click - fetch full post from API
-  const handlePostClick = async (postItem: PostListItem) => {
-    setIsLoading(true);
+  // 文章正文随应用发布，直接本地解析，避免重复请求详情接口。
+  const handlePostClick = (postItem: PostListItem) => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    try {
-      // 从 API 获取完整文章
-      const response = await fetch(`/api/posts/${postItem.slug}`);
-      const result = await response.json();
-
-      if (result.success && result.data) {
-        // 转换为 Post 类型
-        const fullPost: Post = {
-          id: result.data.id,
-          title: result.data.title,
-          slug: result.data.slug,
-          excerpt: result.data.excerpt,
-          content: result.data.content,
-          coverImage: result.data.coverImage,
-          author: {
-            id: '1',
-            name: '郏祥瑞',
-            avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop',
-            bio: '软件测试工程师，4年测试经验',
-            social: { github: 'https://github.com/mxqys', twitter: 'https://twitter.com/mxqys', email: '1102684926@qq.com' },
-          },
-          tags: [],
-          category: { id: '1', name: '技术分享', description: '测试技术和经验分享', icon: 'Code' },
-          createdAt: result.data.createdAt,
-          updatedAt: result.data.createdAt,
-          readTime: result.data.readTime,
-          views: 0,
-          likes: 0,
-          comments: [],
-          featured: result.data.featured,
-        };
-        setSelectedPost(fullPost);
-      } else {
-        // API 失败，尝试本地数据
-        const localPost = getPostBySlug(postItem.slug);
-        if (localPost) {
-          setSelectedPost(localPost);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch post:', error);
-      // 降级到本地数据
-      const localPost = getPostBySlug(postItem.slug);
-      if (localPost) {
-        setSelectedPost(localPost);
-      }
-    }
-
-    setIsLoading(false);
+    const localPost = getPostBySlug(postItem.slug);
+    if (localPost) setSelectedPost(localPost);
   };
 
   // Handle search
@@ -173,24 +118,6 @@ function App() {
 
       {/* SEO */}
       <SEO />
-
-      {/* Loading Overlay */}
-      <AnimatePresence>
-        {isLoading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm"
-          >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="w-12 h-12 border-4 border-violet-200 dark:border-violet-800 border-t-violet-600 rounded-full"
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Main Content */}
       <main id="main-content">

@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 
 type Dot = { x: number; y: number; ox: number; oy: number; r: number; a: number; phase: number; speed: number; kind: 'mountain' | 'bird' };
 type Ripple = { x: number; y: number; born: number };
-type Mote = { x: number; y: number; vx: number; vy: number; r: number; a: number; life: number; tone: 'ink' | 'gold' | 'red' };
+type Mote = { x: number; y: number; vx: number; vy: number; r: number; a: number; life: number; transient: boolean; tone: 'ink' | 'gold' | 'red' };
 
 export default function InkParticleLandscape() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -83,6 +83,7 @@ export default function InkParticleLandscape() {
         r: 0.8 + Math.random() * 2.4,
         a: 0.28 + Math.random() * 0.52,
         life: 1,
+        transient: false,
         tone: index % 11 === 0 ? 'red' : index % 3 === 0 ? 'gold' : 'ink',
       }));
     };
@@ -108,14 +109,16 @@ export default function InkParticleLandscape() {
     };
 
     const addBurst = (x: number, y: number, amount: number) => {
-      for (let index = 0; index < amount; index++) {
+      const available = Math.max(0, 220 - motes.length);
+      for (let index = 0; index < Math.min(amount, available); index++) {
         const angle = Math.random() * Math.PI * 2;
         const speed = 0.7 + Math.random() * 3.2;
-        motes.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, r: 0.8 + Math.random() * 2.8, a: 0.45 + Math.random() * 0.5, life: 1, tone: index % 5 === 0 ? 'red' : index % 2 === 0 ? 'gold' : 'ink' });
+        motes.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, r: 0.8 + Math.random() * 2.8, a: 0.45 + Math.random() * 0.5, life: 0.96, transient: true, tone: index % 5 === 0 ? 'red' : index % 2 === 0 ? 'gold' : 'ink' });
       }
     };
 
     const addTrail = (x: number, y: number) => {
+      if (motes.length >= 220) return;
       motes.push({
         x,
         y,
@@ -124,6 +127,7 @@ export default function InkParticleLandscape() {
         r: 0.65 + Math.random() * 1.15,
         a: 0.22 + Math.random() * 0.2,
         life: 0.68,
+        transient: true,
         tone: 'ink',
       });
     };
@@ -135,10 +139,10 @@ export default function InkParticleLandscape() {
         if (motionEnabled) {
           mote.x += (mote.vx + Math.sin(tick * 3 + index) * 0.18) * intensity;
           mote.y += mote.vy * intensity;
-          mote.life -= mote.life < 1 ? 0.012 : 0;
+          if (mote.transient) mote.life -= 0.018;
         }
         if (mote.y < height * 0.12 || mote.x > width + 30 || mote.x < -30 || mote.life <= 0) {
-          if (motes.length > 220) { motes.splice(index, 1); continue; }
+          if (mote.transient) { motes.splice(index, 1); continue; }
           mote.x = Math.random() * width;
           mote.y = height * (0.62 + Math.random() * 0.24);
           mote.life = 1;
@@ -214,7 +218,7 @@ export default function InkParticleLandscape() {
       const rect = canvas.getBoundingClientRect();
       if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) return;
       ripples.push({ x: event.clientX - rect.left, y: event.clientY - rect.top, born: performance.now() });
-      addBurst(event.clientX - rect.left, event.clientY - rect.top, 46);
+      addBurst(event.clientX - rect.left, event.clientY - rect.top, 18);
     };
     const clear = () => { pointer.x = -999; pointer.y = -999; };
     const toggleMotion = (event: Event) => {
