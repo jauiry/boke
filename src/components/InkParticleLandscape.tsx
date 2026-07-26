@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-type Dot = { x: number; y: number; ox: number; oy: number; r: number; a: number; phase: number; speed: number; tone: 'ink' | 'gold' | 'red' };
-type BirdDot = { flock: number; wing: -1 | 1; t: number; r: number; a: number; phase: number };
+type Dot = { x: number; y: number; ox: number; oy: number; r: number; a: number; phase: number; speed: number; kind: 'mountain' | 'bird' };
 type Ripple = { x: number; y: number; born: number };
 type Mote = { x: number; y: number; vx: number; vy: number; r: number; a: number; life: number; tone: 'ink' | 'gold' | 'red' };
 
@@ -18,35 +17,53 @@ export default function InkParticleLandscape() {
     const ripples: Ripple[] = [];
     let motes: Mote[] = [];
     let dots: Dot[] = [];
-    let birdDots: BirdDot[] = [];
     let width = 1;
     let height = 1;
     let animation = 0;
     let tick = 0;
     let lastTrail = 0;
     let motionEnabled = localStorage.getItem('ink-motion') !== 'off';
+    const source = new Image();
+    source.src = '/art/ink-scroll-hero-v1.png';
+    let imageReady = false;
 
-    const ridge = (x: number, side: 'left' | 'right') => {
-      const n = side === 'left' ? x / width : (width - x) / width;
-      const primary = Math.exp(-Math.pow((n - 0.13) * 9, 2)) * 0.28;
-      const secondary = Math.exp(-Math.pow((n - 0.31) * 13, 2)) * 0.16;
-      return height * (0.76 - primary - secondary - Math.sin(n * 28) * 0.022);
-    };
-
-    const makeMountainDot = (side: 'left' | 'right'): Dot => {
-      const spread = Math.pow(Math.random(), 1.55) * width * 0.44;
-      const x = side === 'left' ? spread : width - spread;
-      const yTop = ridge(x, side);
-      const depth = Math.pow(Math.random(), 1.7) * Math.max(16, height * 0.31);
-      const toneRoll = Math.random();
-      return {
-        x, y: yTop + depth, ox: x, oy: yTop + depth,
-        r: 0.35 + Math.random() * 1.7,
-        a: 0.16 + Math.random() * 0.52,
-        phase: Math.random() * Math.PI * 2,
-        speed: 0.65 + Math.random() * 1.5,
-        tone: toneRoll > 0.965 ? 'red' : toneRoll > 0.91 ? 'gold' : 'ink',
-      };
+    const sampleArtwork = () => {
+      if (!imageReady) return;
+      const buffer = document.createElement('canvas');
+      buffer.width = Math.max(1, Math.round(width));
+      buffer.height = Math.max(1, Math.round(height));
+      const bufferContext = buffer.getContext('2d', { willReadFrequently: true });
+      if (!bufferContext) return;
+      const scale = Math.max(width / source.naturalWidth, height / source.naturalHeight);
+      const drawWidth = source.naturalWidth * scale;
+      const drawHeight = source.naturalHeight * scale;
+      const offsetX = (width - drawWidth) * 0.5;
+      const offsetY = (height - drawHeight) * 0.42;
+      bufferContext.drawImage(source, offsetX, offsetY, drawWidth, drawHeight);
+      const pixels = bufferContext.getImageData(0, 0, buffer.width, buffer.height).data;
+      const step = width < 640 ? 7 : 5;
+      const sampled: Dot[] = [];
+      for (let y = step; y < height; y += step) {
+        for (let x = step; x < width; x += step) {
+          const mountainZone = y > height * 0.27 && y < height * 0.72 && (x < width * 0.4 || x > width * 0.6);
+          const birdZone = y > height * 0.08 && y < height * 0.31 && x > width * 0.54;
+          if (!mountainZone && !birdZone) continue;
+          const pixel = (Math.floor(y) * buffer.width + Math.floor(x)) * 4;
+          const luminance = pixels[pixel] * 0.299 + pixels[pixel + 1] * 0.587 + pixels[pixel + 2] * 0.114;
+          const threshold = birdZone ? 118 : 145;
+          if (luminance > threshold || Math.random() > (birdZone ? 0.82 : 0.56)) continue;
+          const kind = birdZone ? 'bird' : 'mountain';
+          sampled.push({
+            x, y, ox: x, oy: y,
+            r: kind === 'bird' ? 0.65 + Math.random() * 1.15 : 0.45 + Math.random() * 1.65,
+            a: Math.min(0.92, 0.28 + (threshold - luminance) / threshold + Math.random() * 0.18),
+            phase: Math.random() * Math.PI * 2,
+            speed: 0.6 + Math.random() * 1.5,
+            kind,
+          });
+        }
+      }
+      dots = sampled;
     };
 
     const resize = () => {
@@ -57,17 +74,7 @@ export default function InkParticleLandscape() {
       canvas.width = Math.max(1, Math.floor(width * ratio));
       canvas.height = Math.max(1, Math.floor(height * ratio));
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      const count = Math.min(3600, Math.max(1100, Math.floor(width * 2.45)));
-      dots = Array.from({ length: count }, (_, index) => makeMountainDot(index % 2 ? 'left' : 'right'));
-      const birdCount = width < 640 ? 150 : 280;
-      birdDots = Array.from({ length: birdCount }, (_, index) => ({
-        flock: index % 4,
-        wing: index % 2 ? -1 : 1,
-        t: Math.pow(Math.random(), 0.82),
-        r: 0.45 + Math.random() * 1.05,
-        a: 0.35 + Math.random() * 0.58,
-        phase: Math.random() * Math.PI * 2,
-      }));
+      sampleArtwork();
       motes = Array.from({ length: Math.min(180, Math.max(80, Math.floor(width / 8))) }, (_, index) => ({
         x: Math.random() * width,
         y: height * (0.2 + Math.random() * 0.62),
@@ -78,31 +85,6 @@ export default function InkParticleLandscape() {
         life: 1,
         tone: index % 11 === 0 ? 'red' : index % 3 === 0 ? 'gold' : 'ink',
       }));
-    };
-
-    const drawInkMass = (side: 'left' | 'right') => {
-      const extent = width * 0.46;
-      const start = side === 'left' ? 0 : width - extent;
-      const end = side === 'left' ? extent : width;
-      const gradient = context.createLinearGradient(0, height * 0.34, 0, height * 0.77);
-      gradient.addColorStop(0, 'rgba(24,29,25,.38)');
-      gradient.addColorStop(0.38, 'rgba(27,32,28,.25)');
-      gradient.addColorStop(1, 'rgba(35,39,35,.03)');
-      context.save();
-      context.filter = 'blur(1.2px)';
-      context.fillStyle = gradient;
-      context.beginPath();
-      context.moveTo(start, height * 0.76);
-      const steps = 90;
-      for (let index = 0; index <= steps; index++) {
-        const x = start + ((end - start) * index) / steps;
-        const y = ridge(x, side) + Math.sin(index * 1.7) * 3;
-        context.lineTo(x, y);
-      }
-      context.lineTo(end, height * 0.78);
-      context.closePath();
-      context.fill();
-      context.restore();
     };
 
     const drawWash = () => {
@@ -159,61 +141,31 @@ export default function InkParticleLandscape() {
       }
     };
 
-    const drawParticleBirds = () => {
-      const flocks = width < 640
-        ? [[0.72, 0.22, 0.075, 0.027], [0.84, 0.29, 0.055, 0.021]]
-        : [[0.66, 0.18, 0.07, 0.026], [0.76, 0.24, 0.055, 0.021], [0.84, 0.18, 0.046, 0.018], [0.88, 0.31, 0.062, 0.024]];
-      context.save();
-      context.globalCompositeOperation = 'multiply';
-      for (const dot of birdDots) {
-        const flock = flocks[dot.flock % flocks.length];
-        const travel = reduced ? 0 : Math.sin(tick * 0.42 + dot.flock * 1.7) * width * 0.012;
-        const flap = reduced ? 0.72 : 0.62 + Math.sin(tick * 7.2 + dot.phase + dot.flock) * 0.28;
-        const rootX = width * flock[0] + travel;
-        const rootY = height * flock[1] + Math.sin(tick * 1.1 + dot.flock) * 3;
-        const spreadX = width * flock[2];
-        const spreadY = height * flock[3];
-        const t = dot.t;
-        const x = rootX + dot.wing * spreadX * t + Math.sin(dot.phase + tick * 1.8) * 1.6;
-        const y = rootY - spreadY * Math.sin(t * Math.PI) * flap + spreadY * t * 0.48;
-        context.fillStyle = `rgba(20,24,21,${dot.a})`;
-        context.beginPath();
-        context.arc(x, y, dot.r, 0, Math.PI * 2);
-        context.fill();
-      }
-      context.restore();
-    };
-
     const draw = (time = 0) => {
       context.clearRect(0, 0, width, height);
       tick += 0.008;
       context.save();
       context.globalAlpha = 0.5;
       drawWash();
-      drawInkMass('left');
-      drawInkMass('right');
-
       for (const dot of dots) {
         const dx = dot.x - pointer.x;
         const dy = dot.y - pointer.y;
         const distance = Math.hypot(dx, dy);
         const push = distance < 155 ? (155 - distance) / 155 : 0;
-        const gust = dot.tone === 'gold' ? 11 : dot.tone === 'red' ? 6 : 3.8;
+        const gust = dot.kind === 'bird' ? 9 : 4.6;
         const driftX = reduced ? 0 : Math.cos(tick * 2.8 * dot.speed + dot.phase) * gust;
         const driftY = reduced ? 0 : Math.sin(tick * 3.6 * dot.speed + dot.phase) * gust * 0.68;
-        const wind = reduced ? 0 : Math.sin(tick * 1.8 + dot.oy * 0.015) * (dot.tone === 'ink' ? 2.5 : 7);
-        const tx = dot.ox + driftX + wind + (distance ? (dx / distance) * push * 68 : 0);
-        const ty = dot.oy + driftY - (dot.tone === 'gold' ? Math.sin(tick * dot.speed + dot.phase) * 8 : 0) + (distance ? (dy / distance) * push * 48 : 0);
+        const wind = reduced ? 0 : Math.sin(tick * (dot.kind === 'bird' ? 1.2 : 1.8) + dot.oy * 0.015) * (dot.kind === 'bird' ? 10 : 3.2);
+        const tx = dot.ox + driftX + wind + (distance ? (dx / distance) * push * (dot.kind === 'bird' ? 88 : 68) : 0);
+        const ty = dot.oy + driftY + (dot.kind === 'bird' ? Math.sin(tick * 6 + dot.phase) * 3.5 : 0) + (distance ? (dy / distance) * push * 48 : 0);
         dot.x += (tx - dot.x) * 0.085;
         dot.y += (ty - dot.y) * 0.085;
         context.beginPath();
-        context.fillStyle = dot.tone === 'gold' ? `rgba(157,117,47,${dot.a * 0.75})` : dot.tone === 'red' ? `rgba(168,63,50,${dot.a * 0.8})` : `rgba(27,31,28,${dot.a})`;
+        context.fillStyle = `rgba(24,28,25,${dot.a})`;
         context.arc(dot.x, dot.y, dot.r, 0, Math.PI * 2);
         context.fill();
       }
       context.restore();
-
-      drawParticleBirds();
 
       drawMotes();
 
@@ -259,6 +211,11 @@ export default function InkParticleLandscape() {
       if (enabled) animation = requestAnimationFrame(draw);
     };
 
+    void source.decode().then(() => {
+      imageReady = true;
+      sampleArtwork();
+      if (!motionEnabled) draw(performance.now());
+    }).catch(() => { imageReady = false; });
     resize();
     draw(performance.now());
     window.addEventListener('resize', resize);
