@@ -114,16 +114,6 @@ export default function InkParticleLandscape() {
       }
     };
 
-    const drawBird = (x: number, y: number, scale: number, alpha: number) => {
-      context.strokeStyle = `rgba(31,35,31,${alpha})`;
-      context.lineWidth = Math.max(0.7, scale * 0.65);
-      context.beginPath();
-      context.moveTo(x - scale * 8, y + scale * 2);
-      context.quadraticCurveTo(x - scale * 4, y - scale * 5, x, y);
-      context.quadraticCurveTo(x + scale * 5, y - scale * 6, x + scale * 10, y + scale * 1.5);
-      context.stroke();
-    };
-
     const addBurst = (x: number, y: number, amount: number) => {
       for (let index = 0; index < amount; index++) {
         const angle = Math.random() * Math.PI * 2;
@@ -161,6 +151,8 @@ export default function InkParticleLandscape() {
     const draw = (time = 0) => {
       context.clearRect(0, 0, width, height);
       tick += 0.008;
+      context.save();
+      context.globalAlpha = 0.14;
       drawWash();
       drawInkMass('left');
       drawInkMass('right');
@@ -183,14 +175,9 @@ export default function InkParticleLandscape() {
         context.arc(dot.x, dot.y, dot.r, 0, Math.PI * 2);
         context.fill();
       }
+      context.restore();
 
       drawMotes();
-
-      const birdDrift = reduced ? 0 : Math.sin(tick * 2.3) * 24;
-      drawBird(width * 0.67 + birdDrift, height * 0.18, 1.15, 0.72);
-      drawBird(width * 0.74 + birdDrift * 0.7, height * 0.23, 0.72, 0.58);
-      drawBird(width * 0.81 + birdDrift * 0.45, height * 0.17, 0.9, 0.64);
-      drawBird(width * 0.87 + birdDrift * 0.3, height * 0.27, 0.58, 0.46);
 
       for (let index = ripples.length - 1; index >= 0; index--) {
         const age = time - ripples[index].born;

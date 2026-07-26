@@ -290,10 +290,11 @@ html {
 
 .scroll-hero {
   background:
-    radial-gradient(circle at 50% 48%, rgba(255,255,255,.78), transparent 34%),
-    linear-gradient(180deg, #eee8d9 0%, #f5f1e7 46%, #e4decf 100%);
+    linear-gradient(rgba(246,242,232,.03), rgba(246,242,232,.03)),
+    url('/art/ink-scroll-hero-v1.png') center 42% / cover no-repeat,
+    #eee8d9;
 }
-.dark .scroll-hero { background: linear-gradient(180deg, #181b18, #242820 58%, #171a18); }
+.dark .scroll-hero { background: linear-gradient(rgba(246,242,232,.03), rgba(246,242,232,.03)), url('/art/ink-scroll-hero-v1.png') center 42% / cover no-repeat, #eee8d9; }
 .scroll-title { font-size: clamp(3.4rem, 7vw, 6.4rem); line-height: .96; letter-spacing: .06em; white-space: nowrap; text-shadow: 0 4px 12px color-mix(in srgb, var(--ink) 14%, transparent); }
 .scroll-sun { position: absolute; right: 11%; top: 18%; width: clamp(5rem, 9vw, 9rem); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #c98270, var(--cinnabar)); opacity: .72; box-shadow: 0 0 80px color-mix(in srgb, var(--cinnabar) 16%, transparent); }
 .scroll-seal { display: inline-grid; place-items: center; min-width: 2.5rem; min-height: 2.5rem; border: 2px double var(--cinnabar); color: var(--cinnabar); font-size: .58rem; line-height: 1.05; letter-spacing: .06em; transform: rotate(-2deg); }
@@ -306,7 +307,8 @@ html {
 .scroll-disciplines { margin: clamp(3.5rem, 9vh, 7rem) auto 0; display: flex; width: min(100%, 66rem); flex-wrap: wrap; justify-content: center; gap: .65rem; }
 .scroll-disciplines span { display: inline-flex; align-items: center; gap: .55rem; border: 1px solid rgba(255,255,255,.78); border-radius: 999px; background: color-mix(in srgb, var(--paper) 54%, transparent); padding: .58rem 1rem; color: var(--ink-soft); font-size: .75rem; letter-spacing: .08em; box-shadow: inset 0 0 0 1px rgba(55,58,53,.08); backdrop-filter: blur(10px); }
 .scroll-disciplines b { color: var(--cinnabar); font-weight: 500; }
-.scroll-side-verse { position: absolute; z-index: 3; left: clamp(.8rem, 3vw, 3rem); top: 21%; display: flex; width: 3.1rem; flex-direction: column; align-items: center; gap: .7rem; border: 1px solid rgba(255,255,255,.75); background: rgba(246,241,228,.44); padding: 1.1rem .8rem; color: var(--ink-soft); font-size: .72rem; line-height: 1.75; letter-spacing: .22em; writing-mode: vertical-rl; backdrop-filter: blur(8px); clip-path: polygon(12% 0,88% 0,100% 7%,100% 93%,88% 100%,12% 100%,0 93%,0 7%); }
+.scroll-side-verse { position: absolute; z-index: 3; left: clamp(.8rem, 3vw, 3rem); top: 15%; display: grid; width: 3.4rem; min-height: 18rem; place-items: center; gap: .6rem; border: 1px solid rgba(255,255,255,.85); background: rgba(246,241,228,.72); padding: 1rem .65rem; color: var(--ink-soft); font-size: .72rem; line-height: 1.7; letter-spacing: .16em; backdrop-filter: blur(8px); clip-path: polygon(14% 0,86% 0,100% 6%,100% 94%,86% 100%,14% 100%,0 94%,0 6%); }
+.scroll-side-verse em { color: var(--ink-soft); font-style: normal; writing-mode: vertical-rl; }
 .scroll-side-verse span, .scroll-side-verse i { color: var(--cinnabar); font-style: normal; }
 .scroll-motion-toggle { position: absolute; z-index: 20; right: clamp(1rem,3vw,3rem); bottom: 2rem; display: inline-flex; align-items: center; gap: .45rem; border: 1px solid rgba(255,255,255,.75); background: color-mix(in srgb, var(--paper) 62%, transparent); padding: .55rem .75rem; color: var(--ink-soft); font-size: .68rem; letter-spacing: .12em; backdrop-filter: blur(8px); }
 .scroll-motion-toggle:hover { color: var(--cinnabar); }
@@ -321,11 +323,21 @@ html {
 .cloud-nav::before { content: ''; position: absolute; inset: 9px 21% 8px; pointer-events: none; opacity: .18; background: radial-gradient(ellipse at 10% 100%, transparent 45%, var(--ink-muted) 46% 48%, transparent 49%), radial-gradient(ellipse at 28% 0, transparent 45%, var(--ink-muted) 46% 48%, transparent 49%), radial-gradient(ellipse at 52% 100%, transparent 45%, var(--ink-muted) 46% 48%, transparent 49%), radial-gradient(ellipse at 78% 0, transparent 45%, var(--ink-muted) 46% 48%, transparent 49%); background-size: 7rem 3rem; }
 .featured-scroll .ink-card { border-radius: 14px; background: color-mix(in srgb, var(--paper) 92%, transparent); box-shadow: 0 15px 45px rgba(45,42,34,.09), inset 0 0 0 5px color-mix(in srgb, var(--paper-deep) 42%, transparent); }
 .featured-scroll .ink-card::before { content: ''; position: absolute; z-index: 2; inset: 8px; pointer-events: none; border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent); border-radius: 9px; }
+.featured-scroll .ink-cover { filter: grayscale(.82) sepia(.32) contrast(.9) brightness(1.12); opacity: .54; mix-blend-mode: multiply; }
+.featured-scroll .ink-card > div:first-child { height: 8.5rem; }
+.featured-scroll .ink-card > div:nth-child(2) { padding: 1rem 1.2rem; }
+.archive-leaf { min-height: 15.5rem; background: linear-gradient(90deg, rgba(246,242,232,.78), rgba(246,242,232,.93)), url('/art/ink-scroll-hero-v1.png') 83% 54% / 210% auto no-repeat; }
 
 @media (min-width: 768px) {
   .scroll-hero { min-height: 760px; }
   .scroll-hero > div.relative { min-height: 680px; }
-  .featured-scroll-section { z-index: 12; margin-top: -3.5rem; padding-top: 0; background: linear-gradient(180deg, transparent, var(--paper) 5rem); }
+  .scroll-hero > div.relative.z-10 { transform: translateY(-3.2rem); }
+  .featured-scroll-section { z-index: 12; margin-top: -18rem; padding-top: 0; background: linear-gradient(180deg, transparent, var(--paper) 16rem); }
+  .featured-scroll > div:first-child { display: none; }
+  .cloud-nav[data-view="home"] { top: 1rem; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
+  .cloud-nav[data-view="home"] .nav-inner { width: min(56vw, 50rem); height: 3.6rem; justify-content: center; border: 1px solid rgba(255,255,255,.78); border-radius: .55rem; background: rgba(246,241,228,.58); padding-inline: 2rem; box-shadow: 0 8px 28px rgba(48,43,34,.05); backdrop-filter: blur(12px); }
+  .cloud-nav[data-view="home"] .nav-brand, .cloud-nav[data-view="home"] .nav-actions { display: none; }
+  .cloud-nav[data-view="home"] .nav-links { display: flex; width: 100%; justify-content: space-around; }
 }
 
 @media (max-width: 767px) {

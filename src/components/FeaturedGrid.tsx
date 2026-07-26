@@ -148,7 +148,7 @@ export default function FeaturedGrid({ onPostClick }: FeaturedGridProps) {
         </motion.p>
       </div>
 
-      <div className={`grid grid-cols-1 gap-5 ${isPair ? 'md:grid-cols-2 md:items-stretch' : 'md:grid-cols-3 lg:grid-cols-4 auto-rows-[minmax(200px,auto)]'}`}>
+      <div className={`grid grid-cols-1 gap-5 ${isPair ? 'md:grid-cols-3 md:items-stretch' : 'md:grid-cols-3 lg:grid-cols-4 auto-rows-[minmax(200px,auto)]'}`}>
         {displayPosts.map((post, i) => (
           <BentoCard
             key={post.id}
@@ -159,6 +159,14 @@ export default function FeaturedGrid({ onPostClick }: FeaturedGridProps) {
             isPair={isPair}
           />
         ))}
+        {isPair && (
+          <a href="/articles" className="ink-card archive-leaf group relative overflow-hidden p-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--cinnabar)]">
+            <span className="relative z-10 inline-block bg-[var(--ink)] px-2 py-1 text-[10px] tracking-[0.12em] text-[var(--paper)]">卷尾余白</span>
+            <h3 className="relative z-10 mt-5 font-serif-cn text-xl font-semibold tracking-[0.08em] text-ink">更多文章，静候展卷</h3>
+            <p className="relative z-10 mt-3 text-sm leading-7 text-ink-soft">循着山水与墨痕，进入完整文章目录。</p>
+            <span className="relative z-10 mt-7 inline-flex text-xs tracking-[0.12em] text-cinnabar">查看全部文章 →</span>
+          </a>
+        )}
       </div>
     </div>
   );

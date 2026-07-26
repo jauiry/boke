@@ -22,8 +22,7 @@ export default function Hero({ onExplore }: HeroProps) {
       <div className="scroll-cloud scroll-cloud-one" aria-hidden="true" />
       <div className="scroll-cloud scroll-cloud-two" aria-hidden="true" />
       <div className="absolute inset-0" aria-hidden="true"><InkParticleLandscape /></div>
-      <div className="scroll-sun" aria-hidden="true" />
-      <div className="scroll-side-verse" aria-hidden="true"><span>○</span>行到水穷处，坐看云起时。<i>嘉明</i></div>
+      <div className="scroll-side-verse" aria-hidden="true"><span>○</span><em>行到水穷处，坐看云起时。</em><i>嘉明</i></div>
       <button type="button" onClick={toggleMotion} className="scroll-motion-toggle" aria-label={motionOn ? '暂停粒子动效' : '播放粒子动效'}>
         {motionOn ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}{motionOn ? '动效中' : '已暂停'}
       </button>
