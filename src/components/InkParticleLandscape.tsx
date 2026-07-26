@@ -209,6 +209,10 @@ export default function InkParticleLandscape() {
 
     const move = (event: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
+      if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) {
+        clear();
+        return;
+      }
       pointer.x = event.clientX - rect.left;
       pointer.y = event.clientY - rect.top;
       if (motionEnabled && performance.now() - lastTrail > 34) {
@@ -218,6 +222,7 @@ export default function InkParticleLandscape() {
     };
     const ripple = (event: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
+      if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) return;
       ripples.push({ x: event.clientX - rect.left, y: event.clientY - rect.top, born: performance.now() });
       addBurst(event.clientX - rect.left, event.clientY - rect.top, 46);
     };
@@ -232,16 +237,16 @@ export default function InkParticleLandscape() {
     resize();
     draw(performance.now());
     window.addEventListener('resize', resize);
-    canvas.addEventListener('pointermove', move);
-    canvas.addEventListener('pointerdown', ripple);
-    canvas.addEventListener('pointerleave', clear);
+    window.addEventListener('pointermove', move, { passive: true });
+    window.addEventListener('pointerdown', ripple, { passive: true });
+    window.addEventListener('blur', clear);
     window.addEventListener('ink-motion-toggle', toggleMotion);
     return () => {
       cancelAnimationFrame(animation);
       window.removeEventListener('resize', resize);
-      canvas.removeEventListener('pointermove', move);
-      canvas.removeEventListener('pointerdown', ripple);
-      canvas.removeEventListener('pointerleave', clear);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerdown', ripple);
+      window.removeEventListener('blur', clear);
       window.removeEventListener('ink-motion-toggle', toggleMotion);
     };
   }, []);
