@@ -9,6 +9,7 @@ test.describe('博客冒烟测试', () => {
 
     // 检查导航栏
     await expect(page.locator('nav')).toBeVisible();
+    await expect(page.locator('.auth-trigger')).toBeVisible();
 
     // 检查首页有文章列表或 Hero
     const heroOrPosts = page.locator('h1').first();
