@@ -60,6 +60,38 @@ test.describe('博客冒烟测试', () => {
     await expect(page.getByRole('heading', { name: 'Pytest Fixture：自动化测试资源管理详解', exact: true })).toBeVisible();
   });
 
+  test('连续切换文章不应请求失败的详情接口', async ({ page }) => {
+    const detailRequests: string[] = [];
+    page.on('request', (request) => {
+      if (/\/api\/posts\//.test(request.url())) detailRequests.push(request.url());
+    });
+    await page.goto('/articles', { waitUntil: 'domcontentloaded' });
+    for (let index = 0; index < 6; index++) {
+      await page.locator('a.ink-card').first().click();
+      await page.getByRole('button', { name: '返回', exact: true }).click();
+    }
+    expect(detailRequests).toEqual([]);
+  });
+
+  test('首页连续点击后仍应保持响应', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => {
+      for (let index = 0; index < 80; index++) {
+        window.dispatchEvent(new PointerEvent('pointerdown', {
+          clientX: 120 + (index % 7),
+          clientY: 260 + (index % 9),
+          bubbles: true,
+        }));
+      }
+    });
+    const frameTime = await page.evaluate(() => new Promise<number>((resolve) => {
+      const started = performance.now();
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve(performance.now() - started)));
+    }));
+    expect(frameTime).toBeLessThan(1000);
+    await expect(page.locator('.scroll-motion-toggle')).toBeVisible();
+  });
+
   test('深色模式切换应该正常', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
