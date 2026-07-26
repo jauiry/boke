@@ -288,6 +288,53 @@ html {
   filter: saturate(0.46) sepia(0.16) contrast(1) brightness(0.96);
 }
 
+.scroll-hero {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(255,255,255,.78), transparent 34%),
+    linear-gradient(180deg, #eee8d9 0%, #f5f1e7 46%, #e4decf 100%);
+}
+.dark .scroll-hero { background: linear-gradient(180deg, #181b18, #242820 58%, #171a18); }
+.scroll-title { font-size: clamp(3.4rem, 7vw, 6.4rem); line-height: .96; letter-spacing: .06em; white-space: nowrap; text-shadow: 0 4px 12px color-mix(in srgb, var(--ink) 14%, transparent); }
+.scroll-sun { position: absolute; right: 11%; top: 18%; width: clamp(5rem, 9vw, 9rem); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #c98270, var(--cinnabar)); opacity: .72; box-shadow: 0 0 80px color-mix(in srgb, var(--cinnabar) 16%, transparent); }
+.scroll-seal { display: inline-grid; place-items: center; min-width: 2.5rem; min-height: 2.5rem; border: 2px double var(--cinnabar); color: var(--cinnabar); font-size: .58rem; line-height: 1.05; letter-spacing: .06em; transform: rotate(-2deg); }
+.scroll-primary, .scroll-secondary { display: inline-flex; min-height: 3rem; align-items: center; justify-content: center; gap: .65rem; border: 1px solid color-mix(in srgb, var(--ink) 16%, transparent); padding: .75rem 1.65rem; font-size: .84rem; letter-spacing: .15em; transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease; }
+.scroll-primary { border-color: color-mix(in srgb, var(--cinnabar) 80%, black); background: linear-gradient(180deg, color-mix(in srgb, var(--cinnabar) 88%, white), color-mix(in srgb, var(--cinnabar) 92%, black)); color: #fff8ec; box-shadow: inset 0 0 0 3px rgba(255,255,255,.12), 4px 5px 0 rgba(76,42,29,.13); }
+.scroll-secondary { background: color-mix(in srgb, var(--paper) 72%, transparent); color: var(--ink); box-shadow: 0 8px 25px rgba(38,42,38,.08); backdrop-filter: blur(8px); }
+.scroll-primary:hover, .scroll-secondary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(35,38,34,.15); }
+.scroll-primary:active, .scroll-secondary:active { transform: translateY(1px); }
+.scroll-github { display: inline-grid; width: 3rem; height: 3rem; place-items: center; color: var(--ink-soft); }
+.scroll-disciplines { margin: clamp(3.5rem, 9vh, 7rem) auto 0; display: flex; width: min(100%, 66rem); flex-wrap: wrap; justify-content: center; gap: .65rem; }
+.scroll-disciplines span { display: inline-flex; align-items: center; gap: .55rem; border: 1px solid rgba(255,255,255,.78); border-radius: 999px; background: color-mix(in srgb, var(--paper) 54%, transparent); padding: .58rem 1rem; color: var(--ink-soft); font-size: .75rem; letter-spacing: .08em; box-shadow: inset 0 0 0 1px rgba(55,58,53,.08); backdrop-filter: blur(10px); }
+.scroll-disciplines b { color: var(--cinnabar); font-weight: 500; }
+.scroll-side-verse { position: absolute; z-index: 3; left: clamp(.8rem, 3vw, 3rem); top: 21%; display: flex; width: 3.1rem; flex-direction: column; align-items: center; gap: .7rem; border: 1px solid rgba(255,255,255,.75); background: rgba(246,241,228,.44); padding: 1.1rem .8rem; color: var(--ink-soft); font-size: .72rem; line-height: 1.75; letter-spacing: .22em; writing-mode: vertical-rl; backdrop-filter: blur(8px); clip-path: polygon(12% 0,88% 0,100% 7%,100% 93%,88% 100%,12% 100%,0 93%,0 7%); }
+.scroll-side-verse span, .scroll-side-verse i { color: var(--cinnabar); font-style: normal; }
+.scroll-cloud { position: absolute; pointer-events: none; border-radius: 50%; filter: blur(22px); opacity: .44; }
+.scroll-cloud-one { left: 14%; bottom: 19%; width: 36%; height: 12%; background: rgba(255,255,255,.76); }
+.scroll-cloud-two { right: 9%; bottom: 27%; width: 31%; height: 11%; background: rgba(255,255,255,.68); }
+.scroll-waterline { position: absolute; left: 18%; right: 18%; bottom: 9%; display: grid; place-items: center; opacity: .32; }
+.scroll-waterline span { grid-area: 1/1; width: 7rem; height: 1.5rem; border: 1px solid var(--ink-muted); border-radius: 50%; animation: water-breathe 3.8s ease-out infinite; }
+.scroll-waterline span:nth-child(2) { animation-delay: 1.2s; }.scroll-waterline span:nth-child(3) { animation-delay: 2.4s; }
+@keyframes water-breathe { from { transform: scale(.55); opacity: .5; } to { transform: scale(2.2); opacity: 0; } }
+
+.cloud-nav::before { content: ''; position: absolute; inset: 9px 21% 8px; pointer-events: none; opacity: .18; background: radial-gradient(ellipse at 10% 100%, transparent 45%, var(--ink-muted) 46% 48%, transparent 49%), radial-gradient(ellipse at 28% 0, transparent 45%, var(--ink-muted) 46% 48%, transparent 49%), radial-gradient(ellipse at 52% 100%, transparent 45%, var(--ink-muted) 46% 48%, transparent 49%), radial-gradient(ellipse at 78% 0, transparent 45%, var(--ink-muted) 46% 48%, transparent 49%); background-size: 7rem 3rem; }
+.featured-scroll .ink-card { border-radius: 14px; background: color-mix(in srgb, var(--paper) 92%, transparent); box-shadow: 0 15px 45px rgba(45,42,34,.09), inset 0 0 0 5px color-mix(in srgb, var(--paper-deep) 42%, transparent); }
+.featured-scroll .ink-card::before { content: ''; position: absolute; z-index: 2; inset: 8px; pointer-events: none; border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent); border-radius: 9px; }
+
+@media (min-width: 768px) {
+  .scroll-hero { min-height: 760px; }
+  .scroll-hero > div.relative { min-height: 680px; }
+  .featured-scroll-section { z-index: 12; margin-top: -3.5rem; padding-top: 0; background: linear-gradient(180deg, transparent, var(--paper) 5rem); }
+}
+
+@media (max-width: 767px) {
+  .scroll-side-verse { display: none; }
+  .scroll-title { font-size: clamp(3.2rem, 14vw, 5.2rem); line-height: 1.08; white-space: normal; }
+  .scroll-sun { right: 10%; top: 16%; opacity: .58; }
+  .scroll-disciplines { margin-top: 3rem; gap: .45rem; }
+  .scroll-disciplines span { padding: .5rem .7rem; font-size: .68rem; }
+  .scroll-waterline { bottom: 5%; }
+}
+
 .auth-trigger { display: inline-flex; min-height: 2.75rem; align-items: center; justify-content: center; gap: 0.5rem; padding-inline: 0.75rem; color: var(--ink-soft); font-size: 0.8rem; letter-spacing: 0.08em; transition: color 180ms ease, background-color 180ms ease; }
 .auth-trigger:hover { color: var(--cinnabar); background: color-mix(in srgb, var(--cinnabar) 6%, transparent); }
 .auth-backdrop { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 1rem; background: rgba(20, 24, 21, 0.62); backdrop-filter: blur(8px); }
