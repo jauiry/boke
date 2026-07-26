@@ -54,7 +54,7 @@ export default function Navbar({ currentView, onViewChange, onPostClick }: Navba
         initial={{ y: -80 }}
         animate={{ y: 0 }}
         aria-label="主导航"
-        className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-[#f3f0e8]/82 shadow-[0_10px_40px_rgba(32,37,33,0.04)] backdrop-blur-xl dark:border-white/5 dark:bg-[#171a18]/82"
+        className="cloud-nav fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-[#f3f0e8]/82 shadow-[0_10px_40px_rgba(32,37,33,0.04)] backdrop-blur-xl dark:border-white/5 dark:bg-[#171a18]/82"
       >
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
           <button onClick={() => selectView('home')} className="group flex items-center gap-3" aria-label="返回首页">

@@ -129,7 +129,7 @@ export default function FeaturedGrid({ onPostClick }: FeaturedGridProps) {
   const isPair = displayPosts.length === 2;
 
   return (
-    <div className="relative mb-20">
+    <div className="featured-scroll relative mb-20">
       <div className="text-center mb-10">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -148,7 +148,7 @@ export default function FeaturedGrid({ onPostClick }: FeaturedGridProps) {
         </motion.p>
       </div>
 
-      <div className={`grid grid-cols-1 gap-4 ${isPair ? 'md:grid-cols-[minmax(0,1.55fr)_minmax(260px,.75fr)] md:items-end' : 'md:grid-cols-3 lg:grid-cols-4 auto-rows-[minmax(200px,auto)]'}`}>
+      <div className={`grid grid-cols-1 gap-5 ${isPair ? 'md:grid-cols-2 md:items-stretch' : 'md:grid-cols-3 lg:grid-cols-4 auto-rows-[minmax(200px,auto)]'}`}>
         {displayPosts.map((post, i) => (
           <BentoCard
             key={post.id}
