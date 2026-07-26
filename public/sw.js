@@ -1,5 +1,5 @@
 // Service Worker v2 — improved caching strategy
-const CACHE_NAME = 'mxqys-blog-v2';
+const CACHE_NAME = 'mxqys-blog-v3';
 const MAX_CACHE_ENTRIES = 50;
 
 // Prune old cache entries to prevent unlimited growth
@@ -69,6 +69,14 @@ function cacheFirst(request, cacheName) {
   });
 }
 
+// Network-first for navigations so a new visual release is visible immediately.
+function networkFirst(request, cacheName) {
+  return fetch(request).then((response) => {
+    if (response.ok) caches.open(cacheName).then((cache) => cache.put(request, response.clone()));
+    return response;
+  }).catch(() => caches.match(request));
+}
+
 // Fetch
 self.addEventListener('fetch', (event) => {
   const { request } = event;
@@ -76,6 +84,11 @@ self.addEventListener('fetch', (event) => {
 
   // Skip API requests
   if (url.pathname.startsWith('/api/')) return;
+
+  if (request.mode === 'navigate') {
+    event.respondWith(networkFirst(request, CACHE_NAME));
+    return;
+  }
 
   // Images: cache-first
   if (request.destination === 'image') {
