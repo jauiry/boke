@@ -47,7 +47,8 @@ export default function PostList({ onPostClick, initialSearchQuery = '' }: PostL
   const regularPosts = filteredPosts.filter(post => !post.featured);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-24 pb-16">
+    <div className="relative min-h-screen bg-transparent pt-28 pb-20">
+      <div className="paper-noise absolute inset-0" aria-hidden="true" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -55,11 +56,12 @@ export default function PostList({ onPostClick, initialSearchQuery = '' }: PostL
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-4">
-            全部文章
+          <div className="mb-3 flex items-center gap-3 text-xs tracking-[0.3em] text-cinnabar"><span className="h-px w-8 bg-cinnabar" />文集</div>
+          <h1 className="font-serif-cn text-3xl md:text-4xl font-semibold tracking-[0.12em] text-ink mb-4">
+            展卷阅文
           </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            共 {filteredPosts.length} 篇文章，探索技术的无限可能
+          <p className="text-ink-muted tracking-[0.06em]">
+            共收录 {filteredPosts.length} 篇，愿每一次阅读都有所得
           </p>
         </motion.div>
 
@@ -78,7 +80,7 @@ export default function PostList({ onPostClick, initialSearchQuery = '' }: PostL
                 placeholder="搜索文章..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-12"
+                className="h-12 rounded-none border-black/15 bg-[var(--paper)] pl-10 text-ink placeholder:text-ink-muted focus-visible:ring-[var(--cinnabar)] dark:border-white/15"
               />
             </div>
             <div className="flex gap-2">
@@ -106,7 +108,7 @@ export default function PostList({ onPostClick, initialSearchQuery = '' }: PostL
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="p-4 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 space-y-4"
+              className="ink-card space-y-4 p-5"
             >
               {/* Categories */}
               <div>
@@ -184,8 +186,8 @@ export default function PostList({ onPostClick, initialSearchQuery = '' }: PostL
             transition={{ delay: 0.2 }}
             className="mb-12"
           >
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center">
-              <Badge className="mr-2 bg-violet-500 text-white">精选</Badge>
+            <h2 className="font-serif-cn text-xl font-semibold tracking-[0.08em] text-ink mb-6 flex items-center">
+              <Badge className="mr-2 rounded-none bg-[var(--cinnabar)] text-white">精选</Badge>
               推荐阅读
             </h2>
             <div className="grid md:grid-cols-2 gap-6">
@@ -208,7 +210,7 @@ export default function PostList({ onPostClick, initialSearchQuery = '' }: PostL
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
+          <h2 className="font-serif-cn text-xl font-semibold tracking-[0.08em] text-ink mb-6">
             {searchQuery || selectedCategory || selectedTag ? '搜索结果' : '最新文章'}
           </h2>
 

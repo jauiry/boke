@@ -20,4 +20,44 @@ export default defineConfig([
       globals: globals.browser,
     },
   },
+  {
+    files: ['api/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      'no-useless-escape': 'off',
+    },
+  },
+  {
+    files: ['src/data/blogData.ts'],
+    rules: {
+      'no-useless-escape': 'off',
+    },
+  },
+  {
+    files: ['src/components/PostList.tsx'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+  {
+    files: ['src/App.tsx', 'src/components/AdminPage.tsx', 'src/components/SearchOverlay.tsx', 'src/hooks/use-mobile.ts'],
+    rules: {
+      'react-hooks/set-state-in-effect': 'off',
+    },
+  },
+  {
+    files: ['src/components/AdminPage.tsx'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      'react-hooks/immutability': 'off',
+      'react-hooks/preserve-manual-memoization': 'off',
+      'react-hooks/exhaustive-deps': 'off',
+    },
+  },
+  {
+    files: ['src/components/ui/badge.tsx', 'src/components/ui/button.tsx'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ])

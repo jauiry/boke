@@ -88,9 +88,9 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
       .replace(/>/g, '&gt;')
       .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
       .replace(/\*(.+?)\*/g, '<em>$1</em>')
-      .replace(/`(.+?)`/g, '<code class="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-violet-600 dark:text-violet-400 text-sm font-mono">$1</code>')
+      .replace(/`(.+?)`/g, '<code class="bg-[var(--paper-deep)] dark:bg-[var(--paper-deep)] px-1.5 py-0.5 rounded text-cinnabar dark:text-cinnabar text-sm font-mono">$1</code>')
       .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" class="inline-block max-w-full rounded" loading="lazy" />')
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-violet-600 dark:text-violet-400 hover:underline" target="_blank" rel="noopener noreferrer">$1</a>');
+      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-cinnabar dark:text-cinnabar hover:underline" target="_blank" rel="noopener noreferrer">$1</a>');
   };
 
   // 渲染 Markdown 内容（支持代码块、表格、图片、任务列表）
@@ -110,15 +110,15 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
       };
 
       return (
-        <div className="relative group my-6 rounded-xl overflow-hidden border border-slate-700/50">
+        <div className="relative group my-6 rounded-xl overflow-hidden border border-white/10">
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-2 bg-slate-800/80 dark:bg-slate-900/80 border-b border-slate-700/50">
-            <span className="text-xs text-slate-400 font-mono">
+          <div className="flex items-center justify-between px-4 py-2 bg-[#202420]/80 dark:bg-[var(--paper)]/80 border-b border-white/10">
+            <span className="text-xs text-ink-muted font-mono">
               {lang || 'plaintext'}
             </span>
             <button
               onClick={handleCopy}
-              className="text-xs text-slate-400 hover:text-slate-200 transition-colors flex items-center gap-1.5"
+              className="text-xs text-ink-muted hover:text-[var(--paper)] transition-colors flex items-center gap-1.5"
             >
               {copied ? (
                 <><CheckIcon className="w-3 h-3 text-green-400" /> 已复制</>
@@ -128,7 +128,7 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
             </button>
           </div>
           {/* Code */}
-          <pre className="bg-slate-900 dark:bg-slate-950 text-slate-100 p-5 overflow-x-auto text-sm leading-relaxed m-0">
+          <pre className="bg-[var(--paper)] dark:bg-[#111411] text-[var(--paper)] p-5 overflow-x-auto text-sm leading-relaxed m-0">
             <code>{code}</code>
           </pre>
         </div>
@@ -175,19 +175,19 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
 
       if (trimmedLine.startsWith('## ')) {
         elements.push(
-          <h2 key={i} className="text-2xl font-bold text-slate-900 dark:text-white mt-10 mb-4">
+          <h2 key={i} className="text-2xl font-bold text-ink dark:text-white mt-10 mb-4">
             {trimmedLine.replace('## ', '')}
           </h2>
         );
       } else if (trimmedLine.startsWith('### ')) {
         elements.push(
-          <h3 key={i} className="text-xl font-semibold text-slate-900 dark:text-white mt-8 mb-3">
+          <h3 key={i} className="text-xl font-semibold text-ink dark:text-white mt-8 mb-3">
             {trimmedLine.replace('### ', '')}
           </h3>
         );
       } else if (trimmedLine.startsWith('# ')) {
         elements.push(
-          <h1 key={i} className="text-3xl font-bold text-slate-900 dark:text-white mt-12 mb-6">
+          <h1 key={i} className="text-3xl font-bold text-ink dark:text-white mt-12 mb-6">
             {trimmedLine.replace('# ', '')}
           </h1>
         );
@@ -196,19 +196,19 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
         const text = trimmedLine.replace(/- \[[ xX]\] /, '');
         elements.push(
           <div key={i} className="flex items-start gap-2 ml-6 mb-2">
-            <input type="checkbox" checked={checked} readOnly className="mt-1 accent-violet-600" />
-            <span className={`text-slate-700 dark:text-slate-300 ${checked ? 'line-through text-slate-400' : ''}`}>{text}</span>
+            <input type="checkbox" checked={checked} readOnly className="mt-1 accent-[var(--cinnabar)]" />
+            <span className={`text-ink-soft dark:text-ink-soft ${checked ? 'line-through text-ink-muted' : ''}`}>{text}</span>
           </div>
         );
       } else if (trimmedLine.startsWith('- ')) {
         elements.push(
-          <li key={i} className="text-slate-700 dark:text-slate-300 ml-6 mb-2">
+          <li key={i} className="text-ink-soft dark:text-ink-soft ml-6 mb-2">
             {trimmedLine.replace('- ', '')}
           </li>
         );
       } else if (/^\d+\.\s/.test(trimmedLine)) {
         elements.push(
-          <li key={i} className="text-slate-700 dark:text-slate-300 ml-6 mb-2 list-decimal">
+          <li key={i} className="text-ink-soft dark:text-ink-soft ml-6 mb-2 list-decimal">
             {trimmedLine.replace(/^\d+\.\s/, '')}
           </li>
         );
@@ -216,12 +216,12 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
         elements.push(<div key={i} className="h-4" />);
       } else if (trimmedLine.startsWith('> ')) {
         elements.push(
-          <blockquote key={i} className="border-l-4 border-violet-500 pl-4 py-2 my-4 bg-slate-50 dark:bg-slate-800/50 italic text-slate-600 dark:text-slate-400">
+          <blockquote key={i} className="my-4 border border-black/10 bg-[var(--paper)] px-5 py-3 italic text-ink-soft dark:border-white/10">
             {trimmedLine.replace('> ', '')}
           </blockquote>
         );
       } else if (trimmedLine.startsWith('---')) {
-        elements.push(<hr key={i} className="my-8 border-slate-200 dark:border-slate-700" />);
+        elements.push(<hr key={i} className="my-8 border-black/10 dark:border-white/10" />);
       } else if (trimmedLine.startsWith('| ') && trimmedLine.endsWith('|')) {
         // Table: collect consecutive rows including separator
         const tableRows: string[][] = [];
@@ -241,16 +241,16 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
           const dataRows = tableRows.slice(2);
 
           // Check if second row is separator (contains only dashes, colons, spaces, pipes)
-          const isSepRow = tableRows[1].every(c => /^[-:\s]+$/.test(c));
+          const isSepRow = tableRows[1].every(c => /^(?:-|:|\s)+$/.test(c));
           const allRows = isSepRow ? dataRows : tableRows.slice(1);
 
           elements.push(
-            <div key={i} className="my-6 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+            <div key={i} className="my-6 overflow-x-auto rounded-xl border border-black/10 dark:border-white/10">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-slate-50 dark:bg-slate-800/50">
+                  <tr className="bg-[var(--paper)] dark:bg-[var(--paper-deep)]/50">
                     {header.map((h, hi) => (
-                      <th key={hi} className="px-4 py-3 text-left font-semibold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700">
+                      <th key={hi} className="px-4 py-3 text-left font-semibold text-ink dark:text-white border-b border-black/10 dark:border-white/10">
                         {formatInline(h)}
                       </th>
                     ))}
@@ -258,9 +258,9 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
                 </thead>
                 <tbody>
                   {allRows.map((row, ri) => (
-                    <tr key={ri} className="border-b border-slate-100 dark:border-slate-800 last:border-0">
+                    <tr key={ri} className="border-b border-black/5 dark:border-white/5 last:border-0">
                       {row.map((cell, ci) => (
-                        <td key={ci} className="px-4 py-3 text-slate-700 dark:text-slate-300">
+                        <td key={ci} className="px-4 py-3 text-ink-soft dark:text-ink-soft">
                           {formatInline(cell)}
                         </td>
                       ))}
@@ -274,7 +274,7 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
           i = j - 1; // skip past all consumed rows
         } else {
           // Fallback for malformed tables
-          elements.push(<p key={i} className="text-slate-700 dark:text-slate-300 font-mono text-sm mb-4">{trimmedLine}</p>);
+          elements.push(<p key={i} className="text-ink-soft dark:text-ink-soft font-mono text-sm mb-4">{trimmedLine}</p>);
         }
       } else {
         // Image: ![alt](url)
@@ -286,20 +286,20 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
                 src={imageMatch[2]}
                 alt={imageMatch[1] || 'Image'}
                 loading="lazy"
-                className="rounded-xl max-w-full h-auto border border-slate-200 dark:border-slate-700"
+                className="rounded-xl max-w-full h-auto border border-black/10 dark:border-white/10"
                 onError={(e) => {
                   (e.target as HTMLImageElement).style.display = 'none';
                 }}
               />
               {imageMatch[1] && (
-                <figcaption className="text-center text-sm text-slate-400 mt-2">{imageMatch[1]}</figcaption>
+                <figcaption className="text-center text-sm text-ink-muted mt-2">{imageMatch[1]}</figcaption>
               )}
             </figure>
           );
         } else {
           const formatted = formatInline(trimmedLine);
           elements.push(
-            <p key={i} className="text-slate-700 dark:text-slate-300 mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: formatted }} />
+            <p key={i} className="text-ink-soft dark:text-ink-soft mb-4 leading-relaxed" dangerouslySetInnerHTML={{ __html: formatted }} />
           );
         }
       }
@@ -320,7 +320,7 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
 
       {/* Reading Progress Bar */}
       <div
-        className="fixed top-0 left-0 h-1 bg-gradient-to-r from-violet-500 to-fuchsia-500 z-[100]"
+        className="fixed left-0 top-0 z-[100] h-1 bg-cinnabar"
         style={{ width: `${readProgress}%` }}
       />
 
@@ -329,17 +329,17 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
-        className="min-h-screen bg-slate-50 dark:bg-slate-900"
+        className="ink-page min-h-[100dvh]"
       >
       {/* Header */}
-      <div className="sticky top-16 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800">
+      <div className="sticky top-16 z-30 bg-white/80 dark:bg-[var(--paper)]/80 backdrop-blur-lg border-b border-black/10 dark:border-white/5">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
               size="sm"
               onClick={onBack}
-              className="text-slate-600 dark:text-slate-400 hover:text-violet-600 dark:hover:text-violet-400"
+              className="text-ink-soft dark:text-ink-muted hover:text-cinnabar dark:hover:text-cinnabar"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               返回
@@ -351,7 +351,7 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowShareMenu(!showShareMenu)}
-                  className="text-slate-600 dark:text-slate-400"
+                  className="text-ink-soft dark:text-ink-muted"
                 >
                   <Share2 className="w-4 h-4" />
                 </Button>
@@ -360,25 +360,25 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
                   <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="absolute right-0 top-full mt-2 p-2 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 z-50"
+                    className="absolute right-0 top-full mt-2 p-2 bg-white dark:bg-[var(--paper-deep)] rounded-xl shadow-xl border border-black/10 dark:border-white/10 z-50"
                   >
                     <button
                       onClick={() => handleShare('twitter')}
-                      className="flex items-center space-x-2 w-full px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
+                      className="flex items-center space-x-2 w-full px-3 py-2 rounded-lg hover:bg-[var(--paper-deep)] dark:hover:bg-[#292e29]"
                     >
                       <Twitter className="w-4 h-4 text-blue-400" />
                       <span className="text-sm">Twitter</span>
                     </button>
                     <button
                       onClick={() => handleShare('linkedin')}
-                      className="flex items-center space-x-2 w-full px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
+                      className="flex items-center space-x-2 w-full px-3 py-2 rounded-lg hover:bg-[var(--paper-deep)] dark:hover:bg-[#292e29]"
                     >
                       <Linkedin className="w-4 h-4 text-blue-600" />
                       <span className="text-sm">LinkedIn</span>
                     </button>
                     <button
                       onClick={() => handleShare('copy')}
-                      className="flex items-center space-x-2 w-full px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700"
+                      className="flex items-center space-x-2 w-full px-3 py-2 rounded-lg hover:bg-[var(--paper-deep)] dark:hover:bg-[#292e29]"
                     >
                       <LinkIcon className="w-4 h-4" />
                       <span className="text-sm">复制链接</span>
@@ -391,7 +391,7 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsBookmarked(!isBookmarked)}
-                className={isBookmarked ? 'text-violet-600' : 'text-slate-600 dark:text-slate-400'}
+                className={isBookmarked ? 'text-cinnabar' : 'text-ink-soft dark:text-ink-muted'}
               >
                 <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
               </Button>
@@ -415,7 +415,7 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-            <Badge className="mb-4 bg-violet-500 text-white border-0">
+            <Badge className="mb-4 bg-[color-mix(in_srgb,var(--cinnabar)_7%,var(--paper))]0 text-white border-0">
               {post.category.name}
             </Badge>
             <h1 className="text-2xl md:text-4xl font-bold text-white mb-4">
@@ -437,10 +437,10 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
               <AvatarFallback>{post.author.name[0]}</AvatarFallback>
             </Avatar>
             <div>
-              <div className="font-medium text-slate-900 dark:text-white">
+              <div className="font-medium text-ink dark:text-white">
                 {post.author.name}
               </div>
-              <div className="flex items-center space-x-3 text-sm text-slate-500 dark:text-slate-400">
+              <div className="flex items-center space-x-3 text-sm text-ink-muted dark:text-ink-muted">
                 <span className="flex items-center space-x-1">
                   <Calendar className="w-4 h-4" />
                   <span>{post.createdAt}</span>
@@ -453,7 +453,7 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
             </div>
           </div>
 
-          <div className="flex items-center space-x-4 text-sm text-slate-500 dark:text-slate-400">
+          <div className="flex items-center space-x-4 text-sm text-ink-muted dark:text-ink-muted">
             <span className="flex items-center space-x-1">
               <Eye className="w-4 h-4" />
               <span>{post.views}</span>
@@ -496,7 +496,7 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="prose prose-slate dark:prose-invert max-w-none mb-12"
+          className="prose mb-12 max-w-none dark:prose-invert"
         >
           {renderContent(post.content)}
         </motion.div>
@@ -506,7 +506,7 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="flex items-center justify-center space-x-4 py-8 border-t border-b border-slate-200 dark:border-slate-800 mb-12"
+          className="flex items-center justify-center space-x-4 py-8 border-t border-b border-black/10 dark:border-white/5 mb-12"
         >
           <Button
             variant={isLiked ? 'default' : 'outline'}
@@ -540,7 +540,7 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6">
+            <h3 className="text-xl font-bold text-ink dark:text-white mb-6">
               相关文章
             </h3>
             <div className="grid md:grid-cols-3 gap-6">
@@ -563,7 +563,7 @@ export default function PostDetail({ post, onBack, onPostClick }: PostDetailProp
         initial={{ opacity: 0 }}
         animate={{ opacity: showScrollTop ? 1 : 0 }}
         onClick={scrollToTop}
-        className="fixed bottom-8 right-8 p-3 bg-violet-600 text-white rounded-full shadow-lg hover:bg-violet-700 transition-colors z-50"
+        className="fixed bottom-8 right-8 p-3 bg-cinnabar text-white rounded-full shadow-lg hover:bg-[#8f342a] transition-colors z-50"
       >
         <ChevronUp className="w-5 h-5" />
       </motion.button>

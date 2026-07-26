@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import type { MouseEvent } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -35,11 +36,13 @@ function BentoCard({
   size,
   index,
   onClick,
+  isPair,
 }: {
   post: PostListItem;
   size: 'large' | 'tall' | 'wide';
   index: number;
   onClick: () => void;
+  isPair: boolean;
 }) {
   const [coverUrl, setCoverUrl] = useState<string | null>(null);
 
@@ -57,29 +60,36 @@ function BentoCard({
 
   const isLarge = size === 'large';
 
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    event.preventDefault();
+    onClick();
+  };
+
   return (
-    <motion.article
+    <motion.a
+      href={`/${post.slug}`}
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      onClick={onClick}
-      className={`group cursor-pointer relative overflow-hidden rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-violet-300/50 dark:hover:border-violet-600/30 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(139,92,246,0.15)] dark:hover:shadow-[0_8px_30px_rgba(139,92,246,0.2)] ${sizeClasses[size]} flex flex-col`}
+      onClick={handleClick}
+      className={`ink-card group relative flex flex-col overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:border-[var(--cinnabar)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--cinnabar)] ${isPair ? '' : sizeClasses[size]}`}
     >
       {/* Cover */}
       <div className={`relative overflow-hidden ${isLarge ? 'h-64 md:h-80' : 'h-40 md:h-48'} shrink-0`}>
         {coverUrl ? (
-          <img src={coverUrl} alt={post.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+          <img src={coverUrl} alt={post.title} loading="lazy" className="ink-cover w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500" />
+          <div className="w-full h-full bg-[radial-gradient(circle_at_65%_28%,rgba(168,63,50,.42),transparent_18%),linear-gradient(145deg,#d8d2c5,#59615a)]" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
         {post.featured && (
           <div className="absolute top-3 left-3">
-            <Badge className="bg-violet-500/90 text-white border-0 backdrop-blur-sm">精选</Badge>
+            <Badge className="rounded-none border-0 bg-[var(--cinnabar)] text-white backdrop-blur-sm">精选</Badge>
           </div>
         )}
         <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
-          <h3 className={`font-bold text-white group-hover:text-violet-200 transition-colors ${isLarge ? 'text-xl md:text-3xl' : 'text-lg md:text-xl'} line-clamp-2`}>
+          <h3 className={`font-serif-cn font-semibold tracking-[0.06em] text-white transition-colors ${isLarge ? 'text-xl md:text-3xl' : 'text-lg md:text-xl'} line-clamp-2`}>
             {post.title}
           </h3>
         </div>
@@ -87,20 +97,20 @@ function BentoCard({
 
       {/* Content */}
       <div className="flex-1 p-4 md:p-5 flex flex-col">
-        <p className={`text-slate-600 dark:text-slate-400 line-clamp-2 mb-3 ${isLarge ? 'text-base' : 'text-sm'}`}>
+        <p className={`text-ink-soft line-clamp-2 mb-3 leading-7 ${isLarge ? 'text-base' : 'text-sm'}`}>
           {post.excerpt}
         </p>
         <div className="mt-auto flex items-center justify-between">
-          <div className="flex items-center space-x-3 text-xs text-slate-400">
+          <div className="flex items-center space-x-3 text-xs text-ink-muted">
             <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{formatDate(post.createdAt)}</span>
             <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{post.readTime}分钟</span>
           </div>
-          <span className="flex items-center text-xs font-medium text-violet-600 dark:text-violet-400 group-hover:translate-x-1 transition-transform">
+          <span className="flex items-center text-xs font-medium text-cinnabar group-hover:translate-x-1 transition-transform">
             阅读 <ArrowRight className="w-3 h-3 ml-0.5" />
           </span>
         </div>
       </div>
-    </motion.article>
+    </motion.a>
   );
 }
 
@@ -116,28 +126,29 @@ export default function FeaturedGrid({ onPostClick }: FeaturedGridProps) {
 
   // Assign sizes based on position
   const sizes: ('large' | 'tall' | 'wide')[] = ['large', 'tall', 'wide', 'tall'];
+  const isPair = displayPosts.length === 2;
 
   return (
-    <div className="mb-16">
+    <div className="relative mb-20">
       <div className="text-center mb-10">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white mb-3 tracking-tight"
+          className="font-serif-cn text-3xl md:text-4xl font-semibold text-ink mb-3 tracking-[0.12em]"
         >
-          精选文章
+          卷中精选
         </motion.h2>
         <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-slate-500 dark:text-slate-400"
+          className="text-sm tracking-[0.18em] text-ink-muted"
         >
-          推荐阅读的高质量内容
+          择数篇，邀君共读
         </motion.p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[minmax(200px,auto)]">
+      <div className={`grid grid-cols-1 gap-4 ${isPair ? 'md:grid-cols-[minmax(0,1.55fr)_minmax(260px,.75fr)] md:items-end' : 'md:grid-cols-3 lg:grid-cols-4 auto-rows-[minmax(200px,auto)]'}`}>
         {displayPosts.map((post, i) => (
           <BentoCard
             key={post.id}
@@ -145,6 +156,7 @@ export default function FeaturedGrid({ onPostClick }: FeaturedGridProps) {
             size={sizes[i]}
             index={i}
             onClick={() => onPostClick(post)}
+            isPair={isPair}
           />
         ))}
       </div>

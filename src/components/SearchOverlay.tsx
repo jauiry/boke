@@ -78,7 +78,7 @@ export default function SearchOverlay({ isOpen, onClose, onResultClick }: Search
         } else {
           setResults([]);
         }
-      } catch (err) {
+      } catch {
         if (currentRequestId === requestIdRef.current) {
           setError('搜索服务暂时不可用，请稍后再试');
           setResults([]);
@@ -141,7 +141,7 @@ export default function SearchOverlay({ isOpen, onClose, onResultClick }: Search
           onClick={onClose}
         >
           {/* Backdrop */}
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-[#171a18]/55 backdrop-blur-sm" />
 
           {/* Search Modal */}
           <motion.div
@@ -149,26 +149,27 @@ export default function SearchOverlay({ isOpen, onClose, onResultClick }: Search
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.95, opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden"
+            className="relative w-full max-w-2xl overflow-hidden border border-black/15 bg-[var(--paper)] shadow-[12px_18px_60px_rgba(20,24,21,.25)] dark:border-white/15"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Search Input */}
-            <div className="flex items-center px-4 border-b border-slate-200 dark:border-slate-700">
-              <Search className="w-5 h-5 text-slate-400 flex-shrink-0" />
+            <div className="flex items-center border-b border-black/10 px-4 dark:border-white/10">
+              <Search className="w-5 h-5 text-ink-muted flex-shrink-0" />
               <input
                 ref={inputRef}
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="搜索文章标题或内容..."
-                className="flex-1 px-4 py-5 text-lg bg-transparent border-0 outline-none text-slate-900 dark:text-white placeholder:text-slate-400"
+                className="flex-1 border-0 bg-transparent px-4 py-5 font-serif-cn text-lg text-ink outline-none placeholder:text-ink-muted"
               />
               {query && (
                 <button
                   onClick={() => setQuery('')}
-                  className="p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  className="grid h-11 w-11 place-items-center text-ink-muted transition-colors hover:text-cinnabar"
+                  aria-label="清空搜索"
                 >
-                  <X className="w-5 h-5 text-slate-400" />
+                  <X className="h-5 w-5" />
                 </button>
               )}
             </div>
@@ -176,8 +177,8 @@ export default function SearchOverlay({ isOpen, onClose, onResultClick }: Search
             {/* Loading State */}
             {isPending && query.length >= 2 && (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-6 h-6 text-violet-500 animate-spin" />
-                <span className="ml-2 text-slate-500">搜索中...</span>
+                <Loader2 className="w-6 h-6 text-cinnabar animate-spin" />
+                <span className="ml-2 text-ink-muted">搜索中...</span>
               </div>
             )}
 
@@ -191,7 +192,7 @@ export default function SearchOverlay({ isOpen, onClose, onResultClick }: Search
             {/* Results */}
             {!isPending && !error && results.length > 0 && (
               <div className="max-h-[60vh] overflow-y-auto">
-                <div className="px-4 py-2 text-sm text-slate-500 border-b border-slate-100 dark:border-slate-800">
+                <div className="border-b border-black/10 px-4 py-2 text-sm text-ink-muted dark:border-white/10">
                   找到 {results.length} 篇相关文章
                 </div>
                 <div className="py-2" ref={resultsContainerRef} role="listbox" aria-label="搜索结果">
@@ -207,19 +208,19 @@ export default function SearchOverlay({ isOpen, onClose, onResultClick }: Search
                       onMouseEnter={() => setSelectedIndex(index)}
                       className={`w-full px-6 py-4 flex items-start space-x-4 transition-colors text-left ${
                         selectedIndex === index
-                          ? 'bg-violet-50 dark:bg-violet-900/20'
-                          : 'hover:bg-slate-50 dark:hover:bg-slate-800'
+                          ? 'bg-[color-mix(in_srgb,var(--cinnabar)_10%,transparent)]'
+                          : 'hover:bg-black/[.035] dark:hover:bg-white/[.035]'
                       }`}
                     >
-                      <FileText className={`w-5 h-5 flex-shrink-0 mt-0.5 ${selectedIndex === index ? 'text-violet-500' : 'text-slate-400'}`} />
+                      <FileText className={`w-5 h-5 flex-shrink-0 mt-0.5 ${selectedIndex === index ? 'text-cinnabar' : 'text-ink-muted'}`} />
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-slate-900 dark:text-white truncate">
+                        <h4 className="truncate font-serif-cn font-medium text-ink">
                           {post.title}
                         </h4>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-1 mt-1">
+                        <p className="mt-1 line-clamp-1 text-sm text-ink-soft">
                           {post.excerpt}
                         </p>
-                        <p className="text-xs text-slate-400 mt-1">
+                        <p className="mt-1 text-xs text-ink-muted">
                           {formatDateChinese(post.createdAt)} · {post.readTime} 分钟阅读
                         </p>
                       </div>
@@ -232,11 +233,11 @@ export default function SearchOverlay({ isOpen, onClose, onResultClick }: Search
             {/* Empty State */}
             {!isPending && !error && query.length >= 2 && results.length === 0 && (
               <div className="px-6 py-12 text-center">
-                <div className="text-5xl mb-4">🔍</div>
-                <p className="text-slate-600 dark:text-slate-400">
+                <Search className="mx-auto mb-4 h-10 w-10 text-ink-muted" aria-hidden="true" />
+                <p className="text-ink-soft">
                   未找到与 "{query}" 相关的文章
                 </p>
-                <p className="text-sm text-slate-400 mt-2">
+                <p className="mt-2 text-sm text-ink-muted">
                   尝试使用不同的关键词
                 </p>
               </div>
@@ -244,24 +245,24 @@ export default function SearchOverlay({ isOpen, onClose, onResultClick }: Search
 
             {/* Hint */}
             {query.length < 2 && (
-              <div className="px-6 py-4 text-sm text-slate-400 text-center">
+              <div className="px-6 py-4 text-center text-sm text-ink-muted">
                 输入至少 2 个字符开始搜索
               </div>
             )}
 
             {/* Footer */}
-            <div className="px-6 py-3 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-              <div className="flex items-center justify-between text-xs text-slate-400">
+            <div className="border-t border-black/10 bg-black/[.025] px-6 py-3 dark:border-white/10 dark:bg-white/[.025]">
+              <div className="flex items-center justify-between text-xs text-ink-muted">
                 <div className="flex items-center space-x-4">
                   <span>
-                    <kbd className="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-xs">Enter</kbd> 选择
+                    <kbd className="border border-black/10 px-1.5 py-0.5 text-xs dark:border-white/10">Enter</kbd> 选择
                   </span>
                   <span>
-                    <kbd className="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-xs">Esc</kbd> 关闭
+                    <kbd className="border border-black/10 px-1.5 py-0.5 text-xs dark:border-white/10">Esc</kbd> 关闭
                   </span>
                 </div>
                 <span>
-                  <kbd className="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-700 rounded text-xs">↑↓</kbd> 导航
+                  <kbd className="border border-black/10 px-1.5 py-0.5 text-xs dark:border-white/10">↑↓</kbd> 导航
                 </span>
               </div>
             </div>

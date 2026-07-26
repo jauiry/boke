@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Sun, Moon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Menu, Moon, Search, Sun, X } from 'lucide-react';
 import SearchOverlay from './SearchOverlay';
 import type { PostListItem } from '@/types/api';
 
@@ -13,215 +12,114 @@ interface NavbarProps {
 }
 
 const navItems = [
-  { id: 'home', label: '首页' },
-  { id: 'articles', label: '文章' },
-  { id: 'tags', label: '标签' },
-  { id: 'about', label: '关于' },
+  { id: 'home', label: '首页', eyebrow: '归处' },
+  { id: 'articles', label: '文章', eyebrow: '文集' },
+  { id: 'tags', label: '标签', eyebrow: '索引' },
+  { id: 'about', label: '关于', eyebrow: '其人' },
 ];
 
 export default function Navbar({ currentView, onViewChange, onPostClick }: NavbarProps) {
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isDark, setIsDark] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('theme');
-      if (saved) return saved === 'dark';
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    }
-    return false;
+    const saved = localStorage.getItem('theme');
+    return saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // 同步主题状态到 localStorage 和 DOM
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
+    document.documentElement.classList.toggle('dark', isDark);
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
   }, [isDark]);
 
-  // Cmd/Ctrl + K 快捷键
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+        event.preventDefault();
         setIsSearchOpen(true);
       }
     };
-
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-  };
-
-  const handleSearchResult = (post: PostListItem) => {
-    onPostClick(post);
-    setIsSearchOpen(false);
+  const selectView = (view: string) => {
+    onViewChange(view);
+    setIsMobileMenuOpen(false);
   };
 
   return (
     <>
       <motion.nav
-        initial={{ y: -100 }}
+        initial={{ y: -80 }}
         animate={{ y: 0 }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-          isScrolled
-            ? 'bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 shadow-sm'
-            : 'bg-transparent'
-        }`}
+        aria-label="主导航"
+        className="fixed inset-x-0 top-0 z-50 border-b border-black/5 bg-[#f3f0e8]/82 shadow-[0_10px_40px_rgba(32,37,33,0.04)] backdrop-blur-xl dark:border-white/5 dark:bg-[#171a18]/82"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <motion.button
-              onClick={() => onViewChange('home')}
-              className="flex items-center space-x-2 group"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">M</span>
-              </div>
-              <span className="font-bold text-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 bg-clip-text text-transparent">
-                mxqys
-              </span>
-            </motion.button>
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-8 lg:px-12">
+          <button onClick={() => selectView('home')} className="group flex items-center gap-3" aria-label="返回首页">
+            <span className="grid h-10 w-10 place-items-center border border-[var(--cinnabar)] font-calligraphy text-xl text-cinnabar transition-colors group-hover:bg-[var(--cinnabar)] group-hover:text-[var(--paper)]">
+              明
+            </span>
+            <span className="text-left">
+              <span className="block font-serif-cn text-base font-semibold tracking-[0.2em] text-ink">嘉明手札</span>
+              <span className="mt-0.5 block text-[11px] tracking-[0.18em] text-ink-muted">JIAMING NOTES</span>
+            </span>
+          </button>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-1">
-              {navItems.map((item) => (
-                <motion.button
-                  key={item.id}
-                  onClick={() => onViewChange(item.id)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors relative ${
-                    currentView === item.id
-                      ? 'text-violet-600 dark:text-violet-400'
-                      : 'text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400'
-                  }`}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
+          <div className="hidden items-center gap-7 md:flex">
+            {navItems.map((item) => (
+              <button key={item.id} onClick={() => selectView(item.id)} className="group relative py-3 text-center">
+                <span className={`block text-sm tracking-[0.18em] transition-colors ${currentView === item.id ? 'text-cinnabar' : 'text-ink-soft group-hover:text-ink'}`}>
                   {item.label}
-                  {currentView === item.id && (
-                    <motion.div
-                      layoutId="nav-indicator"
-                      className="absolute bottom-0 left-2 right-2 h-0.5 bg-violet-500 rounded-full"
-                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                    />
-                  )}
-                </motion.button>
-              ))}
-            </div>
+                </span>
+                <span className="mt-0.5 block text-[11px] tracking-[0.16em] text-ink-muted">{item.eyebrow}</span>
+                {currentView === item.id && (
+                  <motion.span layoutId="nav-ink" className="absolute -bottom-0.5 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-cinnabar" />
+                )}
+              </button>
+            ))}
+          </div>
 
-            {/* Actions */}
-            <div className="flex items-center space-x-2">
-              {/* Search Button with Kbd hint */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsSearchOpen(true)}
-                className="text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hidden sm:flex"
-              >
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <span className="text-xs text-slate-400 ml-2">⌘K</span>
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsSearchOpen(true)}
-                className="text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 sm:hidden"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleTheme}
-                className="text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 hidden sm:flex"
-              >
-                {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </Button>
-
-              {/* Mobile Menu Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden text-slate-600 dark:text-slate-300"
-              >
-                {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </Button>
-            </div>
+          <div className="flex items-center gap-1">
+            <button onClick={() => setIsSearchOpen(true)} className="grid h-11 w-11 place-items-center text-ink-soft hover:text-cinnabar" aria-label="搜索文章">
+              <Search className="h-[18px] w-[18px]" />
+            </button>
+            <button onClick={() => setIsDark((value) => !value)} className="hidden h-11 w-11 place-items-center text-ink-soft hover:text-cinnabar sm:grid" aria-label={isDark ? '切换浅色主题' : '切换深色主题'}>
+              {isDark ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
+            </button>
+            <span className="mx-2 hidden h-5 w-px bg-black/10 sm:block dark:bg-white/10" />
+            <button onClick={() => setIsMobileMenuOpen((value) => !value)} className="grid h-11 w-11 place-items-center text-ink md:hidden" aria-label={isMobileMenuOpen ? '关闭菜单' : '打开菜单'}>
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
           </div>
         </div>
       </motion.nav>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-x-0 top-16 z-40 md:hidden"
+            exit={{ opacity: 0, y: -12 }}
+            className="fixed inset-x-0 top-20 z-40 border-b border-black/10 bg-[#f3f0e8]/96 px-5 py-5 backdrop-blur-xl md:hidden dark:border-white/10 dark:bg-[#171a18]/96"
           >
-            <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 p-4 space-y-2">
+            <div className="grid grid-cols-2 gap-2">
               {navItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => {
-                    onViewChange(item.id);
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className={`w-full px-4 py-3 rounded-lg text-left font-medium transition-colors ${
-                    currentView === item.id
-                      ? 'bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400'
-                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-                  }`}
-                >
-                  {item.label}
+                <button key={item.id} onClick={() => selectView(item.id)} className={`border p-4 text-left ${currentView === item.id ? 'border-[var(--cinnabar)] text-cinnabar' : 'border-black/10 text-ink-soft dark:border-white/10'}`}>
+                  <span className="block text-base tracking-[0.18em]">{item.label}</span>
+                  <span className="mt-1 block text-xs tracking-[0.16em] text-ink-muted">{item.eyebrow}</span>
                 </button>
               ))}
-              <button
-                onClick={() => { toggleTheme(); setIsMobileMenuOpen(false); }}
-                className="w-full px-4 py-3 rounded-lg text-left font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex items-center gap-2"
-              >
-                {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-                {isDark ? '切换亮色' : '切换暗色'}
-              </button>
             </div>
+            <button onClick={() => setIsDark((value) => !value)} className="mt-3 flex w-full items-center justify-center gap-2 border border-black/10 p-3 text-sm text-ink-soft dark:border-white/10">
+              {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {isDark ? '切换日间卷轴' : '切换夜间卷轴'}
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Search Overlay */}
-      <SearchOverlay
-        isOpen={isSearchOpen}
-        onClose={() => setIsSearchOpen(false)}
-        onResultClick={handleSearchResult}
-      />
+      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} onResultClick={(post) => { onPostClick(post); setIsSearchOpen(false); }} />
     </>
   );
 }
