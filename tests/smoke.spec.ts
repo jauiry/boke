@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('博客冒烟测试', () => {
   test('首页应该正常加载', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     // 检查标题
     await expect(page).toHaveTitle(/郏祥瑞/);
@@ -16,7 +16,7 @@ test.describe('博客冒烟测试', () => {
   });
 
   test('文章列表页应该正常加载', async ({ page }) => {
-    await page.goto('/articles');
+    await page.goto('/articles', { waitUntil: 'domcontentloaded' });
 
     // 检查页面标题
     const heading = page.getByRole('heading', { name: '展卷阅文', exact: true });
@@ -24,10 +24,10 @@ test.describe('博客冒烟测试', () => {
   });
 
   test('搜索功能应该正常工作', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     // 打开搜索
-    await page.keyboard.press('Meta+k');
+    await page.getByTestId('open-search').click();
 
     // 等待搜索框出现
     const searchInput = page.getByRole('textbox', { name: '搜索文章标题或内容' });
@@ -41,7 +41,7 @@ test.describe('博客冒烟测试', () => {
   });
 
   test('文章详情页应该正常加载', async ({ page }) => {
-    await page.goto('/jmeter-performance-testing-guide');
+    await page.goto('/jmeter-performance-testing-guide', { waitUntil: 'domcontentloaded' });
 
     // 检查文章标题
     const heading = page.locator('h1').first();
@@ -53,7 +53,7 @@ test.describe('博客冒烟测试', () => {
   });
 
   test('深色模式切换应该正常', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'domcontentloaded' });
 
     // 查找主题切换按钮
     const themeButton = page.locator('button[aria-label*="主题"]').or(
@@ -61,16 +61,17 @@ test.describe('博客冒烟测试', () => {
     ).first();
 
     if (await themeButton.isVisible()) {
+      const html = page.locator('html');
+      const wasDark = await html.evaluate((element) => element.classList.contains('dark'));
       await themeButton.click();
 
       // 检查 dark class
-      const html = page.locator('html');
-      await expect(html).toHaveClass(/dark/);
+      await expect.poll(() => html.evaluate((element) => element.classList.contains('dark'))).toBe(!wasDark);
     }
   });
 
   test('关于页面应该正常加载', async ({ page }) => {
-    await page.goto('/about');
+    await page.goto('/about', { waitUntil: 'domcontentloaded' });
 
     // 检查关于页面内容
     const heading = page.locator('h1, h2').first();

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Menu, Moon, Search, Sun, X } from 'lucide-react';
 import SearchOverlay from './SearchOverlay';
+import AuthDialog from './AuthDialog';
 import type { PostListItem } from '@/types/api';
 
 interface NavbarProps {
@@ -82,12 +83,13 @@ export default function Navbar({ currentView, onViewChange, onPostClick }: Navba
 
           <div className="flex items-center gap-1">
             <button onClick={() => setIsSearchOpen(true)} className="grid h-11 w-11 place-items-center text-ink-soft hover:text-cinnabar" aria-label="搜索文章">
-              <Search className="h-[18px] w-[18px]" />
+              <Search data-testid="open-search" className="h-[18px] w-[18px]" />
             </button>
             <button onClick={() => setIsDark((value) => !value)} className="hidden h-11 w-11 place-items-center text-ink-soft hover:text-cinnabar sm:grid" aria-label={isDark ? '切换浅色主题' : '切换深色主题'}>
               {isDark ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
             </button>
             <span className="mx-2 hidden h-5 w-px bg-black/10 sm:block dark:bg-white/10" />
+            <AuthDialog />
             <button onClick={() => setIsMobileMenuOpen((value) => !value)} className="grid h-11 w-11 place-items-center text-ink md:hidden" aria-label={isMobileMenuOpen ? '关闭菜单' : '打开菜单'}>
               {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
