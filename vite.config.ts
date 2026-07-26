@@ -17,6 +17,7 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
+          'blog-content': [path.resolve(__dirname, 'src/data/blogData.ts')],
           'vendor-react': ['react', 'react-dom'],
           'vendor-motion': ['framer-motion'],
           'vendor-radix': [

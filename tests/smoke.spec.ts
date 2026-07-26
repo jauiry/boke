@@ -55,6 +55,11 @@ test.describe('博客冒烟测试', () => {
     await expect(backButton).toBeVisible();
   });
 
+  test('导入的 Obsidian 文章应该能够打开', async ({ page }) => {
+    await page.goto('/pytest-fixture-resource-management', { waitUntil: 'domcontentloaded' });
+    await expect(page.getByRole('heading', { name: 'Pytest Fixture：自动化测试资源管理详解', exact: true })).toBeVisible();
+  });
+
   test('深色模式切换应该正常', async ({ page }) => {
     await page.goto('/', { waitUntil: 'domcontentloaded' });
 
