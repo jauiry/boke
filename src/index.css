@@ -336,7 +336,11 @@ html {
   .featured-scroll > div:first-child { display: none; }
   .cloud-nav[data-view="home"] { top: 1rem; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
   .cloud-nav[data-view="home"] .nav-inner { width: min(56vw, 50rem); height: 3.6rem; justify-content: center; border: 1px solid rgba(255,255,255,.78); border-radius: .55rem; background: rgba(246,241,228,.58); padding-inline: 2rem; box-shadow: 0 8px 28px rgba(48,43,34,.05); backdrop-filter: blur(12px); }
-  .cloud-nav[data-view="home"] .nav-brand, .cloud-nav[data-view="home"] .nav-actions { display: none; }
+  .cloud-nav[data-view="home"] .nav-brand { display: none; }
+  .cloud-nav[data-view="home"] .nav-inner { position: relative; }
+  .cloud-nav[data-view="home"] .nav-actions { position: absolute; left: calc(100% + 1rem); top: 50%; display: flex; transform: translateY(-50%); }
+  .cloud-nav[data-view="home"] .nav-actions > button:first-child,
+  .cloud-nav[data-view="home"] .nav-actions > span { display: none; }
   .cloud-nav[data-view="home"] .nav-links { display: flex; width: 100%; justify-content: space-around; }
 }
 
