@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('博客冒烟测试', () => {
   test('首页应该正常加载', async ({ page }) => {
-    await page.goto('https://www.mxqys.xyz');
+    await page.goto('/');
 
     // 检查标题
     await expect(page).toHaveTitle(/郏祥瑞/);
@@ -16,15 +16,15 @@ test.describe('博客冒烟测试', () => {
   });
 
   test('文章列表页应该正常加载', async ({ page }) => {
-    await page.goto('https://www.mxqys.xyz/articles');
+    await page.goto('/articles');
 
     // 检查页面标题
-    const heading = page.getByRole('heading', { name: '全部文章', exact: true });
-    await expect(heading).toContainText('文章');
+    const heading = page.getByRole('heading', { name: '展卷阅文', exact: true });
+    await expect(heading).toBeVisible();
   });
 
   test('搜索功能应该正常工作', async ({ page }) => {
-    await page.goto('https://www.mxqys.xyz');
+    await page.goto('/');
 
     // 打开搜索
     await page.keyboard.press('Meta+k');
@@ -41,7 +41,7 @@ test.describe('博客冒烟测试', () => {
   });
 
   test('文章详情页应该正常加载', async ({ page }) => {
-    await page.goto('https://www.mxqys.xyz/jmeter-performance-testing-guide');
+    await page.goto('/jmeter-performance-testing-guide');
 
     // 检查文章标题
     const heading = page.locator('h1').first();
@@ -53,7 +53,7 @@ test.describe('博客冒烟测试', () => {
   });
 
   test('深色模式切换应该正常', async ({ page }) => {
-    await page.goto('https://www.mxqys.xyz');
+    await page.goto('/');
 
     // 查找主题切换按钮
     const themeButton = page.locator('button[aria-label*="主题"]').or(
@@ -70,7 +70,7 @@ test.describe('博客冒烟测试', () => {
   });
 
   test('关于页面应该正常加载', async ({ page }) => {
-    await page.goto('https://www.mxqys.xyz/about');
+    await page.goto('/about');
 
     // 检查关于页面内容
     const heading = page.locator('h1, h2').first();

@@ -43,9 +43,18 @@ function LoadingSkeleton() {
 
 type ViewType = 'home' | 'articles' | 'tags' | 'about' | 'admin';
 
+function resolveLocation(): { view: ViewType; post: Post | null } {
+  const slug = window.location.pathname.replace(/^\/+|\/+$/g, '');
+  if (!slug) return { view: 'home', post: null };
+  if (slug === 'articles' || slug === 'tags' || slug === 'about' || slug === 'admin') {
+    return { view: slug, post: null };
+  }
+  return { view: 'home', post: getPostBySlug(slug) ?? null };
+}
+
 function App() {
-  const [currentView, setCurrentView] = useState<ViewType>('home');
-  const [selectedPost, setSelectedPost] = useState<Post | null>(null);
+  const [currentView, setCurrentView] = useState<ViewType>(() => resolveLocation().view);
+  const [selectedPost, setSelectedPost] = useState<Post | null>(() => resolveLocation().post);
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -131,54 +140,26 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Check URL for direct post access or admin
-  useEffect(() => {
-    const path = window.location.pathname;
-    const slug = path.replace('/', '');
-
-    if (slug === 'admin') {
-      setCurrentView('admin');
-    } else if (slug) {
-      const post = getPostBySlug(slug);
-      if (post) {
-        setSelectedPost(post);
-      }
-    }
-  }, []);
-
   // Handle browser back/forward buttons
   useEffect(() => {
     const handlePopState = () => {
-      const path = window.location.pathname;
-      const slug = path.replace('/', '');
-      if (slug === 'admin') {
-        setSelectedPost(null);
-        setCurrentView('admin');
-      } else if (slug) {
-        const post = getPostBySlug(slug);
-        if (post) {
-          setSelectedPost(post);
-        } else {
-          setSelectedPost(null);
-          setCurrentView('home');
-        }
-      } else {
-        setSelectedPost(null);
-      }
+      const route = resolveLocation();
+      setCurrentView(route.view);
+      setSelectedPost(route.post);
     };
 
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  // Update URL when post changes
+  // Keep the URL aligned with the active view.
   useEffect(() => {
     if (selectedPost) {
       window.history.pushState({}, '', `/${selectedPost.slug}`);
     } else {
-      window.history.pushState({}, '', '/');
+      window.history.pushState({}, '', currentView === 'home' ? '/' : `/${currentView}`);
     }
-  }, [selectedPost]);
+  }, [currentView, selectedPost]);
 
   return (
     <div className="ink-page min-h-screen">
