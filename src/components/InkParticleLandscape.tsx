@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 
 type Dot = { x: number; y: number; ox: number; oy: number; r: number; a: number; phase: number; speed: number; tone: 'ink' | 'gold' | 'red' };
 type Ripple = { x: number; y: number; born: number };
+type Mote = { x: number; y: number; vx: number; vy: number; r: number; a: number; life: number; tone: 'ink' | 'gold' | 'red' };
 
 export default function InkParticleLandscape() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -14,11 +15,14 @@ export default function InkParticleLandscape() {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const pointer = { x: -999, y: -999 };
     const ripples: Ripple[] = [];
+    let motes: Mote[] = [];
     let dots: Dot[] = [];
     let width = 1;
     let height = 1;
     let animation = 0;
     let tick = 0;
+    let lastTrail = 0;
+    let motionEnabled = localStorage.getItem('ink-motion') !== 'off';
 
     const ridge = (x: number, side: 'left' | 'right') => {
       const n = side === 'left' ? x / width : (width - x) / width;
@@ -53,6 +57,16 @@ export default function InkParticleLandscape() {
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
       const count = Math.min(3600, Math.max(1100, Math.floor(width * 2.45)));
       dots = Array.from({ length: count }, (_, index) => makeMountainDot(index % 2 ? 'left' : 'right'));
+      motes = Array.from({ length: Math.min(180, Math.max(80, Math.floor(width / 8))) }, (_, index) => ({
+        x: Math.random() * width,
+        y: height * (0.2 + Math.random() * 0.62),
+        vx: (Math.random() - 0.35) * 0.7,
+        vy: -0.12 - Math.random() * 0.42,
+        r: 0.8 + Math.random() * 2.4,
+        a: 0.28 + Math.random() * 0.52,
+        life: 1,
+        tone: index % 11 === 0 ? 'red' : index % 3 === 0 ? 'gold' : 'ink',
+      }));
     };
 
     const drawInkMass = (side: 'left' | 'right') => {
@@ -110,6 +124,40 @@ export default function InkParticleLandscape() {
       context.stroke();
     };
 
+    const addBurst = (x: number, y: number, amount: number) => {
+      for (let index = 0; index < amount; index++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 0.7 + Math.random() * 3.2;
+        motes.push({ x, y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, r: 0.8 + Math.random() * 2.8, a: 0.45 + Math.random() * 0.5, life: 1, tone: index % 5 === 0 ? 'red' : index % 2 === 0 ? 'gold' : 'ink' });
+      }
+    };
+
+    const drawMotes = () => {
+      const intensity = reduced ? 0.45 : 1;
+      for (let index = motes.length - 1; index >= 0; index--) {
+        const mote = motes[index];
+        if (motionEnabled) {
+          mote.x += (mote.vx + Math.sin(tick * 3 + index) * 0.18) * intensity;
+          mote.y += mote.vy * intensity;
+          mote.life -= mote.life < 1 ? 0.012 : 0;
+        }
+        if (mote.y < height * 0.12 || mote.x > width + 30 || mote.x < -30 || mote.life <= 0) {
+          if (motes.length > 220) { motes.splice(index, 1); continue; }
+          mote.x = Math.random() * width;
+          mote.y = height * (0.62 + Math.random() * 0.24);
+          mote.life = 1;
+        }
+        context.save();
+        context.shadowBlur = mote.tone === 'ink' ? 2 : 9;
+        context.shadowColor = mote.tone === 'red' ? 'rgba(177,61,43,.8)' : mote.tone === 'gold' ? 'rgba(190,145,57,.9)' : 'rgba(28,32,29,.45)';
+        context.fillStyle = mote.tone === 'red' ? `rgba(177,61,43,${mote.a * mote.life})` : mote.tone === 'gold' ? `rgba(190,145,57,${mote.a * mote.life})` : `rgba(28,32,29,${mote.a * .72 * mote.life})`;
+        context.beginPath();
+        context.arc(mote.x, mote.y, mote.r, 0, Math.PI * 2);
+        context.fill();
+        context.restore();
+      }
+    };
+
     const draw = (time = 0) => {
       context.clearRect(0, 0, width, height);
       tick += 0.008;
@@ -136,6 +184,8 @@ export default function InkParticleLandscape() {
         context.fill();
       }
 
+      drawMotes();
+
       const birdDrift = reduced ? 0 : Math.sin(tick * 2.3) * 24;
       drawBird(width * 0.67 + birdDrift, height * 0.18, 1.15, 0.72);
       drawBird(width * 0.74 + birdDrift * 0.7, height * 0.23, 0.72, 0.58);
@@ -154,19 +204,30 @@ export default function InkParticleLandscape() {
           context.stroke();
         }
       }
-      if (!reduced) animation = requestAnimationFrame(draw);
+      if (motionEnabled) animation = requestAnimationFrame(draw);
     };
 
     const move = (event: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
       pointer.x = event.clientX - rect.left;
       pointer.y = event.clientY - rect.top;
+      if (motionEnabled && performance.now() - lastTrail > 34) {
+        addBurst(pointer.x, pointer.y, 3);
+        lastTrail = performance.now();
+      }
     };
     const ripple = (event: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
       ripples.push({ x: event.clientX - rect.left, y: event.clientY - rect.top, born: performance.now() });
+      addBurst(event.clientX - rect.left, event.clientY - rect.top, 46);
     };
     const clear = () => { pointer.x = -999; pointer.y = -999; };
+    const toggleMotion = (event: Event) => {
+      const enabled = (event as CustomEvent<boolean>).detail;
+      motionEnabled = enabled;
+      cancelAnimationFrame(animation);
+      if (enabled) animation = requestAnimationFrame(draw);
+    };
 
     resize();
     draw(performance.now());
@@ -174,12 +235,14 @@ export default function InkParticleLandscape() {
     canvas.addEventListener('pointermove', move);
     canvas.addEventListener('pointerdown', ripple);
     canvas.addEventListener('pointerleave', clear);
+    window.addEventListener('ink-motion-toggle', toggleMotion);
     return () => {
       cancelAnimationFrame(animation);
       window.removeEventListener('resize', resize);
       canvas.removeEventListener('pointermove', move);
       canvas.removeEventListener('pointerdown', ripple);
       canvas.removeEventListener('pointerleave', clear);
+      window.removeEventListener('ink-motion-toggle', toggleMotion);
     };
   }, []);
 
