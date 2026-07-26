@@ -78,7 +78,7 @@ export default function SearchOverlay({ isOpen, onClose, onResultClick }: Search
         } else {
           setResults([]);
         }
-      } catch (err) {
+      } catch {
         if (currentRequestId === requestIdRef.current) {
           setError('搜索服务暂时不可用，请稍后再试');
           setResults([]);

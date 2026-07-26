@@ -3,7 +3,7 @@ const CACHE_NAME = 'mxqys-blog-v2';
 const MAX_CACHE_ENTRIES = 50;
 
 // Prune old cache entries to prevent unlimited growth
-async function pruneCache(cacheName: string) {
+async function pruneCache(cacheName) {
   const cache = await caches.open(cacheName);
   const keys = await cache.keys();
   if (keys.length > MAX_CACHE_ENTRIES) {
@@ -33,7 +33,7 @@ self.addEventListener('activate', (event) => {
 });
 
 // Helper: stale-while-revalidate
-function staleWhileRevalidate(request: Request, cacheName: string) {
+function staleWhileRevalidate(request, cacheName) {
   return caches.match(request).then((cached) => {
     const fetchPromise = fetch(request).then((response) => {
       if (response.ok) {
@@ -50,7 +50,7 @@ function staleWhileRevalidate(request: Request, cacheName: string) {
 }
 
 // Helper: cache-first for images
-function cacheFirst(request: Request, cacheName: string) {
+function cacheFirst(request, cacheName) {
   return caches.match(request).then((cached) => {
     if (cached) return cached;
     return fetch(request).then((response) => {
@@ -62,7 +62,7 @@ function cacheFirst(request: Request, cacheName: string) {
       return response;
     }).catch(() => {
       return new Response(
-        '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200"><rect fill="#7c3aed" width="400" height="200"/><text x="200" y="110" text-anchor="middle" fill="white" font-size="20" font-family="system-ui">Image</text></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200"><rect fill="#a83f32" width="400" height="200"/><text x="200" y="110" text-anchor="middle" fill="white" font-size="20" font-family="system-ui">Image</text></svg>',
         { headers: { 'Content-Type': 'image/svg+xml' } }
       );
     });
