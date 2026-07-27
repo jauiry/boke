@@ -2,7 +2,7 @@ import type { MouseEvent } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, UserRound } from 'lucide-react';
 import type { PostListItem } from '@/types/api';
-import { usePostList } from '@/hooks/usePosts';
+import { posts as localPosts } from '@/data/blogData';
 
 interface FeaturedGridProps {
   onPostClick: (post: PostListItem) => void;
@@ -54,7 +54,10 @@ function ScrollArticleCard({ post, index, onClick }: { post: PostListItem; index
 }
 
 export default function FeaturedGrid({ onPostClick }: FeaturedGridProps) {
-  const posts = usePostList();
+  // 直接使用本地数据：FeaturedGrid 在首屏关键区域，Suspense + usePostList 在 Vercel
+  // /api/posts 冷启动时（>1s）会让首屏停在骨架屏。先用本地数据同步渲染，保留
+  // PostList 在需要异步数据刷新场景下的 Suspense 行为。
+  const posts: PostListItem[] = localPosts;
   const featured = posts.filter((post) => post.featured);
   const displayPosts = [...featured, ...posts.filter((post) => !post.featured)].slice(0, 3);
 

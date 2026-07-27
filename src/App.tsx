@@ -152,9 +152,7 @@ function App() {
                   <div className="featured-scroll-section relative py-20 md:py-24">
                     <div className="paper-noise absolute inset-0" aria-hidden="true" />
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                      <Suspense fallback={<PostListSkeleton />}>
-                        <FeaturedGrid onPostClick={handlePostClick} />
-                      </Suspense>
+                      <FeaturedGrid onPostClick={handlePostClick} />
                     </div>
                   </div>
                 </>
