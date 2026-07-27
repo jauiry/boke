@@ -12,8 +12,12 @@ interface TagsPageProps {
 export default function TagsPage({ onPostClick }: TagsPageProps) {
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
 
-  const filteredPosts = selectedTag ? getPostsByTag(selectedTag) : posts;
-  const selectedTagInfo = selectedTag ? tags.find(t => t.id === selectedTag) : null;
+  // selectedTag 保存的是 tag.id（点击时 setSelectedTag(tag.id)）；静态 tags 数组
+  // 使用 '1'、'2'… 数字 ID，而文章内嵌的 tag 对象使用 'obs-1-1' 这类自定义 ID。
+  // 两种 ID 体系不相通，必须先查 tag.name 再传给 getPostsByTag。
+  const selectedTagInfo = selectedTag ? tags.find(t => t.id === selectedTag || t.name === selectedTag) : null;
+  const filterTagKey: string = selectedTagInfo?.name ?? selectedTag ?? '';
+  const filteredPosts = selectedTag ? getPostsByTag(filterTagKey) : posts;
 
   return (
     <div className="ink-page min-h-[100dvh] pb-16 pt-24">
@@ -54,7 +58,10 @@ export default function TagsPage({ onPostClick }: TagsPageProps) {
               </span>
             </button>
             {tags.map((tag, index) => {
-              const tagPostCount = getPostsByTag(tag.id).length;
+              // 静态 tags 数组使用 '1'、'2'… 数字 ID；文章内嵌的 tag 对象使用
+              // 'obs-1-1' 这类自定义 ID。按 tag.id 查找永远匹配不到，导致几乎所有
+              // 标签显示 0。按 tag.name 匹配可命中文章内嵌标签的名称字段。
+              const tagPostCount = getPostsByTag(tag.name).length;
               return (
                 <motion.button
                   key={tag.id}
@@ -156,7 +163,7 @@ export default function TagsPage({ onPostClick }: TagsPageProps) {
             { value: tags.length, label: '标签总数', icon: Hash },
             { value: posts.length, label: '文章总数', icon: BookOpen },
             { value: Math.round(posts.length / tags.length), label: '平均每标签', icon: BookOpen },
-            { value: tags.slice().sort((a, b) => getPostsByTag(b.id).length - getPostsByTag(a.id).length)[0]?.name || '-', label: '最热标签', icon: Hash },
+            { value: tags.slice().sort((a, b) => getPostsByTag(b.name).length - getPostsByTag(a.name).length)[0]?.name || '-', label: '最热标签', icon: Hash },
           ].map((stat, index) => (
             <motion.div
               key={index}
