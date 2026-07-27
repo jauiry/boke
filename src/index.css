@@ -359,7 +359,7 @@ html {
   .scroll-article-grid { grid-template-columns: 1fr; }
   .scroll-article-card { min-height: 12.5rem; }
   .scroll-motion-toggle { right: .75rem; bottom: .75rem; }
-  .scroll-title { font-size: clamp(3.2rem, 14vw, 5.2rem); line-height: 1.08; white-space: normal; }
+  .scroll-title { font-size: clamp(2.1rem, 9.5vw, 4.6rem); line-height: 1.18; white-space: normal; word-break: keep-all; overflow-wrap: anywhere; padding-inline: .5rem; }
   .scroll-sun { right: 10%; top: 16%; opacity: .58; }
   .scroll-disciplines { margin-top: 3rem; gap: .45rem; }
   .scroll-disciplines span { padding: .5rem .7rem; font-size: .68rem; }
