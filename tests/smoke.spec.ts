@@ -66,9 +66,18 @@ test.describe('博客冒烟测试', () => {
       if (/\/api\/posts\//.test(request.url())) detailRequests.push(request.url());
     });
     await page.goto('/articles', { waitUntil: 'domcontentloaded' });
+
+    const articlesHeading = page.getByRole('heading', { name: '展卷阅文', exact: true });
+    const articleLink = page.getByRole('link', { name: /Git 提交流程模板/ }).first();
+
     for (let index = 0; index < 6; index++) {
-      await page.locator('a.ink-card').first().click();
-      await page.getByRole('button', { name: '返回', exact: true }).click();
+      await expect(articleLink).toBeVisible();
+      await articleLink.dispatchEvent('click');
+
+      const backButton = page.getByRole('button', { name: '返回', exact: true });
+      await expect(backButton).toBeVisible();
+      await backButton.click();
+      await expect(articlesHeading).toBeVisible();
     }
     expect(detailRequests).toEqual([]);
   });
