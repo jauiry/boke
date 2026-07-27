@@ -1,0 +1,6 @@
+{
+  "permissions": {
+    "allow": ["Read", "Glob", "Grep", "Edit", "Write", "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git switch:*)", "Bash(git add:*)", "Bash(git commit:*)", "Bash(git push:*)", "Bash(npm run lint)", "Bash(npm run typecheck)", "Bash(npm run build)", "Bash(npx playwright test:*)"],
+    "deny": ["Bash(git push --force:*)", "Bash(git reset --hard:*)", "Bash(git clean:*)", "Bash(git branch -D:*)", "Bash(vercel --prod:*)", "Bash(npm publish:*)"]
+  }
+}
