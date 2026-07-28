@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import SEO from './components/SEO';
 import PostListSkeleton from './components/PostListSkeleton';
+import FeaturedGrid from './components/FeaturedGrid';
 import { setupGlobalErrorHandler } from './components/ErrorBoundary';
 import type { Post } from './types/blog';
 import type { PostListItem } from './types/api';
@@ -20,7 +21,6 @@ const PostDetail = lazy(() => import('./components/PostDetail'));
 const TagsPage = lazy(() => import('./components/TagsPage'));
 const AboutPage = lazy(() => import('./components/AboutPage'));
 const AdminPage = lazy(() => import('./components/AdminPage'));
-const FeaturedGrid = lazy(() => import('./components/FeaturedGrid'));
 
 // 加载骨架屏组件
 function LoadingSkeleton() {
