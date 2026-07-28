@@ -6,6 +6,7 @@ import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import SEO from './components/SEO';
 import PostListSkeleton from './components/PostListSkeleton';
+import FeaturedGrid from './components/FeaturedGrid';
 import { setupGlobalErrorHandler } from './components/ErrorBoundary';
 import type { Post } from './types/blog';
 import type { PostListItem } from './types/api';
@@ -20,7 +21,6 @@ const PostDetail = lazy(() => import('./components/PostDetail'));
 const TagsPage = lazy(() => import('./components/TagsPage'));
 const AboutPage = lazy(() => import('./components/AboutPage'));
 const AdminPage = lazy(() => import('./components/AdminPage'));
-const FeaturedGrid = lazy(() => import('./components/FeaturedGrid'));
 
 // 加载骨架屏组件
 function LoadingSkeleton() {
@@ -152,9 +152,7 @@ function App() {
                   <div className="featured-scroll-section relative py-20 md:py-24">
                     <div className="paper-noise absolute inset-0" aria-hidden="true" />
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                      <Suspense fallback={<PostListSkeleton />}>
-                        <FeaturedGrid onPostClick={handlePostClick} />
-                      </Suspense>
+                      <FeaturedGrid onPostClick={handlePostClick} />
                     </div>
                   </div>
                 </>

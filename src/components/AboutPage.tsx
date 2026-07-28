@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
-import { 
-  Mail, MapPin, Phone, Calendar, Briefcase, GraduationCap,
+import {
+  Mail, MapPin, Calendar, Briefcase, GraduationCap,
   Code, Database, Bug, Server, FileText, Users, Award,
-  CheckCircle, Star, Zap, Target, Cpu
+  CheckCircle, Star, Zap, Target, Cpu, Github
 } from 'lucide-react';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -247,16 +247,26 @@ export default function AboutPage() {
                 </div>
               </div>
 
-              {/* 联系方式 */}
+              {/* 联系方式（脱敏展示，避免爬虫与社工） */}
               <div className="flex flex-wrap gap-3 mt-6 pt-6 border-t border-black/10 dark:border-white/10">
-                <a href="tel:183-2597-5419" className="flex items-center space-x-2 px-4 py-2 bg-[var(--paper-deep)] dark:bg-[#292e29] rounded-full text-sm text-ink-soft dark:text-ink-soft hover:bg-[color-mix(in_srgb,var(--cinnabar)_12%,var(--paper))] dark:hover:bg-[color-mix(in_srgb,var(--cinnabar)_18%,var(--paper))] transition-colors">
-                  <Phone className="w-4 h-4" />
-                  <span>183-2597-5419</span>
+                <a
+                  href={author.social.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="通过 GitHub 联系"
+                  className="flex items-center space-x-2 px-4 py-2 bg-[var(--paper-deep)] dark:bg-[#292e29] rounded-full text-sm text-ink-soft dark:text-ink-soft hover:bg-[color-mix(in_srgb,var(--cinnabar)_12%,var(--paper))] dark:hover:bg-[color-mix(in_srgb,var(--cinnabar)_18%,var(--paper))] transition-colors"
+                >
+                  <Github className="w-4 h-4" />
+                  <span>GitHub 联系</span>
                 </a>
-                <a href="mailto:1102684926@qq.com" className="flex items-center space-x-2 px-4 py-2 bg-[var(--paper-deep)] dark:bg-[#292e29] rounded-full text-sm text-ink-soft dark:text-ink-soft hover:bg-[color-mix(in_srgb,var(--cinnabar)_12%,var(--paper))] dark:hover:bg-[color-mix(in_srgb,var(--cinnabar)_18%,var(--paper))] transition-colors">
+                <span
+                  aria-label="QQ 邮箱已脱敏，完整联系方式见评论区留言"
+                  className="flex items-center space-x-2 px-4 py-2 bg-[var(--paper-deep)] dark:bg-[#292e29] rounded-full text-sm text-ink-soft dark:text-ink-soft cursor-default"
+                  title="完整邮箱可在评论区留言获取，避免爬虫抓取"
+                >
                   <Mail className="w-4 h-4" />
-                  <span>1102684926@qq.com</span>
-                </a>
+                  <span>1102****26@qq.com</span>
+                </span>
               </div>
             </CardContent>
           </Card>
@@ -534,14 +544,16 @@ export default function AboutPage() {
                 <CardContent className="p-6 text-center">
                   <h3 className="text-lg font-semibold mb-2">有意联系？</h3>
                   <p className="text-sm text-ink-muted mb-4">
-                    随时欢迎交流合作机会
+                    欢迎通过 GitHub 发起 Issue 或在文章评论区留言
                   </p>
-                  <a 
-                    href="tel:183-2597-5419"
+                  <a
+                    href={author.social.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-flex items-center justify-center w-full px-4 py-2 bg-cinnabar hover:bg-[#8f342a] rounded-lg text-sm font-medium transition-colors"
                   >
-                    <Phone className="w-4 h-4 mr-2" />
-                    拨打电话
+                    <Github className="w-4 h-4 mr-2" />
+                    前往 GitHub
                   </a>
                 </CardContent>
               </Card>
